@@ -1,10 +1,6 @@
-import { db } from "~~/lib/db";
-import { exampleTable } from "~~/lib/db/schema";
+import db from "~~/lib/db";
 
 export default defineEventHandler(async (_event) => {
-    const results = await db
-        .select()
-        .from(exampleTable);
-
+    const results = await db.query.exampleTable.findMany();
     return results;
 });

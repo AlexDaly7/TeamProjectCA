@@ -5,5 +5,5 @@ export const exampleTable = pgTable('example_table', {
     text: text('text').notNull(),
 });
 
-export type InsertUser = typeof exampleTable.$inferInsert;
-export type SelectUser = typeof exampleTable.$inferSelect;
+export type InsertExample = typeof exampleTable.$inferInsert;
+export type SelectExample = typeof exampleTable.$inferSelect;
