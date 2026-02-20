@@ -12,6 +12,9 @@
 </script>
 
 <template>
+    <div class="projectHeader">
+        <button>Create Task.</button>
+    </div>
     <Timeline
         :items="items"
         :groups="groups"
