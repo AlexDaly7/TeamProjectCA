@@ -1,5 +1,6 @@
-import { pgTable, serial, varchar } from 'drizzle-orm/pg-core';
-export default const projectTable = pgTable("project", {
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const projects = pgTable("projects", {
     id: serial("id").primaryKey(),
-    title: varchar(40).notNull()
+    title: text().notNull(),
 });
