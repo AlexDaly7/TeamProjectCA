@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 1,
   "workspaces": {
     "": {
       "name": "TeamProjectCA",
@@ -13,6 +12,7 @@
         "pg": "^8.18.0",
         "vue": "^3.5.28",
         "vue-router": "^4.6.4",
+        "vue-timeline-chart": "^4.1.2",
         "zod": "^4.3.6",
       },
       "devDependencies": {
@@ -1356,6 +1356,8 @@
     "vue-devtools-stub": ["vue-devtools-stub@0.1.0", "", {}, "sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ=="],
 
     "vue-router": ["vue-router@4.6.4", "", { "dependencies": { "@vue/devtools-api": "^6.6.4" }, "peerDependencies": { "vue": "^3.5.0" } }, "sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg=="],
+
+    "vue-timeline-chart": ["vue-timeline-chart@4.1.2", "", { "dependencies": { "vue": "^3.4.38" } }, "sha512-uR2Yq+eMqbYc1aFiUhXtwq1t6aSXV3Jd5IzhjJvxM9Vg8vruQI9PUBsy/mQGkPtQ2eCbO5Ixxr2iOH6E2733Hw=="],
 
     "webidl-conversions": ["webidl-conversions@3.0.1", "", {}, "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ=="],
 
