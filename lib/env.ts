@@ -1,4 +1,4 @@
-import z, { ZodError, ZodObject, ZodRawShape } from "zod";
+import z, { ZodError, ZodObject, type ZodRawShape } from "zod";
 
 function tryParseEnv<T extends ZodRawShape>(
     EnvSchema: ZodObject<T>,
@@ -24,6 +24,10 @@ function tryParseEnv<T extends ZodRawShape>(
 
 const EnvSchema = z.object({
     DATABASE_URL: z.string(),
+    BETTER_AUTH_SECRET: z.string(),
+    BETTER_AUTH_URL: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string(),
 });
 
 
