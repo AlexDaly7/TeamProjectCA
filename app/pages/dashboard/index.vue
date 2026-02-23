@@ -29,6 +29,8 @@ async function createGroup() {
 
     alert(`Created group with ID: ${id}`);
 }
+
+const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/api/groups', { method: 'GET' })
 </script>
 
 <template>
@@ -52,6 +54,16 @@ async function createGroup() {
         <AppButton @click="createGroup">
             Create group
         </AppButton>
+    </div>
+
+    <div v-if="groupsPending">
+        Loading groups...
+    </div>
+    <div v-else-if="groupsError">
+        Groups error: {{ groupsError }}
+    </div>
+    <div v-else>
+        {{ groups }}
     </div>
 
     <h1 class="text-3xl font-bold">My Repos</h1>

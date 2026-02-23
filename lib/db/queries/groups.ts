@@ -20,12 +20,22 @@ export async function createGroup(userId: string, groupName: string) {
     return result.id;
 }
 
-// export async function listUserGroups(userId: string) {
-//     await db.query.
-// }
-
 export async function findGroupBySlug(slug: string) {
     return await db.query.groups.findFirst({
         where: eq(groups.slug, slug),
+    });
+}
+
+export async function listUserGroups(userId: string) {
+    return await db.query.groupMembers.findMany({
+        where: eq(groupMembers.userId, userId),
+        with: {
+            group: {
+                columns: {
+                    name: true,
+                    slug: true,
+                }
+            },
+        }
     });
 }

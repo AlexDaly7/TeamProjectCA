@@ -1,6 +1,7 @@
 import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { groups } from './groups';
+import { relations } from 'drizzle-orm';
 
 export const groupRole = pgEnum('groupRole', ['owner', 'developer', 'reader']);
 
@@ -11,3 +12,10 @@ export const groupMembers = pgTable("groupMembers", {
 }, (table) => [
     primaryKey({ columns: [ table.groupId, table.userId ] }),
 ]);
+
+export const groupMembersRelations = relations(groupMembers, ({ one }) => ({ 
+    group: one(groups, {
+        fields: [ groupMembers.groupId ],
+        references: [ groups.id ],
+    }),
+}));
