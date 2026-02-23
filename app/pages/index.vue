@@ -6,9 +6,9 @@ const auth = useAuth();
 
 <template>
     <div>
-        <button @click="auth.signInWithGitHub">
+        <AppButton @click="auth.signInWithGitHub">
             Sign in with GitHub
-        </button>
+        </AppButton>
         <span>{{ auth.user.value?.email }}</span>
     </div>
 </template>
