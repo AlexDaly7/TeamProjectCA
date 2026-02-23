@@ -2,6 +2,7 @@
 const auth = useAuth();
 const router = useRouter();
 const { $authClient } = useNuxtApp();
+const groupsStore = useGroupsStore();
 
 async function addProject(title: string) {
     await $fetch("/api/project", {
@@ -16,6 +17,17 @@ async function signOut() {
     await $authClient.signOut();
 
     router.push({ name: 'index' });
+}
+
+async function createGroup() {
+    const name = prompt("Enter group name:");
+    if (!name) return;
+
+    console.log(name);
+
+    const id = await groupsStore.createGroup(name);
+
+    alert(`Created group with ID: ${id}`);
 }
 </script>
 
@@ -32,9 +44,13 @@ async function signOut() {
         </span>
     </span>
 
-    <div>
+    <div class="flex flex-row gap-2">
         <AppButton @click="signOut">
             Sign out
+        </AppButton>
+
+        <AppButton @click="createGroup">
+            Create group
         </AppButton>
     </div>
 
