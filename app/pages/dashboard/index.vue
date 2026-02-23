@@ -2,6 +2,7 @@
 const auth = useAuth();
 const router = useRouter();
 const { $authClient } = useNuxtApp();
+const groupsStore = useGroupsStore();
 
 async function addProject(title: string) {
     await $fetch("/api/project", {
@@ -17,6 +18,19 @@ async function signOut() {
 
     router.push({ name: 'index' });
 }
+
+async function createGroup() {
+    const name = prompt("Enter group name:");
+    if (!name) return;
+
+    console.log(name);
+
+    const id = await groupsStore.createGroup(name);
+
+    alert(`Created group with ID: ${id}`);
+}
+
+const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/api/groups', { method: 'GET' })
 </script>
 
 <template>
@@ -32,10 +46,24 @@ async function signOut() {
         </span>
     </span>
 
-    <div>
+    <div class="flex flex-row gap-2">
         <AppButton @click="signOut">
             Sign out
         </AppButton>
+
+        <AppButton @click="createGroup">
+            Create group
+        </AppButton>
+    </div>
+
+    <div v-if="groupsPending">
+        Loading groups...
+    </div>
+    <div v-else-if="groupsError">
+        Groups error: {{ groupsError }}
+    </div>
+    <div v-else>
+        {{ groups }}
     </div>
 
     <h1 class="text-3xl font-bold">My Repos</h1>
