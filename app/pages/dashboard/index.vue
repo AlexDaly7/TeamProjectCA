@@ -10,7 +10,7 @@ async function addProject(title: string) {
     });
 }
 
-const { data: repos, pending, error } = useFetch('/api/github/repos');
+const { data: repos, pending, error } = useFetch('/api/github/repos', { lazy: true });
 
 async function signOut() {
     await $authClient.signOut();
@@ -23,9 +23,6 @@ async function signOut() {
     <div>
         <button v-on:click="addProject('Hi!')">Create Project</button>
         
-        <AppButton @click="signOut">
-            Sign out
-        </AppButton>
     </div>
 
     <span>
@@ -34,6 +31,12 @@ async function signOut() {
             {{ auth.user.value?.name }}
         </span>
     </span>
+
+    <div>
+        <AppButton @click="signOut">
+            Sign out
+        </AppButton>
+    </div>
 
     <h1 class="text-3xl font-bold">My Repos</h1>
     <div v-if="pending">
