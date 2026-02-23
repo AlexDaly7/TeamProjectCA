@@ -31,8 +31,8 @@
         
     </div>
     <Timeline
-        :items="items"
-        :groups="groups"
+        :items
+        :groups
         :minViewportDuration="50000000"
         :viewport-min="1740051756"
     />

@@ -1,0 +1,28 @@
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { projects } from './project';
+import { relations } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
+import z from 'zod';
+
+export const groups = pgTable("groups", {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => new Date())
+        .notNull(),
+});
+
+export const groupRelations = relations(groups, ({ many }) => ({ members: many(projects) }));
+
+export const InsertGroup = createInsertSchema(groups).omit({
+    id: true,
+    slug: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type GroupSchema = typeof groups.$inferSelect;
+
+export type InsertGroup = z.infer<typeof InsertGroup>;
