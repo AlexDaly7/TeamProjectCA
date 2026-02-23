@@ -1,0 +1,10 @@
+{
+    "tailwindCSS.experimental.configFile": "app/assets/css/main.css",
+    "typescript.preferences.autoImportFileExcludePatterns": ["process", "node:process"],
+    "files.associations": {
+        "*.css": "tailwindcss",
+    },
+    "explorer.autoRevealExclude": {
+        "**/.vite": true
+    }
+}
