@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: true },
-    modules: ['nuxt-csurf', '@pinia/nuxt'],
+    modules: ['nuxt-csurf', '@pinia/nuxt', 'reka-ui/nuxt', '@nuxt/icon'],
     vite: {
         plugins: [
             // @ts-expect-error - See https://github.com/tailwindlabs/tailwindcss/discussions/19655
