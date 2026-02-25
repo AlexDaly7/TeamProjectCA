@@ -11,8 +11,6 @@ async function addProject(title: string) {
     });
 }
 
-const { data: repos, pending, error } = useFetch('/api/github/repos', { lazy: true });
-
 async function signOut() {
     await $authClient.signOut();
 
@@ -34,63 +32,50 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
 </script>
 
 <template>
-    <div>
-        <button v-on:click="addProject('Hi!')">Create Project</button>
-        
-    </div>
-
-    <span>
-        Hello
-        <span>
-            {{ auth.user.value?.name }}
+    <div class="h-full grow flex flex-col p-4">
+        <span class="text-xl ">
+            Hello {{ auth.user.value?.name }}
         </span>
-    </span>
 
-    <div class="flex flex-row gap-2">
-        <AppButton @click="signOut">
-            Sign out
-        </AppButton>
+        <h1 class="text-3xl font-bold">
+            My Groups
+        </h1>
 
-        <AppButton @click="createGroup">
-            Create group
-        </AppButton>
+        <div class="flex flex-row gap-2">
+            <AppButton @click="signOut">
+                Sign out
+            </AppButton>
+        </div>
+        
+        <div 
+            v-if="groupsPending"
+            class="mt-4 grow flex items-center justify-center">
+            <Icon 
+                name="hugeicons:loading-03" 
+                class="animate-spin"
+                size="32" />
+        </div>
+        <div 
+            v-else-if="groupsError"
+            class="mt-4 grow flex items-center justify-center">
+            An error occured loading groups: {{ groupsError ?? 'Unknown Error' }}
+        </div>
+        <div 
+            v-else
+            class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
+            <RouterLink
+                v-for="group in groups"
+                :key="group.groupId"
+                class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
+                :to="{ name: 'dashboard-group-groupId', params: { groupId: group.groupId }  }">
+                <span class="text-lg font-semibold">{{ group.group.name }}</span>
+                <span class="capitalize">Role: <i>{{ group.role }}</i></span>
+            </RouterLink>
+            <button
+                class="bg-main-800 flex items-center justify-center max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
+                @click="createGroup">
+                    <span>Create a group</span>
+            </button>
+        </div>
     </div>
-
-    <div v-if="groupsPending">
-        Loading groups...
-    </div>
-    <div v-else-if="groupsError">
-        Groups error: {{ groupsError }}
-    </div>
-    <div v-else>
-        {{ groups }}
-    </div>
-
-    <h1 class="text-3xl font-bold">My Repos</h1>
-    <div v-if="pending">
-        Loading...
-    </div>
-    <div v-else-if="error">
-        Error: {{ error }}
-    </div>
-    <ul 
-        v-else
-        class="flex flex-col gap-2 p-4 max-h-80 overflow-auto">
-        <li
-            v-for="repo in repos"
-            :key="repo.id"
-            class="w-full flex flex-col bg-slate-800 p-2 ring-1 ring-slate-50/10 ring-inset rounded-lg">
-            <div class="flex flex-row gap-2 items-center">
-                <img 
-                    :src="repo.owner.avatar"
-                    class="size-5 rounded-full">
-                <span class="text-sm">{{ repo.owner.name }}</span>
-            </div>
-            <NuxtLink 
-                :to="{ name: 'dashboard-repo-id', params: { id: repo.id } }"
-                class="text-lg hover:underline">
-                {{ repo.name }}
-            </NuxtLink>
-        </li>
-    </ul>
 </template>

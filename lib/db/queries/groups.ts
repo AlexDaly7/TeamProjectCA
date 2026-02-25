@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import db from '../index';
 import { groupMembers, groups } from '../schema';
 
@@ -38,4 +38,19 @@ export async function listUserGroups(userId: string) {
             },
         }
     });
+}
+
+export async function isUserInGroup(userId: string, groupId: number): Promise<boolean> {
+    const result = await db.query.groupMembers.findFirst({
+        where: and(
+            eq(groupMembers.userId, userId),
+            eq(groupMembers.groupId, groupId),
+        )
+    });
+
+    if (!result) {
+        return false;
+    } else {
+        return true;
+    }
 }

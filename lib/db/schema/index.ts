@@ -1,4 +1,5 @@
 export * from './auth';
-export * from './project';
+export * from './projects';
 export * from './groups';
 export * from './groupMembers';
+export * from './tasks';

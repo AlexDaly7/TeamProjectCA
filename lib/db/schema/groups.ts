@@ -1,5 +1,5 @@
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { projects } from './project';
+import { projects } from './projects';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
@@ -25,4 +25,4 @@ export const InsertGroup = createInsertSchema(groups).omit({
 
 export type GroupSchema = typeof groups.$inferSelect;
 
-export type InsertGroup = z.infer<typeof InsertGroup>;
+export type InsertGroupSchema = z.infer<typeof InsertGroup>;
