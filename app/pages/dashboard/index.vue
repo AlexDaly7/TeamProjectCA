@@ -67,7 +67,7 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
                 v-for="group in groups"
                 :key="group.groupId"
                 class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
-                :to="{ name: 'dashboard-group-id', params: { id: group.groupId }  }">
+                :to="{ name: 'dashboard-group-groupId', params: { groupId: group.groupId }  }">
                 <span class="text-lg font-semibold">{{ group.group.name }}</span>
                 <span class="capitalize">Role: <i>{{ group.role }}</i></span>
             </RouterLink>

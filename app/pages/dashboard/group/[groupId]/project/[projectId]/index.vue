@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-chart';
 import "vue-timeline-chart/style.css";
-import { CalendarDateTime } from '@internationalized/date';
-import type { DateRange } from 'reka-ui';
 const items: TimelineItem[] = [
     {id: "item1", group: "group1", type: "point", start: 1705878000000 },
     {id: "item2", group: "group1", type: "point", start: 1705858000000 }
@@ -14,7 +12,7 @@ const groups: TimelineGroup[] = [
 
 let taskName;
 let taskDesc;
-const dateValue = ref(null);
+const dateValue = ref<any>(null);
 let timeValue1 = ref();
 let timeValue2 = ref();
 
