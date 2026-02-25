@@ -32,6 +32,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@iconify-json/hugeicons": "^1.2.23",
     "@nuxt/icon": "^2.2.1",
     "@types/node": "^25.3.0",
     "@types/slug": "^5.0.9",
