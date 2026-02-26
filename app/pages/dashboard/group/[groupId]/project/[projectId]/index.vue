@@ -38,6 +38,7 @@ async function addTask() {
         method: "POST",
         body: { 
             title: taskName,
+            desc: taskDesc,
             startTime: date1,
             endTime: date1,
             projectId: 1
