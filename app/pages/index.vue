@@ -2,6 +2,14 @@
 import { useAuth } from '~/composables/auth';
 
 const auth = useAuth();
+const { $authClient } = useNuxtApp();
+
+function setOpened() {
+    $authClient.updateUser({
+        selectedGroup: 1,
+        selectedProject: 1
+    });
+}
 </script>
 
 <template>

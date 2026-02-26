@@ -1,5 +1,5 @@
 {
-  "id": "caae8591-4f48-42c0-99d5-6d3e3521472e",
+  "id": "6f3ab558-a7a9-401f-bbb3-cd7fdd4b84a1",
   "prevId": "0145a41f-08e8-4563-a262-068086910888",
   "version": "7",
   "dialect": "postgresql",
@@ -277,13 +277,13 @@
         },
         "selected_group": {
           "name": "selected_group",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
         "selected_project": {
           "name": "selected_project",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         }

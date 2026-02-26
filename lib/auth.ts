@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import * as schema from './db/schema';
 
 import db from "./db";
 import env from "./env";
@@ -7,6 +8,7 @@ import env from "./env";
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: 'pg',
+        schema,
     }),
     socialProviders: {
         github: {
@@ -18,22 +20,12 @@ export const auth = betterAuth({
     user: {
         additionalFields: {
             selectedGroup: {
-                type: 'string',
+                type: 'number',
                 required: false,
-                references: {
-                    model: 'groups',
-                    field: 'id',
-                    onDelete: 'set null',
-                },
             },
             selectedProject: {
-                type: 'string',
+                type: 'number',
                 required: false,
-                references: {
-                    model: 'projects',
-                    field: 'id',
-                    onDelete: 'set null',
-                },
             },
         },
     },

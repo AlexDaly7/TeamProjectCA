@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, integer } from "drizzle-orm/pg-core";
 import { groups } from './groups';
 import { projects } from './projects';
 
@@ -16,9 +16,9 @@ export const user = pgTable("user", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
-    selectedGroup: text("selected_group")
+    selectedGroup: integer("selected_group")
         .references(() => groups.id, { onDelete: 'set null' }),
-    selectedProject: text("selected_project")
+    selectedProject: integer("selected_project")
         .references(() => projects.id, { onDelete: 'set null' }),
 });
 
