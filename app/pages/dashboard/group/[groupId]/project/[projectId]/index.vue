@@ -77,7 +77,9 @@ async function renderTask(startTime: Date, endTime: Date, groupNum: string) {
             <input v-model="taskName" placeholder="Task Title"/>
             <input v-model="taskDesc" placeholder="Task Description"/>
             <div class="flex flex-col gap-2 bg-slate-800 p-4 m-4 max-w-md mx-auto rounded-lg ring-1 ring-inset ring-main-50/10">
-                <DatePicker v-model:date-value="dateValue"/>
+                <DatePicker 
+                    date-picker-label="Timespan"
+                    v-model:date-value="dateValue"/>
             </div>
             <p>{{ dateValue }}</p>
             <p>{{ timeValue1 }}</p>
