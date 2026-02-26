@@ -22,10 +22,11 @@ export async function getTasks(projectId: number) {
     `);
 }
 
-export async function createTask(projectId: number, title: string, startTime: string, endTime: string, ) {
+export async function createTask(projectId: number, title: string, desc: string, startTime: string, endTime: string, ) {
     return await db.insert(tasks)
     .values({
         title: title,
+        desc: desc,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         projectId: projectId,

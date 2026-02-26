@@ -11,7 +11,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     } try {
         const body = await readBody(event);
-        let result = await createTask(Number(projectId), body.title, body.startTime, body.endTime);
+        let result = await createTask(Number(projectId), body.title, body.desc, body.startTime, body.endTime);
         console.log(result);
         if (!result || !result[0] || !result[0].id) {
             throw createError({
