@@ -1,13 +1,14 @@
 import { createProject } from "~~/lib/db/queries/projects";
-import { InsertProject } from "~~/lib/db/schema";
+import { ClientInsertProject } from "~~/lib/db/schema";
 import { getUserGitHubAuthToken } from "~~/server/utils/auth";
 import { verifyGitHubRepoAccess } from "~~/server/utils/github";
 import { validateBody } from "~~/server/utils/validation";
 
+
 export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;
 
-    const bodyData = await validateBody(event, InsertProject);
+    const bodyData = await validateBody(event, ClientInsertProject);
 
     ensureUserInGroup(userId, bodyData.groupId);
 
@@ -15,15 +16,16 @@ export default defineAuthenticatedEventHandler(async (event) => {
         // Validate GitHub repo id
         const token = await getUserGitHubAuthToken(userId);
 
-        const validRepo = await verifyGitHubRepoAccess(token, bodyData.repoId);
-        if (!validRepo) {
+        const repoStatus = await verifyGitHubRepoAccess(token, bodyData.repo);
+        if (!repoStatus.valid) {
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Bad Request',
+                message: 'Invalid repo'
             });
         }
         
-        const createdProjectId = await createProject(bodyData.repoId, bodyData.title, bodyData.groupId);
+        const createdProjectId = await createProject(repoStatus.id, bodyData.title, bodyData.groupId);
 
         return { id: createdProjectId };
     } catch (error) {
