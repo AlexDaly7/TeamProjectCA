@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { groups } from './groups';
+import { projects } from './projects';
 
 // Generated with `bunx @better-auth/cli generate`
 
@@ -14,6 +16,10 @@ export const user = pgTable("user", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
+    selectedGroup: text("selected_group")
+        .references(() => groups.id, { onDelete: 'set null' }),
+    selectedProject: text("selected_project")
+        .references(() => projects.id, { onDelete: 'set null' }),
 });
 
 export const session = pgTable(

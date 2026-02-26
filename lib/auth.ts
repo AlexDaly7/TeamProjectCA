@@ -15,4 +15,26 @@ export const auth = betterAuth({
             scope: [ 'user:email', 'repo' ]
         },
     },
+    user: {
+        additionalFields: {
+            selectedGroup: {
+                type: 'string',
+                required: false,
+                references: {
+                    model: 'groups',
+                    field: 'id',
+                    onDelete: 'set null',
+                },
+            },
+            selectedProject: {
+                type: 'string',
+                required: false,
+                references: {
+                    model: 'projects',
+                    field: 'id',
+                    onDelete: 'set null',
+                },
+            },
+        },
+    },
 });
