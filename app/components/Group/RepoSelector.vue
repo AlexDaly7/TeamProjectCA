@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
+    fieldId: string;
     fieldName?: string;
     value?: string
     label?: string;
@@ -36,10 +37,13 @@ const value = defineModel('repo', {
     <div class="flex flex-col gap-1">
         <label 
             class="text-sm text-txt-secondary"
-            :for="props.fieldName">
+            :for="props.fieldId">
             {{ label }}
         </label>
-        <SelectRoot :name="props.fieldName" v-model="value">
+        <SelectRoot 
+            :name="props.fieldName" 
+            :id="props.fieldId"
+            v-model="value">
             <SelectTrigger
                 class="inline-flex min-w-40 items-center justify-between 
                 rounded-lg px-4 leading-none h-8 gap-1 bg-main-700 ring-md data-disabled:text-txt-secondary outline-none"

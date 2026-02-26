@@ -84,13 +84,14 @@ function selectedRepoChanged(value: string) {
             <template #body>
                 <form @submit.prevent="createProject">
                     <div class="flex flex-col gap-1">
-                        <label
+                        <Label
                             class="text-sm text-txt-secondary"
                             for="title">
                             Project Title
-                        </label>
+                        </Label>
                         <input 
                             name="title" 
+                            id="title"
                             type="text"
                             placeholder="My project..."
                             required
@@ -100,6 +101,7 @@ function selectedRepoChanged(value: string) {
                     </div>
                     <RepoSelector 
                         label="Repository"
+                        field-id="repo"
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
                     <div class="flex items-end mt-4">
