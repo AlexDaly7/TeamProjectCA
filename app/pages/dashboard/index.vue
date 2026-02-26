@@ -5,7 +5,7 @@ const { $authClient } = useNuxtApp();
 const groupsStore = useGroupsStore();
 
 async function addProject(title: string) {
-    await $fetch("/api/project", {
+    await useFetch(`/api/project/${1}`, {
         method: "POST",
         body: { title }
     });

@@ -5,6 +5,7 @@ import { projects } from './projects';
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
+    // desc: text("desc").notNull(),
 
     projectId: integer('project_id').references(() => projects.id, { onDelete: 'cascade' }),
     parentId: integer('parent_id').references((): AnyPgColumn => tasks.id, { onDelete: 'cascade' }),
