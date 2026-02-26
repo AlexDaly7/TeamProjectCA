@@ -65,13 +65,13 @@ function selectedRepoChanged(value: string) {
     <div 
         v-else
         class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
-        <RouterLink
+        <NuxtLink
             v-for="project in projects"
             :key="project.groupId"
             class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
             :to="{ name: 'dashboard-group-groupId-project-projectId', params: { groupId, projectId: project.id }  }">
             <span class="text-lg font-semibold">{{ project.title }}</span>
-        </RouterLink>
+        </NuxtLink>
         <AppDialog
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
