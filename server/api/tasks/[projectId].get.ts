@@ -15,7 +15,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     const parsedProjectId = Number(projectId);
-
+    
     const project = await getProject(parsedProjectId);
     if (!project) {
         throw createError({
@@ -23,7 +23,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
             statusMessage: 'Not Found',
         });
     }
-
+    
+    // TODO: use the other function in validators for this
     await ensureUserInGroup(userId, project.groupId);
 
     return getTasks(parsedProjectId);

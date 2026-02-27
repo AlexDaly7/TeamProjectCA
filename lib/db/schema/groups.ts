@@ -1,8 +1,8 @@
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { projects } from './projects';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
+import { groupMembers } from './groupMembers';
 
 export const groups = pgTable("groups", {
     id: serial("id").primaryKey(),
@@ -14,7 +14,9 @@ export const groups = pgTable("groups", {
         .notNull(),
 });
 
-export const groupRelations = relations(groups, ({ many }) => ({ members: many(projects) }));
+export const groupRelations = relations(groups, ({ many }) => ({ 
+    members: many(groupMembers),
+}));
 
 export const InsertGroup = createInsertSchema(groups).omit({
     id: true,

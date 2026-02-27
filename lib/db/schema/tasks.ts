@@ -1,13 +1,15 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, integer, timestamp, type AnyPgColumn, real } from 'drizzle-orm/pg-core';
 import { projects } from './projects';
+import { createInsertSchema } from 'drizzle-zod';
+import z from 'zod';
 
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
     description: text("description"),
 
-    projectId: integer('project_id').references(() => projects.id, { onDelete: 'cascade' }),
+    projectId: integer('project_id').references(() => projects.id, { onDelete: 'cascade' }).notNull(),
     parentId: integer('parent_id').references((): AnyPgColumn => tasks.id, { onDelete: 'cascade' }),
 
     startTime: timestamp('start_time').notNull(),
@@ -36,3 +38,25 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
         relationName: 'subtasks',
     }),
 }));
+
+const preprocessDate = z.preprocess((value) => {   
+    // Since we submit the values as a date string, but we need
+    // to format them into a Date instance back on the server, just
+    // throw it into a new Date
+    if (typeof value === 'string' && value.trim() !== '') return new Date(value);       
+                                                                                                              
+    return value;                                                                                                                                                                             
+}, z.date());
+
+export const InsertTask = createInsertSchema(tasks, {
+    startTime: () => preprocessDate,
+    endTime: () => preprocessDate,
+}).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type TasksSchema = typeof tasks.$inferSelect;
+
+export type InsertTaskSchema = z.infer<typeof InsertTask>;

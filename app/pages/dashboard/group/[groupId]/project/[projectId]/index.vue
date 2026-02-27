@@ -1,23 +1,31 @@
 <script setup lang="ts">
+import type { DateRange } from 'reka-ui';
 import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-chart';
 import "vue-timeline-chart/style.css";
-import { CalendarDateTime } from '@internationalized/date';
+import type { InsertTaskSchema } from '~~/lib/db/schema';
+
+const { $csrfFetch } = useNuxtApp();
+
+const route = useRoute();
+const projectId = computed(() => route.params.projectId);
+
+const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET' });
+
 
 const items = ref<TimelineItem[]>([
     {id: "item1", group: "group1", type: "point", start: 1705878000000 },
     {id: "item2", group: "group1", type: "point", start: 1705858000000 }
 ]);
-const groups: TimelineGroup[] = [
-    {id:"group1", label: "Group 1"},
-    {id:"group2", label: "Group 2"}
-]
-const timeline = ref();
 
-let taskName;
-let taskDesc;
-const dateValue = ref<any>(null);
-let timeValue1 = ref();
-let timeValue2 = ref();
+const groups = ref<TimelineGroup[]>([
+    { id:"group1", label: "Group 1"},
+    { id:"group2", label: "Group 2"}
+]);
+
+const taskName = ref<string | null>(null);
+const taskDesc = ref<string | null>(null);
+// TODO: type this
+const dateValue = ref<DateRange | undefined>();
 
 // function createTimeObj() {
 //     const date1 = dateValue.value.start;
@@ -30,61 +38,105 @@ let timeValue2 = ref();
 // }
 
 async function addTask() {
-    const date1 = new Date(dateValue.value.start.year, dateValue.value.start.month-1, dateValue.value.start.day, dateValue.value.start.hour);
-    const date2 = new Date(dateValue.value.end.year, dateValue.value.end.month-1, dateValue.value.end.day, dateValue.value.end.hour);
+    // TODO: better validation
+    if (!taskName.value || !taskDesc.value || !dateValue.value || !projectId.value) return;
+    if (isNaN(Number(projectId.value))) return;
 
-    const { $csrfFetch } = useNuxtApp();
-    let result = await $csrfFetch("/api/tasks/1", {
-        method: "POST",
-        body: { 
-            title: taskName,
-            desc: taskDesc,
-            startTime: date1,
-            endTime: date1,
-            projectId: 1
-        }
-    });
-    if(result.id) {
-        renderTask(date1, date2, "group1");
+    if (!dateValue.value.start || !dateValue.value.end) return;
+
+    const startDate = new Date(
+        dateValue.value.start.year, 
+        dateValue.value.start.month - 1,
+        dateValue.value.start.day, 
+    );
+
+    const endDate = new Date(
+        dateValue.value.end.year, 
+        dateValue.value.end.month - 1, 
+        dateValue.value.end.day, 
+    );
+
+    const body: InsertTaskSchema = {
+        title: taskName.value,
+        projectId: Number(projectId.value.toString()),
+        startTime: startDate,
+        endTime: endDate,
+        description: taskDesc.value,
+    };
+
+    const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
+
+    if (result.id) {
+        renderTask(startDate, endDate, taskName.value, result.id);
+    } else {
+        alert('Failed to add task');
     }
 }
 
-async function renderTask(startTime: Date, endTime: Date, groupNum: string) {
+function renderTask(startTime: Date, endTime: Date, groupName: string, groupId: number) {
+    groups.value.push({
+        id: groupId.toString(),
+        label: groupName,
+    });
+
     items.value.push({
         type: "range",
         start: startTime.getTime(),
         end: endTime.getTime(),
-        group: groupNum
+        group: groupId.toString(),
     });
 }
 </script>
 
 <template>
-    <div class="projectHeader">
-        
-    </div>
-    <Timeline
-        ref="timeline"
-        :items
-        :groups
-        :minViewportDuration="50000000"
-        :viewport-min="1740051756"
-    />
-
-    <div class="taskMain">
-        
-        <form>
-            <input v-model="taskName" placeholder="Task Title"/>
-            <input v-model="taskDesc" placeholder="Task Description"/>
-            <div class="flex flex-col gap-2 bg-slate-800 p-4 m-4 max-w-md mx-auto rounded-lg ring-1 ring-inset ring-main-50/10">
-                <DatePicker 
-                    date-picker-label="Timespan"
-                    v-model:date-value="dateValue"/>
-            </div>
-            <p>{{ dateValue }}</p>
-            <p>{{ timeValue1 }}</p>
-        </form>
-        <button v-on:click="addTask">Create Task.</button>
+    <div class="mb-4">
+        <div v-if="projectInfoPending">
+            <span>Selected project:</span>
+            <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
+            <h2 class="mt-4">Tasks:</h2>
+        </div>
+        <div v-else-if="projectInfoError || !projectInfo">
+            There was an error fetching project info. {{ projectInfoError }}
+        </div>
+        <div v-else class="flex flex-col">
+            <span>Selected project:</span>
+            <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
+            <span class="mt-4">Tasks:</span>
+        </div>
     </div>
 
+    
+    <div class="ring-md rounded-sm touch-none">
+        <Timeline
+            :items
+            :groups
+            :minViewportDuration="50000000"
+            :viewport-min="1740051756"
+        />
+    </div>
+
+    <h2 class="mt-4">Add a new task:</h2>
+    <form
+        class="flex flex-col gap-2 bg-slate-800 p-4 max-w-md rounded-lg ring-md"
+        @submit.prevent="addTask">
+        <AppFormInput
+            v-model="taskName"
+            label="Title"
+            name="title"
+            placeholder="My Task" />
+        <AppFormInput
+            v-model="taskDesc"
+            label="Description"
+            name="description"
+            placeholder="We need to..." />
+        <DatePicker 
+            date-picker-label="Timespan"
+            v-model="dateValue"/>
+        <AppButton type="submit">
+            Create Task
+        </AppButton>
+    </form>
+    
+    <!-- debug -->
+    <!-- <p>{{ dateValue }}</p> -->
 </template>

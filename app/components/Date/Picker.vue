@@ -8,7 +8,7 @@ withDefaults(defineProps<{
 });
 
 
-const dateValue = defineModel<DateRange | null>('dateValue', {
+const modelValue = defineModel<DateRange>('modelValue', {
     default: null,
 });
 
@@ -18,20 +18,20 @@ const datePickerId = useId();
 <template>
     <div class="flex flex-col gap-2">
         <Label 
-            class="text-sm text-txt-primary" 
+            class="text-sm text-txt-secondary" 
             :for="datePickerId">
             {{ datePickerLabel }}
         </Label>
+        <!-- TODO: add back granularity later -->
         <DateRangePickerRoot 
             :id="datePickerId" 
             :week-starts-on="1"
-            :granularity="'hour'"
             :number-of-months="2"
             :weekday-format="'short'"
-            v-model="dateValue">
+            v-model="modelValue">
             <DateRangePickerField 
                 v-slot="{ segments }"
-                class="flex select-none items-center rounded-lg text-center p-1 
+                class="h-8 pl-4 flex select-none items-center rounded-md text-center p-1 
                     bg-slate-700 ring-md
                     data-invalid:border-red-500">
                 <template 

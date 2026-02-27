@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { tasks } from '../schema';
+import { tasks, type InsertTaskSchema } from '../schema';
 import db from '../index';
 
 export async function getTasks(projectId: number) {
@@ -22,14 +22,8 @@ export async function getTasks(projectId: number) {
     `);
 }
 
-export async function createTask(projectId: number, title: string, desc: string, startTime: string, endTime: string, ) {
+export async function createTask(values: InsertTaskSchema) {
     return await db.insert(tasks)
-    .values({
-        title: title,
-        desc: desc,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-        projectId: projectId,
-    })
-    .returning({id: tasks.projectId});
+        .values(values)
+        .returning({ id: tasks.projectId });
 }

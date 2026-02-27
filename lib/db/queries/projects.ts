@@ -20,3 +20,28 @@ export async function listProjects(groupId: number) {
         where: eq(projects.groupId, groupId),
     });
 }
+
+export async function getUserProject(userId: string, projectId: number) {
+    const projectGroupInfo = await db.query.projects.findFirst({
+        where: eq(projects.id, projectId),
+        with: {
+            group: {
+                with: {
+                    members: {
+                        columns: {
+                            userId: true,
+                        }
+                    },
+                }
+            }
+        }
+    });
+
+    if (!projectGroupInfo) return null;
+
+    if (projectGroupInfo.group.members.find((m) => m.userId === userId)) {
+        return projectGroupInfo;
+    } else {
+        return null;
+    }
+}
