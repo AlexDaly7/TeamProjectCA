@@ -19,10 +19,15 @@ async function createProject() {
         throw Error('Invalid groupId when creating project.');
     }
 
+    const [ repoOwner, repoName ] = selectedRepo.value.split('/');
+    if (!repoOwner || !repoName) return;
+
     const body: ClientInsertProjectSchema = {
         groupId: Number(groupId.value),
         repo: selectedRepo.value,
         title: title.value,
+        repoOwner,
+        repoName,
     };
 
     await $csrfFetch('/api/projects', {
