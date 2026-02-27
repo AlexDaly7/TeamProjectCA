@@ -2,16 +2,37 @@ import { eq } from 'drizzle-orm';
 import db from '../../db';
 import { projects } from '../schema';
 
-export async function createProject(repoId: number, title: string, groupId: number) {
+export async function createProject(
+    repoId: number,
+    repoName: string,
+    repoOwner: string,
+    title: string,
+    groupId: number
+) {
     return await db
         .insert(projects)
-        .values({ repoId, title, groupId })
+        .values({ repoId, title, groupId, repoName, repoOwner })
         .returning({ id: projects.id })
 }
 
 export async function getProject(projectId: number) {
     return await db.query.projects.findFirst({
         where: eq(projects.id, projectId),
+        with: {
+            group: {
+                with: {
+                    members: {
+                        with: {
+                            user: {
+                                columns: {
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     });
 }
 

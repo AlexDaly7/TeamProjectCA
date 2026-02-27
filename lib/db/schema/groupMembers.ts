@@ -18,4 +18,8 @@ export const groupMembersRelations = relations(groupMembers, ({ one }) => ({
         fields: [ groupMembers.groupId ],
         references: [ groups.id ],
     }),
+    user: one(user, {
+        fields: [ groupMembers.userId ],
+        references: [ user.id ],
+    }),
 }));

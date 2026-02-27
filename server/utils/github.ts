@@ -1,7 +1,7 @@
 import { Octokit } from "octokit";
 import env from "~~/lib/env";
 
-export async function verifyGitHubRepoAccess(ghToken: string, fullRepo: string): Promise<{ valid: false } | { valid: true, id: number }> {
+export async function verifyGitHubRepoAccess(ghToken: string, fullRepo: string): Promise<{ valid: false } | { valid: true, id: number, name: string, owner: string }> {
     const [ owner, repo ] = fullRepo.split('/');
     if (!owner || !repo) throw Error('Invalid repo');
 
@@ -14,6 +14,8 @@ export async function verifyGitHubRepoAccess(ghToken: string, fullRepo: string):
     return {
         valid: true,
         id: repoInfo.data.id,
+        name: repo,
+        owner,
     };
 }
 
@@ -44,4 +46,8 @@ export async function canCreateIssue(owner: string, repo: string) {
 
         return false;
     }
+}
+
+export async function getRepoIssues(projectId: number) {
+
 }
