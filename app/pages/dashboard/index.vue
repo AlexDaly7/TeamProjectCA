@@ -4,13 +4,6 @@ const router = useRouter();
 const { $authClient } = useNuxtApp();
 const groupsStore = useGroupsStore();
 
-async function addProject(title: string) {
-    await useFetch(`/api/project/${1}`, {
-        method: "POST",
-        body: { title }
-    });
-}
-
 async function signOut() {
     await $authClient.signOut();
 
@@ -74,7 +67,7 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
             <button
                 class="bg-main-800 flex items-center justify-center max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
                 @click="createGroup">
-                    <span>Create a group</span>
+                <span>Create a group</span>
             </button>
         </div>
     </div>

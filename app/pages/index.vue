@@ -2,21 +2,34 @@
 import { useAuth } from '~/composables/auth';
 
 const auth = useAuth();
-const { $authClient } = useNuxtApp();
 
-function setOpened() {
-    $authClient.updateUser({
-        selectedGroup: 1,
-        selectedProject: 1
-    });
+const signInPressed = ref(false);
+const isSigningIn = computed(() => auth.isLoading.value || signInPressed.value);
+
+function signIn() {
+    signInPressed.value = true;
+
+    auth.signInWithGitHub();
 }
 </script>
 
 <template>
-    <div>
-        <AppButton @click="auth.signInWithGitHub">
+    <div class="h-full grow flex flex-col items-center justify-center">
+        <h1 class="font-serif text-5xl text-main-50 font-medium">Mórchlár</h1>
+        <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
+        <AppButton 
+            class="inline-flex gap-2 items-center"
+            :disabled="isSigningIn"
+            @click="signIn">
+            <Icon 
+                v-if="isSigningIn"
+                name="hugeicons:loading-03" 
+                size="20" />
+            <Icon
+                v-else
+                name="hugeicons:github-01"
+                size="20"/>
             Sign in with GitHub
         </AppButton>
-        <span>{{ auth.user.value?.email }}</span>
     </div>
 </template>
