@@ -15,7 +15,7 @@ function signIn() {
 
 <template>
     <div class="h-full grow flex flex-col items-center justify-center">
-        <h1 class="font-serif text-5xl text-main-50 font-medium">Mórchlár</h1>
+        <img class="w-200"src="/logo.png" alt="The Logo for Mórchlár">
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
         <AppButton 
             class="inline-flex gap-2 items-center"
