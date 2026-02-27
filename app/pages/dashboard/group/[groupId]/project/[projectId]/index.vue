@@ -3,6 +3,7 @@ import type { DateRange } from 'reka-ui';
 import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-chart';
 import "vue-timeline-chart/style.css";
 import type { InsertTaskSchema } from '~~/lib/db/schema';
+import { Octokit } from 'octokit';
 
 const { $csrfFetch } = useNuxtApp();
 

@@ -8,7 +8,6 @@ const props = withDefaults(defineProps<{
     fieldName: 'repo',
 });
 
-
 const { data, pending, error } = useFetch('/api/github/repos', { method: 'get', lazy: true });
 
 const repos = computed(() => {

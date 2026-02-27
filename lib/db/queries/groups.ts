@@ -57,3 +57,17 @@ export async function getUserGroup(userId: string, groupId: number) {
         where: eq(groups.id, groupId),
     });
 }
+
+//export async function getProjectOwner(projectId: number) {
+//    const user = await db.select({
+//        field1: groupMembers,
+//    }).from(groupMembers).where(groupMembers.)
+//}
+
+export async function addUserToGroup(userId: string, groupId: number) {
+    return await db.insert(groupMembers).values({
+        groupId: groupId,
+        userId: userId,
+        role: 'developer',
+    });
+}
