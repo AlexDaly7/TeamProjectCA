@@ -40,17 +40,20 @@ export async function listUserGroups(userId: string) {
     });
 }
 
-export async function isUserInGroup(userId: string, groupId: number): Promise<boolean> {
-    const result = await db.query.groupMembers.findFirst({
+export async function getUserGroupPermissions(userId: string, groupId: number) {
+    return await db.query.groupMembers.findFirst({
         where: and(
             eq(groupMembers.userId, userId),
             eq(groupMembers.groupId, groupId),
         )
     });
+}
 
-    if (!result) {
-        return false;
-    } else {
-        return true;
-    }
+export async function getUserGroup(userId: string, groupId: number) {
+    const userPermissions = await getUserGroupPermissions(userId, groupId);
+    if (!userPermissions) return null;
+
+    return await db.query.groups.findFirst({
+        where: eq(groups.id, groupId),
+    });
 }

@@ -1,4 +1,3 @@
-import { isUserInGroup } from "~~/lib/db/queries/groups";
 import { getProject } from "~~/lib/db/queries/projects";
 import { getTasks } from "~~/lib/db/queries/tasks";
 import { ensureUserInGroup } from "~~/server/utils/userPermission";
@@ -16,7 +15,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     const parsedProjectId = Number(projectId);
-
+    
     const project = await getProject(parsedProjectId);
     if (!project) {
         throw createError({
@@ -24,8 +23,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
             statusMessage: 'Not Found',
         });
     }
-
-    ensureUserInGroup(userId, project.groupId);
+    
+    // TODO: use the other function in validators for this
+    await ensureUserInGroup(userId, project.groupId);
 
     return getTasks(parsedProjectId);
 });

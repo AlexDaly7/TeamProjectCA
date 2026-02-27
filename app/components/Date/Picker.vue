@@ -8,7 +8,7 @@ withDefaults(defineProps<{
 });
 
 
-const dateValue = defineModel<DateRange | null>('dateValue', {
+const modelValue = defineModel<DateRange>('modelValue', {
     default: null,
 });
 
@@ -18,20 +18,20 @@ const datePickerId = useId();
 <template>
     <div class="flex flex-col gap-2">
         <Label 
-            class="text-sm text-txt-primary" 
+            class="text-sm text-txt-secondary" 
             :for="datePickerId">
             {{ datePickerLabel }}
         </Label>
+        <!-- TODO: add back granularity later -->
         <DateRangePickerRoot 
             :id="datePickerId" 
             :week-starts-on="1"
-            :granularity="'hour'"
             :number-of-months="2"
             :weekday-format="'short'"
-            v-model="dateValue">
+            v-model="modelValue">
             <DateRangePickerField 
                 v-slot="{ segments }"
-                class="flex select-none items-center rounded-lg text-center p-1 
+                class="h-8 pl-4 flex select-none items-center rounded-md text-center p-1 
                     bg-slate-700 ring-md
                     data-invalid:border-red-500">
                 <template 
@@ -78,17 +78,11 @@ const datePickerId = useId();
                     </DateRangePickerInput>
                 </template>
 
-                <DateRangePickerTrigger class="ml-2 focus:ring-2 ring-black focus:outline-none rounded-md p-1">
+                <DateRangePickerTrigger class="ml-auto inline-flex focus:ring-2 ring-black focus:outline-none rounded-md p-1">
                     <Icon 
-                        name="radix-icons:calendar" 
-                        class="size-4" />
+                        name="hugeicons:calendar-02" 
+                        size="20" />
                 </DateRangePickerTrigger>
-
-                <button class="ml-2 focus:ring-2 ring-black focus:outline-none rounded-md p-1">
-                    <Icon
-                        name="radix-icons:reload"
-                        class="size-4" />
-                </button>
             </DateRangePickerField>
 
             <DateRangePickerContent 
@@ -108,7 +102,7 @@ const datePickerId = useId();
                         <DateRangePickerPrev
                             class="inline-flex items-center cursor-pointer justify-center rounded-md bg-transparent size-7 hover:bg-main-600 active:scale-98 active:transition-all focus:ring-2 focus:ring-black">
                             <Icon 
-                                name="radix-icons:chevron-left" 
+                                name="hugeicons:arrow-left-01" 
                                 class="size-4" />
                         </DateRangePickerPrev>
 
@@ -117,7 +111,7 @@ const datePickerId = useId();
                         <DateRangePickerNext
                             class="inline-flex items-center cursor-pointer justify-center rounded-md bg-transparent size-7 hover:bg-main-600 active:scale-98 active:transition-all focus:ring-2 focus:ring-black">
                             <Icon 
-                                name="radix-icons:chevron-right" 
+                                name="hugeicons:arrow-right-01" 
                                 class="size-4" />
                         </DateRangePickerNext>
                     </DateRangePickerHeader>

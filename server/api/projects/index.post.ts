@@ -10,7 +10,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const bodyData = await validateBody(event, ClientInsertProject);
 
-    ensureUserInGroup(userId, bodyData.groupId);
+    await ensureUserInGroup(userId, bodyData.groupId);
 
     try {
         // Validate GitHub repo id

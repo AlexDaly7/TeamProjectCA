@@ -1,0 +1,1 @@
+ALTER TABLE "tasks" RENAME COLUMN "end_date" TO "end_time";

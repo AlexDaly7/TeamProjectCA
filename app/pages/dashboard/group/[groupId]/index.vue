@@ -7,7 +7,9 @@ const route = useRoute();
 // https://nuxt.com/docs/4.x/api/composables/use-fetch#reactive-keys-and-shared-state
 const groupId = computed(() => route.params.groupId);
 
-const { data: projects, pending: projectsPending, error: projectsError } = useFetch(() => `/api/projects/${groupId.value}`, { method: 'GET' })
+const { data: groupInfo, pending: groupInfoPending, error: groupInfoError } = useFetch(() => `/api/groups/${groupId.value}`, { method: 'GET' });
+
+const { data: projects, pending: projectsPending, error: projectsError, refresh: refreshProjects } = useFetch(() => `/api/projects/${groupId.value}`, { method: 'GET' });
 
 async function createProject() {
     if (title.value.length === 0) return;
@@ -23,12 +25,12 @@ async function createProject() {
         title: title.value,
     };
 
-    const response = await $csrfFetch('/api/projects', {
+    await $csrfFetch('/api/projects', {
         method: 'POST',
         body,
     });
 
-    console.log(response);
+    refreshProjects();
 }
 
 const title = ref('');
@@ -46,8 +48,18 @@ function selectedRepoChanged(value: string) {
 </script>
 
 <template>
-    <div>
-        group: {{ groupId }}
+    <div v-if="groupInfoPending">
+        <span>Selected group:</span>
+        <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
+        <span class="mt-4">Projects</span>
+    </div>
+    <div v-if="groupInfoError || !groupInfo">
+        There was an error fetching group info.
+    </div>
+    <div v-else class="flex flex-col">
+        <span>Selected group:</span>
+        <h1 class="text-3xl font-bold">{{ groupInfo.name }}</h1>
+        <span class="mt-4">Projects</span>
     </div>
     <div 
         v-if="projectsPending"
@@ -65,13 +77,13 @@ function selectedRepoChanged(value: string) {
     <div 
         v-else
         class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
-        <RouterLink
+        <NuxtLink
             v-for="project in projects"
             :key="project.groupId"
             class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
             :to="{ name: 'dashboard-group-groupId-project-projectId', params: { groupId, projectId: project.id }  }">
             <span class="text-lg font-semibold">{{ project.title }}</span>
-        </RouterLink>
+        </NuxtLink>
         <AppDialog
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
@@ -84,13 +96,14 @@ function selectedRepoChanged(value: string) {
             <template #body>
                 <form @submit.prevent="createProject">
                     <div class="flex flex-col gap-1">
-                        <label
+                        <Label
                             class="text-sm text-txt-secondary"
                             for="title">
                             Project Title
-                        </label>
+                        </Label>
                         <input 
                             name="title" 
+                            id="title"
                             type="text"
                             placeholder="My project..."
                             required
@@ -100,6 +113,7 @@ function selectedRepoChanged(value: string) {
                     </div>
                     <RepoSelector 
                         label="Repository"
+                        field-id="repo"
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
                     <div class="flex items-end mt-4">

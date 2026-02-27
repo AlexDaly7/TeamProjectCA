@@ -1,35 +1,42 @@
 import { sql } from 'drizzle-orm';
-import { tasks } from '../schema';
+import { tasks, type InsertTaskSchema, type TasksSchema } from '../schema';
 import db from '../index';
 
-export async function getTasks(projectId: number) {
-    return await db.execute(sql`
-        WITH RECURSIVE task_tree AS (
-            -- top-level tasks
-            SELECT *, 0 AS depth, ARRAY[id] AS path
-            FROM tasks
-            WHERE parent_id is NULL AND project_id = ${projectId}
+export async function getTasks(projectId: number): Promise<(TasksSchema & { depth: number, path: number[] })[]> {
+    const snakeToCamel = (text: string) => text.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
-            UNION ALL
+    const mapKeys = <T>(row: Record<string, unknown>): T =>                                                                                                                                     
+        Object.fromEntries(Object.entries(row).map(([k, v]) => [snakeToCamel(k), v])) as T;
 
-            -- recurse children
-            SELECT t.*, tt.depth + 1, tt.path || t.id
-            FROM tasks t
-            INNER JOIN task_tree tt ON t.parent_id = tt.id
-        )
-        SELECT * FROM task_tree
-        ORDER_BY path
-    `);
+    try {
+        const result = await db.execute(sql`
+            WITH RECURSIVE task_tree AS (
+                -- top-level tasks
+                SELECT *, 0 AS depth, ARRAY[id] AS path
+                FROM tasks
+                WHERE parent_id is NULL AND project_id = ${projectId}
+
+                UNION ALL
+
+                -- recurse children
+                SELECT t.*, tt.depth + 1, tt.path || t.id
+                FROM tasks t
+                INNER JOIN task_tree tt ON t.parent_id = tt.id
+            )
+            SELECT * FROM task_tree
+            ORDER BY path
+        `);
+
+        return result.rows.map((row) => 
+            mapKeys<(TasksSchema & { depth: number, path: number[] })>(row)
+        );
+    } catch (error) {
+        throw error;
+    }
 }
 
-export async function createTask(projectId: number, title: string, desc: string, startTime: string, endTime: string, ) {
+export async function createTask(values: InsertTaskSchema) {
     return await db.insert(tasks)
-    .values({
-        title: title,
-        desc: desc,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-        projectId: projectId,
-    })
-    .returning({id: tasks.projectId});
+        .values(values)
+        .returning({ id: tasks.projectId });
 }
