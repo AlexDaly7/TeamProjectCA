@@ -18,21 +18,6 @@ export async function createProject(
 export async function getProject(projectId: number) {
     return await db.query.projects.findFirst({
         where: eq(projects.id, projectId),
-        with: {
-            group: {
-                with: {
-                    members: {
-                        with: {
-                            user: {
-                                columns: {
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     });
 }
 
