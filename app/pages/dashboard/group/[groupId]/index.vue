@@ -7,7 +7,9 @@ const route = useRoute();
 // https://nuxt.com/docs/4.x/api/composables/use-fetch#reactive-keys-and-shared-state
 const groupId = computed(() => route.params.groupId);
 
-const { data: projects, pending: projectsPending, error: projectsError } = useFetch(() => `/api/projects/${groupId.value}`, { method: 'GET' })
+const { data: groupInfo, pending: groupInfoPending, error: groupInfoError } = useFetch(() => `/api/groups/${groupId.value}`, { method: 'GET' });
+
+const { data: projects, pending: projectsPending, error: projectsError, refresh: refreshProjects } = useFetch(() => `/api/projects/${groupId.value}`, { method: 'GET' });
 
 async function createProject() {
     if (title.value.length === 0) return;
@@ -23,12 +25,12 @@ async function createProject() {
         title: title.value,
     };
 
-    const response = await $csrfFetch('/api/projects', {
+    await $csrfFetch('/api/projects', {
         method: 'POST',
         body,
     });
 
-    console.log(response);
+    refreshProjects();
 }
 
 const title = ref('');
@@ -46,8 +48,18 @@ function selectedRepoChanged(value: string) {
 </script>
 
 <template>
-    <div>
-        group: {{ groupId }}
+    <div v-if="groupInfoPending">
+        <span>Selected group:</span>
+        <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
+        <span class="mt-4">Projects</span>
+    </div>
+    <div v-if="groupInfoError || !groupInfo">
+        There was an error fetching group info.
+    </div>
+    <div v-else class="flex flex-col">
+        <span>Selected group:</span>
+        <h1 class="text-3xl font-bold">{{ groupInfo.name }}</h1>
+        <span class="mt-4">Projects</span>
     </div>
     <div 
         v-if="projectsPending"

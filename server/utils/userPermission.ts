@@ -1,9 +1,9 @@
-import { isUserInGroup } from "~~/lib/db/queries/groups";
+import { getUserGroupPermissions } from "~~/lib/db/queries/groups";
 
-
-export function ensureUserInGroup(userId: string, groupId: number) {
-    const isMember = isUserInGroup(userId, groupId);
-    if (!isMember) {
+export async function ensureUserInGroup(userId: string, groupId: number) {
+    const hasPermissions = await getUserGroupPermissions(userId, groupId);
+    
+    if (!hasPermissions) {
         throw createError({
             statusCode: 403,
             statusMessage: 'Forbidden',

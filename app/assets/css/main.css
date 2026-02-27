@@ -13,6 +13,7 @@
     --color-main-700: var(--color-slate-700);
     --color-main-800: var(--color-slate-800);
     --color-main-900: var(--color-slate-900);
+    --color-main-950: var(--color-slate-950);
 }
 
 body {
