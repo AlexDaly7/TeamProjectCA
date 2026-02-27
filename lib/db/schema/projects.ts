@@ -9,6 +9,8 @@ export const projects = pgTable("projects", {
     title: text("title").notNull(),
     groupId: integer("group_id").notNull(),
     repoId: integer("repo_id").notNull(),
+    repoName: text('repo_name').notNull(),
+    repoOwner: text('repo_owner').notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .$onUpdate(() => new Date())
