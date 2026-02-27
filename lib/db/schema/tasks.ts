@@ -13,7 +13,7 @@ export const tasks = pgTable("tasks", {
     parentId: integer('parent_id').references((): AnyPgColumn => tasks.id, { onDelete: 'cascade' }),
 
     startTime: timestamp('start_time').notNull(),
-    endTime: timestamp('end_date').notNull(),
+    endTime: timestamp('end_time').notNull(),
     progress: real('progress').default(0), // 0.00 to 1.00 as %
 
     order: integer('order').default(0), // Order as sibling

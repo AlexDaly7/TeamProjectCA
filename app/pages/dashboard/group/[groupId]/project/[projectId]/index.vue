@@ -11,16 +11,57 @@ const projectId = computed(() => route.params.projectId);
 
 const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET' });
 
+const { data: tasksInfo, pending: tasksPending, error: tasksError } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
 
-const items = ref<TimelineItem[]>([
-    {id: "item1", group: "group1", type: "point", start: 1705878000000 },
-    {id: "item2", group: "group1", type: "point", start: 1705858000000 }
-]);
+// maybe add controls later on
+// https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
 
-const groups = ref<TimelineGroup[]>([
-    { id:"group1", label: "Group 1"},
-    { id:"group2", label: "Group 2"}
-]);
+const items = computed<TimelineItem[]>(() => {
+    if (!tasksInfo.value) return [];
+    
+    return tasksInfo.value.map((task) => {
+        return {
+            id: task.id.toString(),
+            group: `${task.id}-group`,
+            type: 'range',
+            start: new Date(task.startTime).getTime(),
+            end: new Date(task.endTime).getTime()
+        }
+    })
+});
+
+// How much time to put on the timeline as padding before the start of the ealiest task
+// and end of the latest task
+const PADDING_MS = 604800000;
+
+const bounds = computed<{ lower: number, upper: number }>(() => {
+    // 1 month behind, 1 month ahead as default view range
+    const defaultValues = {
+        lower: Date.now() - 2629800000,
+        upper: Date.now() + 2629800000
+    };
+
+    if (!items.value || !items.value[0]) return defaultValues;
+
+    const lowest = items.value.reduce((lowest, item) => item.start < lowest.start ? item : lowest, items.value[0]);
+    const highest = items.value.reduce((highest, item) => item.start > highest.start ? item : highest, items.value[0]);
+    
+    return {
+        lower: lowest.start - PADDING_MS,
+        upper: (highest.end ?? defaultValues.upper) + PADDING_MS,
+    };
+});
+
+const groups = computed<TimelineGroup[]>(() => {
+    if (!tasksInfo.value) return [];
+
+    return tasksInfo.value.map((task) => {
+        return {
+            id: `${task.id}-group`,
+            label: task.title,
+        }
+    })
+});
 
 const taskName = ref<string | null>(null);
 const taskDesc = ref<string | null>(null);
@@ -67,15 +108,16 @@ async function addTask() {
     const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
 
     if (result.id) {
+        // TODO: fix this not refreshing
         renderTask(startDate, endDate, taskName.value, result.id);
     } else {
         alert('Failed to add task');
     }
 }
 
-function renderTask(startTime: Date, endTime: Date, groupName: string, groupId: number) {
+function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: number) {
     groups.value.push({
-        id: groupId.toString(),
+        id: taskId.toString(),
         label: groupName,
     });
 
@@ -83,7 +125,7 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, groupId: 
         type: "range",
         start: startTime.getTime(),
         end: endTime.getTime(),
-        group: groupId.toString(),
+        group: taskId.toString(),
     });
 }
 </script>
@@ -107,12 +149,19 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, groupId: 
 
     
     <div class="ring-md rounded-sm touch-none">
+        <div v-if="tasksPending">
+            Loading timeline...
+        </div>
+        <div v-else-if="tasksError">
+            There was an error loading the timeline
+        </div>
         <Timeline
+            v-else
             :items
             :groups
-            :minViewportDuration="50000000"
-            :viewport-min="1740051756"
-        />
+            :initial-viewport-start="bounds.lower"
+            :initial-viewport-end="bounds.upper"
+            />
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>
