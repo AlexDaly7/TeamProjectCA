@@ -87,8 +87,7 @@ const datePickerId = useId();
 
             <DateRangePickerContent 
                 :side-offset="4"
-                class="rounded-xl bg-main-700 border border-main-500 shadow-sm z-10
-                will-change-[transform,opacity]">
+                class="rounded-xl bg-main-700 border border-main-500 shadow-sm z-150">
                 <DateRangePickerArrow class="fill-main-700 stroke-main-500" />
                 
                 <DateRangePickerCalendar 

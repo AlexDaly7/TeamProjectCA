@@ -21,7 +21,7 @@ withDefaults(defineProps<{
 
             <DialogContent 
                 class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
-                bg-main-800 rounded-xl p-6 shadow-md shadow-black
+                bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
                 focus:outline-none">
                 <DialogTitle class="text-xl font-semibold mb-3">
                     {{ title }}

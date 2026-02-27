@@ -165,27 +165,39 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>
-    <form
-        class="flex flex-col gap-2 bg-slate-800 p-4 max-w-md rounded-lg ring-md"
-        @submit.prevent="addTask">
-        <AppFormInput
-            v-model="taskName"
-            label="Title"
-            name="title"
-            placeholder="My Task" />
-        <AppFormInput
-            v-model="taskDesc"
-            label="Description"
-            name="description"
-            placeholder="We need to..." />
-        <DatePicker 
-            date-picker-label="Timespan"
-            v-model="dateValue"/>
-        <AppButton type="submit">
-            Create Task
-        </AppButton>
-    </form>
-    
-    <!-- debug -->
-    <!-- <p>{{ dateValue }}</p> -->
+    <AppDialog
+        title="Add a new task"
+        description="Select a title, description, and date range.">
+        <template #trigger>
+            <AppButton>
+                New Task
+            </AppButton>
+        </template>
+        <template #body>
+            <form
+                class="flex flex-col gap-2"
+                @submit.prevent="addTask">
+                <AppFormInput
+                    v-model="taskName"
+                    label="Title"
+                    name="title"
+                    placeholder="My Task" />
+                <AppFormInput
+                    v-model="taskDesc"
+                    label="Description"
+                    name="description"
+                    placeholder="We need to..." />
+                <DatePicker 
+                    date-picker-label="Timespan"
+                    v-model="dateValue"/>
+                <div class="flex items-end mt-4">
+                    <button 
+                        type="submit"
+                        class="ml-auto bg-main-100 text-main-900 px-6 py-2 rounded-md ring-md cursor-pointer hover:bg-main-500 transition-all duration-75 hover:scale-102 active:scale-98">
+                        Create Task
+                    </button>
+                </div>
+            </form>
+        </template>
+    </AppDialog>
 </template>
