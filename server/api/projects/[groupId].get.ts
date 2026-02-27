@@ -6,7 +6,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;
     const groupId = validateRouterParam(event, 'groupId');
 
-    ensureUserInGroup(userId, groupId);
+    await ensureUserInGroup(userId, groupId);
 
     const groupProjects = await listProjects(groupId);
 

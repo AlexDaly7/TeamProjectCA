@@ -1,4 +1,3 @@
-import { isUserInGroup } from "~~/lib/db/queries/groups";
 import { getProject } from "~~/lib/db/queries/projects";
 import { getTasks } from "~~/lib/db/queries/tasks";
 import { ensureUserInGroup } from "~~/server/utils/userPermission";
@@ -25,7 +24,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    ensureUserInGroup(userId, project.groupId);
+    await ensureUserInGroup(userId, project.groupId);
 
     return getTasks(parsedProjectId);
 });
