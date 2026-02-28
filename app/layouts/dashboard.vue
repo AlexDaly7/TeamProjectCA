@@ -17,24 +17,24 @@ const projectId = computed(() => route.params.projectId);
             class="flex flex-row gap-2 p-2
             bg-main-800 ring-1 ring-inset ring-main-50/10">
             <NuxtLink v-if="groupId" :to="{ name: 'dashboard' }">
-                <AppButton class="inline-flex items-center gap-2">
+                <ButtonSecondary class="inline-flex items-center gap-2">
                     <Icon name="hugeicons:arrow-left-01" />
                     All groups
-                </AppButton>
+                </ButtonSecondary>
             </NuxtLink>
-            <AppButton
+            <ButtonSecondary
                 v-else
                 class="inline-flex items-center gap-2"
                 disabled>
                 <Icon name="hugeicons:arrow-left-01" />
                 All groups
-            </AppButton>
+            </ButtonSecondary>
 
             <NuxtLink v-if="projectId" :to="{ name: 'dashboard-group-groupId', params: { groupId } }">
-                <AppButton class="inline-flex items-center gap-2">
+                <ButtonSecondary class="inline-flex items-center gap-2">
                     <Icon name="hugeicons:arrow-left-01" />
                     Projects
-                </AppButton>
+                </ButtonSecondary>
             </NuxtLink>
         </nav>
         <div class="h-full w-full flex flex-col p-2 grow">

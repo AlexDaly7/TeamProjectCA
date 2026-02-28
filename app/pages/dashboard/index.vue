@@ -35,9 +35,9 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
         </h1>
 
         <div class="flex flex-row gap-2">
-            <AppButton @click="signOut">
+            <ButtonPrimary @click="signOut">
                 Sign out
-            </AppButton>
+            </ButtonPrimary>
         </div>
         
         <div 

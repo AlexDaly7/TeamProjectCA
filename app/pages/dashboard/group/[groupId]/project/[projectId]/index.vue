@@ -170,9 +170,9 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
         title="Add a new task"
         description="Select a title, description, and date range.">
         <template #trigger>
-            <AppButton>
+            <ButtonSecondary>
                 New Task
-            </AppButton>
+            </ButtonSecondary>
         </template>
         <template #body>
             <form
