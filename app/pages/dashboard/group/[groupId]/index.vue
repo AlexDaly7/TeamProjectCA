@@ -79,7 +79,7 @@ async function addUserToGroup() {
                 name="userInput"
                 v-model="userName"/>
         </form>
-        <button v-on:click="addUserToGroup">Add members to group.</button>
+        <ButtonSecondary @click="addUserToGroup">Add members to group.</ButtonSecondary>
     </div>
     <div v-if="groupInfoError || !groupInfo">
         There was an error fetching group info.
@@ -105,6 +105,7 @@ async function addUserToGroup() {
     <div 
         v-else
         class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
+        
         <NuxtLink
             v-for="project in projects"
             :key="project.groupId"
@@ -112,6 +113,7 @@ async function addUserToGroup() {
             :to="{ name: 'dashboard-group-groupId-project-projectId', params: { groupId, projectId: project.id }  }">
             <span class="text-lg font-semibold">{{ project.title }}</span>
         </NuxtLink>
+
         <AppDialog
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
@@ -144,12 +146,10 @@ async function addUserToGroup() {
                         field-id="repo"
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
-                    <div class="flex items-end mt-4">
-                        <button 
-                            type="submit"
-                            class="ml-auto bg-main-100 text-main-900 px-6 py-2 rounded-md ring-md cursor-pointer hover:bg-main-500 transition-all duration-75 hover:scale-102 active:scale-98">
+                    <div class="flex justify-end mt-4">
+                        <ButtonPrimary type="submit">
                             Import
-                        </button>
+                        </ButtonPrimary>
                     </div>
                 </form>
             </template>

@@ -191,12 +191,10 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
                 <DatePicker 
                     date-picker-label="Timespan"
                     v-model="dateValue"/>
-                <div class="flex items-end mt-4">
-                    <button 
-                        type="submit"
-                        class="ml-auto bg-main-100 text-main-900 px-6 py-2 rounded-md ring-md cursor-pointer hover:bg-main-500 transition-all duration-75 hover:scale-102 active:scale-98">
+                <div class="flex justify-end mt-4">
+                    <ButtonPrimary type="submit">
                         Create Task
-                    </button>
+                    </ButtonPrimary>
                 </div>
             </form>
         </template>
