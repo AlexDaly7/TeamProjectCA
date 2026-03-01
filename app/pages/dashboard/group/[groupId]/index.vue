@@ -49,20 +49,6 @@ function selectedRepoChanged(value: string) {
         title.value = name;
     }
 }
-
-let userName: string = "";
-
-async function addUserToGroup() {
-    const result = await $csrfFetch('/api/groups/addUser', {
-        method: 'POST',
-        body: {
-            userName: userName,
-            groupId: Number(groupId.value)
-        },
-    });
-    console.log(await result);
-}
-
 </script>
 
 <template>
@@ -70,16 +56,6 @@ async function addUserToGroup() {
         <span>Selected group:</span>
         <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
         <span class="mt-4">Projects</span>
-    </div>
-    <div>
-        <form>
-            <AppFormInput
-                label="Enter the name of the person you would like to add."
-                placeholder="John Smith"
-                name="userInput"
-                v-model="userName"/>
-        </form>
-        <ButtonSecondary @click="addUserToGroup">Add members to group.</ButtonSecondary>
     </div>
     <div v-if="groupInfoError || !groupInfo">
         There was an error fetching group info.

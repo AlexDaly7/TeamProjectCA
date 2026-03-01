@@ -9,6 +9,8 @@ const route = useRoute();
 const groupId = computed(() => route.params.groupId);
 const projectId = computed(() => route.params.projectId);
 
+const sidebarType = computed(() => route.meta.sidebarType ?? 'group');
+
 </script>
 
 <template>
@@ -39,8 +41,15 @@ const projectId = computed(() => route.params.projectId);
                 Projects
             </ButtonSecondary>
         </nav>
-        <div class="h-full w-full flex flex-col p-2 grow">
-            <slot />
+        <div class="grow w-full flex flex-row">
+            <aside class="w-xs bg-main-800 border-r border-main-50/10 p-2">
+                <UserSidebar v-if="sidebarType === 'user'" />
+                <GroupSidebar v-else-if="sidebarType === 'group'" />
+                <ProjectSidebar v-else-if="sidebarType === 'project'" />
+            </aside>
+            <main class="grow w-full flex flex-col p-2">
+                <NuxtPage />
+            </main>
         </div>
     </div>
 </template>

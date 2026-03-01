@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import db from '../index';
-import { groupMembers, groups, type GroupSchema } from '../schema';
+import { groupMembers, groups, InsertGroupMember, type GroupSchema } from '../schema';
 
 export async function createGroup(userId: string, groupName: string) {
     const inserted = await db.insert(groups).values({
@@ -64,10 +64,28 @@ export async function getUserGroup(userId: string, groupId: number): Promise<Gro
 //    }).from(groupMembers).where(groupMembers.)
 //}
 
-export async function addUserToGroup(userId: string, groupId: number) {
-    return await db.insert(groupMembers).values({
-        groupId: groupId,
-        userId: userId,
-        role: 'developer',
+export async function addUserToGroup(userId: string, groupId: number, role: InsertGroupMember['role']) {
+    return await db
+        .insert(groupMembers)
+        .values({ groupId, userId, role })
+        .returning();
+}
+
+export async function getGroupMembers(groupId: number) {
+    return await db.query.groupMembers.findMany({
+        where: eq(groupMembers.groupId, groupId),
+        columns: {
+            groupId: false,
+            userId: false,
+        },
+        with: {
+            user: {
+                columns: {
+                    id: true,
+                    name: true,
+                    image: true,
+                },
+            }
+        }
     });
 }

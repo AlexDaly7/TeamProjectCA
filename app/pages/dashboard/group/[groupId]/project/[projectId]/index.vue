@@ -4,6 +4,10 @@ import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-ch
 import "vue-timeline-chart/style.css";
 import type { InsertTaskSchema } from '~~/lib/db/schema';
 
+definePageMeta({
+    sidebarType: 'project',
+});
+
 const { $csrfFetch } = useNuxtApp();
 
 const route = useRoute();

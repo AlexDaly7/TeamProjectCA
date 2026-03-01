@@ -6,11 +6,10 @@ type AuthenticatedEvent = H3Event & {
         user: User;
     }
 };
-
-export default function defineAuthenticatedEventHandler<T extends EventHandlerRequest, D>(
-    handler: EventHandler<T, D>,
-): EventHandler<T, D> {
-    return defineEventHandler<T>(async (event) => {
+export default function defineAuthenticatedEventHandler<T>(
+    handler: (event: AuthenticatedEvent) => T,
+) {
+    return defineEventHandler(async (event) => {
         if (!event.context.user) {
             throw createError({
                 statusCode: 401,
@@ -18,6 +17,6 @@ export default function defineAuthenticatedEventHandler<T extends EventHandlerRe
             });
         }
 
-        return handler(event as AuthenticatedEvent & T);
+        return handler(event as AuthenticatedEvent);
     });
 }
