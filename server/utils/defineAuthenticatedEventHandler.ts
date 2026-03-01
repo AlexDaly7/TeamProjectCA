@@ -7,17 +7,17 @@ type AuthenticatedEvent = H3Event & {
     }
 };
 
-export default function defineAuthenticatedEventHandler<T>(
-    handler: (event: AuthenticatedEvent) => T,
-) {
-    return defineEventHandler(async (event) => {
+export default function defineAuthenticatedEventHandler<T extends EventHandlerRequest, D>(
+    handler: EventHandler<T, D>,
+): EventHandler<T, D> {
+    return defineEventHandler<T>(async (event) => {
         if (!event.context.user) {
-            return sendError(event, createError({
+            throw createError({
                 statusCode: 401,
                 statusMessage: 'Unauthorized',
-            }));
+            });
         }
 
-        return handler(event as AuthenticatedEvent);
+        return handler(event as AuthenticatedEvent & T);
     });
 }

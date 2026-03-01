@@ -21,10 +21,7 @@ function signIn() {
             class="inline-flex gap-2 items-center"
             :disabled="isSigningIn"
             @click="signIn">
-            <Icon 
-                v-if="isSigningIn"
-                name="hugeicons:loading-03" 
-                size="20" />
+            <LoadingIcon v-if="isSigningIn" />
             <Icon
                 v-else
                 name="hugeicons:github-01"

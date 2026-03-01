@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import db from '../index';
-import { groupMembers, groups } from '../schema';
+import { groupMembers, groups, type GroupSchema } from '../schema';
 
 export async function createGroup(userId: string, groupName: string) {
     const inserted = await db.insert(groups).values({
@@ -49,13 +49,13 @@ export async function getUserGroupPermissions(userId: string, groupId: number) {
     });
 }
 
-export async function getUserGroup(userId: string, groupId: number) {
+export async function getUserGroup(userId: string, groupId: number): Promise<GroupSchema | null> {
     const userPermissions = await getUserGroupPermissions(userId, groupId);
     if (!userPermissions) return null;
 
     return await db.query.groups.findFirst({
         where: eq(groups.id, groupId),
-    });
+    }) ?? null;
 }
 
 //export async function getProjectOwner(projectId: number) {

@@ -43,10 +43,7 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
         <div 
             v-if="groupsPending"
             class="mt-4 grow flex items-center justify-center">
-            <Icon 
-                name="hugeicons:loading-03" 
-                class="animate-spin"
-                size="32" />
+            <LoadingIcon :size="32" />
         </div>
         <div 
             v-else-if="groupsError"
