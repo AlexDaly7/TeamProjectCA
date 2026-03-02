@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import db from '../index';
-import { groupMembers, groups } from '../schema';
+import { groupMembers, groups, InsertGroupMember, type GroupSchema } from '../schema';
 
 export async function createGroup(userId: string, groupName: string) {
     const inserted = await db.insert(groups).values({
@@ -49,13 +49,13 @@ export async function getUserGroupPermissions(userId: string, groupId: number) {
     });
 }
 
-export async function getUserGroup(userId: string, groupId: number) {
+export async function getUserGroup(userId: string, groupId: number): Promise<GroupSchema | null> {
     const userPermissions = await getUserGroupPermissions(userId, groupId);
     if (!userPermissions) return null;
 
     return await db.query.groups.findFirst({
         where: eq(groups.id, groupId),
-    });
+    }) ?? null;
 }
 
 //export async function getProjectOwner(projectId: number) {
@@ -64,10 +64,28 @@ export async function getUserGroup(userId: string, groupId: number) {
 //    }).from(groupMembers).where(groupMembers.)
 //}
 
-export async function addUserToGroup(userId: string, groupId: number) {
-    return await db.insert(groupMembers).values({
-        groupId: groupId,
-        userId: userId,
-        role: 'developer',
+export async function addUserToGroup(userId: string, groupId: number, role: InsertGroupMember['role']) {
+    return await db
+        .insert(groupMembers)
+        .values({ groupId, userId, role })
+        .returning();
+}
+
+export async function getGroupMembers(groupId: number) {
+    return await db.query.groupMembers.findMany({
+        where: eq(groupMembers.groupId, groupId),
+        columns: {
+            groupId: false,
+            userId: false,
+        },
+        with: {
+            user: {
+                columns: {
+                    id: true,
+                    name: true,
+                    image: true,
+                },
+            }
+        }
     });
 }

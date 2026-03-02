@@ -49,20 +49,6 @@ function selectedRepoChanged(value: string) {
         title.value = name;
     }
 }
-
-let userName: string = "";
-
-async function addUserToGroup() {
-    const result = await $csrfFetch('/api/groups/addUser', {
-        method: 'POST',
-        body: {
-            userName: userName,
-            groupId: Number(groupId.value)
-        },
-    });
-    console.log(await result);
-}
-
 </script>
 
 <template>
@@ -70,16 +56,6 @@ async function addUserToGroup() {
         <span>Selected group:</span>
         <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
         <span class="mt-4">Projects</span>
-    </div>
-    <div>
-        <form>
-            <AppFormInput
-                label="Enter the name of the person you would like to add."
-                placeholder="John Smith"
-                name="userInput"
-                v-model="userName"/>
-        </form>
-        <button v-on:click="addUserToGroup">Add members to group.</button>
     </div>
     <div v-if="groupInfoError || !groupInfo">
         There was an error fetching group info.
@@ -92,10 +68,7 @@ async function addUserToGroup() {
     <div 
         v-if="projectsPending"
         class="mt-4 grow flex items-center justify-center">
-        <Icon 
-            name="hugeicons:loading-03" 
-            class="animate-spin"
-            size="32" />
+        <LoadingIcon :size="32" />
     </div>
     <div 
         v-else-if="projectsError"
@@ -105,6 +78,7 @@ async function addUserToGroup() {
     <div 
         v-else
         class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
+        
         <NuxtLink
             v-for="project in projects"
             :key="project.groupId"
@@ -112,6 +86,7 @@ async function addUserToGroup() {
             :to="{ name: 'dashboard-group-groupId-project-projectId', params: { groupId, projectId: project.id }  }">
             <span class="text-lg font-semibold">{{ project.title }}</span>
         </NuxtLink>
+
         <AppDialog
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
@@ -144,12 +119,10 @@ async function addUserToGroup() {
                         field-id="repo"
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
-                    <div class="flex items-end mt-4">
-                        <button 
-                            type="submit"
-                            class="ml-auto bg-main-100 text-main-900 px-6 py-2 rounded-md ring-md cursor-pointer hover:bg-main-500 transition-all duration-75 hover:scale-102 active:scale-98">
+                    <div class="flex justify-end mt-4">
+                        <ButtonPrimary type="submit">
                             Import
-                        </button>
+                        </ButtonPrimary>
                     </div>
                 </form>
             </template>

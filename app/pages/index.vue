@@ -17,19 +17,16 @@ function signIn() {
     <div class="h-full grow flex flex-col items-center justify-center">
         <img class="w-200"src="/logo.png" alt="The Logo for Mórchlár">
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
-        <AppButton 
+        <ButtonPrimary 
             class="inline-flex gap-2 items-center"
             :disabled="isSigningIn"
             @click="signIn">
-            <Icon 
-                v-if="isSigningIn"
-                name="hugeicons:loading-03" 
-                size="20" />
+            <LoadingIcon v-if="isSigningIn" />
             <Icon
                 v-else
                 name="hugeicons:github-01"
                 size="20"/>
             Sign in with GitHub
-        </AppButton>
+        </ButtonPrimary>
     </div>
 </template>

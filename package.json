@@ -1,5 +1,5 @@
 {
-  "name": "TeamProjectCA",
+  "name": "team-project-ca",
   "type": "module",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@pinia/nuxt": "0.11.3",
     "@tailwindcss/vite": "^4.2.0",
-    "better-auth": "^1.4.18",
+    "better-auth": "^1.5.0",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "nanoid": "^5.1.6",

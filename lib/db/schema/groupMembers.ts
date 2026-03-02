@@ -2,6 +2,8 @@ import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
 import { user } from './auth';
 import { groups } from './groups';
 import { relations } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
+import z from 'zod';
 
 export const groupRole = pgEnum('groupRole', ['owner', 'developer', 'reader']);
 
@@ -23,3 +25,15 @@ export const groupMembersRelations = relations(groupMembers, ({ one }) => ({
         references: [ user.id ],
     }),
 }));
+
+
+
+export const InsertGroupMember = createInsertSchema(groupMembers).omit({
+    userId: true,
+}).extend({
+    userName: z.string(),
+});
+
+export type GroupMemberSchema = typeof groups.$inferSelect;
+
+export type InsertGroupMember = z.infer<typeof InsertGroupMember>;

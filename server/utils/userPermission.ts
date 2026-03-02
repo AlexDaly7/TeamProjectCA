@@ -6,8 +6,8 @@ export async function ensureUserInGroup(userId: string, groupId: number) {
     
     if (!hasPermissions) {
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Forbidden',
+            statusCode: 404,
+            statusMessage: 'Group not found',
         });
     }
 }
