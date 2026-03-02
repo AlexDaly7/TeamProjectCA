@@ -45,7 +45,7 @@ const datePickerId = useId();
                         type="start">
                         {{ item.value }}
                     </DateRangePickerInput>
-
+                    
                     <!-- the number inputs -->
                     <DateRangePickerInput 
                         v-else 
@@ -61,7 +61,7 @@ const datePickerId = useId();
                 <template 
                     v-for="item in segments.end" 
                     :key="item.part">
-
+                    
                     <DateRangePickerInput 
                         v-if="item.part === 'literal'" 
                         :part="item.part" 

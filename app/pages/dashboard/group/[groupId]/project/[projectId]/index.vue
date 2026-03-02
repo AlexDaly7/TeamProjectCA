@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { DateRange } from 'reka-ui';
-import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-chart';
+import { Timeline, type TimelineGroup, type TimelineItem, type TimelineMarker } from 'vue-timeline-chart';
 import "vue-timeline-chart/style.css";
-import type { InsertTaskSchema } from '~~/lib/db/schema';
+import { tasks, type InsertTaskSchema } from '~~/lib/db/schema';
+
 
 definePageMeta({
     sidebarType: 'project',
@@ -15,12 +16,12 @@ const projectId = computed(() => route.params.projectId);
 
 const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET' });
 
-const { data: tasksInfo, pending: tasksPending, error: tasksError } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
+const { data: tasksInfo, pending: tasksPending, error: tasksError, refresh: taskRefresh } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
 
-const items = computed<TimelineItem[]>(() => {
+const items = computed<TimelineItemWithData[]>(() => {
     if (!tasksInfo.value) return [];
     
     return tasksInfo.value.map((task) => {
@@ -29,7 +30,8 @@ const items = computed<TimelineItem[]>(() => {
             group: `${task.id}-group`,
             type: 'range',
             start: new Date(task.startTime).getTime(),
-            end: new Date(task.endTime).getTime()
+            end: new Date(task.endTime).getTime(),
+            data: task
         }
     })
 });
@@ -66,6 +68,26 @@ const groups = computed<TimelineGroup[]>(() => {
         }
     })
 });
+
+// Is a task selected
+
+const selectedTask = ref<TimelineItemWithData | null>(null);
+
+type TimelineItemWithData = TimelineItem & {
+    data: ApiResponse<"/api/tasks/:projectId", "get">[number]
+};
+
+
+function taskSelect({ time, event, item}: {
+    time: number,
+    event: MouseEvent,
+    item: TimelineMarker | TimelineItemWithData
+}) {
+    if(event.type==="click" && item.type==="range") {
+        selectedTask.value = item;
+        console.log(selectedTask);
+    }
+};
 
 const taskName = ref<string | null>(null);
 const taskDesc = ref<string | null>(null);
@@ -124,14 +146,8 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
         id: taskId.toString(),
         label: groupName,
     });
-
-    items.value.push({
-        type: "range",
-        start: startTime.getTime(),
-        end: endTime.getTime(),
-        group: taskId.toString(),
-    });
-}
+    taskRefresh();
+};
 </script>
 
 <template>
@@ -165,7 +181,11 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
             :groups
             :initial-viewport-start="bounds.lower"
             :initial-viewport-end="bounds.upper"
-            />
+            @click="taskSelect">
+            <template #group-label="{ group }">
+                
+            </template>
+        </Timeline>
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>
@@ -202,4 +222,8 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
             </form>
         </template>
     </AppDialog>
+    <div v-if="selectedTask" class="mt-4">
+        <h2>{{ selectedTask.data.title }}</h2>
+        <p>{{ selectedTask.data.description }}</p>
+    </div>
 </template>
