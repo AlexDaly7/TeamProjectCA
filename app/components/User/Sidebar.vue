@@ -5,6 +5,10 @@
             label="My Groups"
             icon="hugeicons:grid-view" />
         <SidebarLink
+            :to="{ name: 'dashboard-account-profile' }"
+            label="Account"
+            icon="hugeicons:user-circle" />
+        <SidebarLink
             :to="{ name: 'dashboard-settings' }"
             label="Settings"
             icon="hugeicons:settings-01" />

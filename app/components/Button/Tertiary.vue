@@ -20,9 +20,9 @@ const tag = computed(() => {
         :is="tag"
         :to="to || undefined"
         :type="!to ? type : undefined"
-        exact-active-class="bg-main-700!"
+        exact-active-class="bg-main-700! ring-md"
         class="
-            bg-main-800 text-txt-primary py-2 px-4 rounded-md cursor-pointer
+            bg-main-800 text-txt-primary py-2 px-4 rounded-md cursor-pointer text-center
             not-disabled:hover:bg-main-700 not-disabled:hover:scale-102
             not-disabled:active:bg-main-900 not-disabled:active:scale-98
             disabled:opacity-60 disabled:cursor-default

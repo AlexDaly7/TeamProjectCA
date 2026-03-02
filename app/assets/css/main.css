@@ -14,6 +14,8 @@
     --color-main-800: var(--color-slate-800);
     --color-main-900: var(--color-slate-900);
     --color-main-950: var(--color-slate-950);
+
+    --color-brand: var(--color-blue-600);
 }
 
 body {
