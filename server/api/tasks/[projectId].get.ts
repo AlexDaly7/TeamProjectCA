@@ -1,7 +1,6 @@
 import { getProject } from "~~/lib/db/queries/projects";
 import { getTasks } from "~~/lib/db/queries/tasks";
-import { getRepoIssues } from "~~/server/utils/github";
-import { ensureUserInGroup } from "~~/server/utils/userPermission";
+import { ensureUserInOrg } from "~~/server/utils/userPermission";
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;
@@ -26,7 +25,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
     
     // TODO: use the other function in validators for this
-    await ensureUserInGroup(userId, project.groupId);
+    await ensureUserInOrg(event, userId, project.organizationId);
 
 
     const tasks = getTasks(parsedProjectId);

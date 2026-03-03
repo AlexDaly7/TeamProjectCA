@@ -5,71 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771516493303,
-      "tag": "0000_init",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1771602611639,
-      "tag": "0001_auth",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771605679469,
-      "tag": "0002_projects",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1771850775017,
-      "tag": "0003_groups",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771980431865,
-      "tag": "0004_project_and_tasks",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1772122964563,
-      "tag": "0005_user_selected_project",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1772159699427,
-      "tag": "0006_task_project_not_null",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1772161262684,
-      "tag": "0007_end_time_typo",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1772191075234,
-      "tag": "0008_repo_name_owner_in_project",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1772191579031,
-      "tag": "0009_fix_repo_cols",
+      "when": 1772502976752,
+      "tag": "0000_new_init_with_orgs",
       "breakpoints": true
     }
   ]

@@ -10,7 +10,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const bodyData = await validateBody(event, ClientInsertProject);
 
-    await ensureUserInGroup(userId, bodyData.groupId);
+    await ensureUserInOrg(event, userId, bodyData.organizationId);
 
     try {
         // Validate GitHub repo id
@@ -25,7 +25,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
             });
         }
         
-        const createdProjectId = await createProject(repoStatus.id, repoStatus.name, repoStatus.owner, bodyData.title, bodyData.groupId);
+        const createdProjectId = await createProject(repoStatus.id, repoStatus.name, repoStatus.owner, bodyData.title, bodyData.organizationId);
 
         return { id: createdProjectId };
     } catch (error) {

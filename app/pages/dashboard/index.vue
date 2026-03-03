@@ -6,7 +6,6 @@ definePageMeta({
 const auth = useAuth();
 const router = useRouter();
 const { $authClient } = useNuxtApp();
-const groupsStore = useGroupsStore();
 
 async function signOut() {
     await $authClient.signOut();
@@ -14,18 +13,41 @@ async function signOut() {
     router.push({ name: 'index' });
 }
 
-async function createGroup() {
-    const name = prompt("Enter group name:");
+const organizations = $authClient.useListOrganizations();
+
+async function createOrganization() {
+    // async function promptValidSlug(): Promise<string | null> {
+    //     while (true) {
+    //         const slug = prompt("Enter org slug: ");
+    //         if (!slug) return null;
+
+    //         const { data, error } = await $authClient.organization.checkSlug({ slug });
+
+    //         if (error) {
+    //             alert("There was an error validating the slug. Please try again.");
+    //             continue;
+    //         }
+
+    //         if (data.status) return slug;
+
+    //         alert("That slug is already taken. Please choose another.");
+    //     }
+    // }
+
+    const name = prompt("Enter organization name:");
     if (!name) return;
 
-    console.log(name);
+    const slug = prompt("Enter org slug: ");
+    if (!slug) return;
 
-    const id = await groupsStore.createGroup(name);
+    const { data, error } = await $authClient.organization.create({ name, slug });
 
-    alert(`Created group with ID: ${id}`);
+    if (error) {
+        alert(`There was an error creating this org.`);
+    } else {
+        alert(`Created org with ID: ${data.id}`);
+    }
 }
-
-const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/api/groups', { method: 'GET' })
 </script>
 
 <template>
@@ -34,7 +56,7 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
     </span>
 
     <h1 class="text-3xl font-bold">
-        My Groups
+        My Organizations
     </h1>
 
     <div class="flex flex-row gap-2">
@@ -44,30 +66,30 @@ const { data: groups, pending: groupsPending, error: groupsError } = useFetch('/
     </div>
     
     <div 
-        v-if="groupsPending"
+        v-if="organizations.error"
         class="mt-4 grow flex items-center justify-center">
-        <LoadingIcon :size="32" />
+        An error occured loading organizations: {{ organizations.error.statusText ?? 'Unknown Error' }}
     </div>
     <div 
-        v-else-if="groupsError"
+        v-else-if="organizations.isPending"
         class="mt-4 grow flex items-center justify-center">
-        An error occured loading groups: {{ groupsError ?? 'Unknown Error' }}
+        <LoadingIcon :size="32" />
     </div>
     <div 
         v-else
         class="h-full mt-4 grow grid gap-2 grid-cols-4 overflow-y-auto">
         <NuxtLink
-            v-for="group in groups"
-            :key="group.groupId"
+            v-for="org in organizations.data"
+            :key="org.id"
             class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
-            :to="{ name: 'dashboard-group-groupId', params: { groupId: group.groupId }  }">
-            <span class="text-lg font-semibold">{{ group.group.name }}</span>
-            <span class="capitalize">Role: <i>{{ group.role }}</i></span>
+            :to="{ name: 'dashboard-group-groupId', params: { groupId: org.id }  }">
+            <span class="text-lg font-semibold">{{ org.name }}</span>
+            <!-- <span class="capitalize">Role: <i>{{ org. }}</i></span> -->
         </NuxtLink>
         <button
             class="bg-main-800 flex items-center justify-center max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
-            @click="createGroup">
-            <span>Create a group</span>
+            @click="createOrganization">
+            <span>Create an organization</span>
         </button>
     </div>
 </template>

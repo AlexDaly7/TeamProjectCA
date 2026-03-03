@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import RepoSelector from '~/components/Group/RepoSelector.vue';
 import { type ClientInsertProjectSchema } from '~~/lib/db/schema';
-const { $csrfFetch } = useNuxtApp();
+
+const { $csrfFetch, $authClient } = useNuxtApp();
 
 const route = useRoute();
 // https://nuxt.com/docs/4.x/api/composables/use-fetch#reactive-keys-and-shared-state
 const groupId = computed(() => route.params.groupId);
 
-const { data: groupInfo, pending: groupInfoPending, error: groupInfoError } = useFetch(() => `/api/groups/${groupId.value}`, { method: 'GET' });
+const activeOrg = $authClient.useActiveOrganization();
 
 const { data: projects, pending: projectsPending, error: projectsError, refresh: refreshProjects } = useFetch(() => `/api/projects/${groupId.value}`, { method: 'GET' });
 
 async function createProject() {
     if (title.value.length === 0) return;
     if (selectedRepo.value.length === 0) return;
-
-    if (isNaN(Number(groupId.value))) {
-        throw Error('Invalid groupId when creating project.');
-    }
+    if (!activeOrg.value.data) return; // todo: add warnings later?
 
     const [ repoOwner, repoName ] = selectedRepo.value.split('/');
     if (!repoOwner || !repoName) return;
 
     const body: ClientInsertProjectSchema = {
-        groupId: Number(groupId.value),
+        organizationId: activeOrg.value.data.id,
         repo: selectedRepo.value,
         title: title.value,
         repoOwner,
@@ -52,17 +49,17 @@ function selectedRepoChanged(value: string) {
 </script>
 
 <template>
-    <div v-if="groupInfoPending">
-        <span>Selected group:</span>
+    <div v-if="activeOrg.isPending">
+        <span>Selected organization:</span>
         <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
         <span class="mt-4">Projects</span>
     </div>
-    <div v-if="groupInfoError || !groupInfo">
+    <div v-if="activeOrg.error || !activeOrg.data">
         There was an error fetching group info.
     </div>
     <div v-else class="flex flex-col">
-        <span>Selected group:</span>
-        <h1 class="text-3xl font-bold">{{ groupInfo.name }}</h1>
+        <span>Selected organization:</span>
+        <h1 class="text-3xl font-bold">{{ activeOrg.data.name }}</h1>
         <span class="mt-4">Projects</span>
     </div>
     <div 
@@ -81,7 +78,7 @@ function selectedRepoChanged(value: string) {
         
         <NuxtLink
             v-for="project in projects"
-            :key="project.groupId"
+            :key="project.id"
             class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
             :to="{ name: 'dashboard-group-groupId-project-projectId', params: { groupId, projectId: project.id }  }">
             <span class="text-lg font-semibold">{{ project.title }}</span>
@@ -114,7 +111,7 @@ function selectedRepoChanged(value: string) {
                             @input="titleChanged = true"
                             class="mb-2 h-8 bg-main-700 rounded-md ring-md px-4 leading-none outline-none" />
                     </div>
-                    <RepoSelector 
+                    <OrgRepoSelector 
                         label="Repository"
                         field-id="repo"
                         v-model:repo="selectedRepo"

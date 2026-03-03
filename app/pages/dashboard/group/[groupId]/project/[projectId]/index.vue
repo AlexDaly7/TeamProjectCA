@@ -13,25 +13,27 @@ const { $csrfFetch } = useNuxtApp();
 const route = useRoute();
 const projectId = computed(() => route.params.projectId);
 
-const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET' });
+const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET', lazy: true });
 
-const { data: tasksInfo, pending: tasksPending, error: tasksError } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
+// const { data: tasksInfo, pending: tasksPending, error: tasksError } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET', lazy: true });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
 
 const items = computed<TimelineItem[]>(() => {
-    if (!tasksInfo.value) return [];
+    // if (!tasksInfo.value) return [];
     
-    return tasksInfo.value.map((task) => {
-        return {
-            id: task.id.toString(),
-            group: `${task.id}-group`,
-            type: 'range',
-            start: new Date(task.startTime).getTime(),
-            end: new Date(task.endTime).getTime()
-        }
-    })
+    // return tasksInfo.value.map((task) => {
+    //     return {
+    //         id: task.id.toString(),
+    //         group: `${task.id}-group`,
+    //         type: 'range',
+    //         start: new Date(task.startTime).getTime(),
+    //         end: new Date(task.endTime).getTime()
+    //     }
+    // })
+
+    return [];
 });
 
 // How much time to put on the timeline as padding before the start of the ealiest task
@@ -57,14 +59,16 @@ const bounds = computed<{ lower: number, upper: number }>(() => {
 });
 
 const groups = computed<TimelineGroup[]>(() => {
-    if (!tasksInfo.value) return [];
+    // if (!tasksInfo.value) return [];
 
-    return tasksInfo.value.map((task) => {
-        return {
-            id: `${task.id}-group`,
-            label: task.title,
-        }
-    })
+    // return tasksInfo.value.map((task) => {
+    //     return {
+    //         id: `${task.id}-group`,
+    //         label: task.title,
+    //     }
+    // })
+
+    return [];
 });
 
 const taskName = ref<string | null>(null);
@@ -72,15 +76,6 @@ const taskDesc = ref<string | null>(null);
 // TODO: type this
 const dateValue = ref<DateRange | undefined>();
 
-// function createTimeObj() {
-//     const date1 = dateValue.value.start;
-//     const date2 = dateValue.value.end;
-//     const time1 = new Date(date1.year, date1.month-1, date1.day, date1.hour);
-//     const time2 = new Date(date2.year, date2.month-1, date2.day, date2.hour);
-//     console.log(time1.getTime());
-//     items.value.push({id: "item"+(items.value.length+1), group: "group1", type: "range", start: (time1.getTime()), end: (time2.getTime())});
-//     console.log(items);
-// }
 
 async function addTask() {
     // TODO: better validation
@@ -153,19 +148,19 @@ function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: n
 
     
     <div class="ring-md rounded-sm touch-none">
-        <div v-if="tasksPending">
+        <!-- <div v-if="tasksPending">
             Loading timeline...
         </div>
         <div v-else-if="tasksError">
             There was an error loading the timeline
         </div>
+        <ClientOnly v-else> -->
         <Timeline
-            v-else
             :items
             :groups
             :initial-viewport-start="bounds.lower"
-            :initial-viewport-end="bounds.upper"
-            />
+            :initial-viewport-end="bounds.upper" />
+        <!-- </ClientOnly> -->
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>

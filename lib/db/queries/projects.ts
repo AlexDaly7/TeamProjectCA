@@ -7,11 +7,11 @@ export async function createProject(
     repoName: string,
     repoOwner: string,
     title: string,
-    groupId: number
+    organizationId: string
 ) {
     return await db
         .insert(projects)
-        .values({ repoId, title, groupId, repoName, repoOwner })
+        .values({ repoId, title, organizationId, repoName, repoOwner })
         .returning({ id: projects.id })
 }
 
@@ -28,9 +28,9 @@ export async function getRepoId(projectId: number) {
     .where(eq(projects.id, projectId));
 }
 
-export async function listProjects(groupId: number) {
+export async function listProjects(organizationId: string) {
     return await db.query.projects.findMany({
-        where: eq(projects.groupId, groupId),
+        where: eq(projects.organizationId, organizationId),
     });
 }
 
@@ -38,7 +38,7 @@ export async function getUserProject(userId: string, projectId: number) {
     const projectGroupInfo = await db.query.projects.findFirst({
         where: eq(projects.id, projectId),
         with: {
-            group: {
+            organization: {
                 with: {
                     members: {
                         columns: {
@@ -52,7 +52,7 @@ export async function getUserProject(userId: string, projectId: number) {
 
     if (!projectGroupInfo) return null;
 
-    if (projectGroupInfo.group.members.find((m) => m.userId === userId)) {
+    if (projectGroupInfo.organization.members.find((m) => m.userId === userId)) {
         return projectGroupInfo;
     } else {
         return null;

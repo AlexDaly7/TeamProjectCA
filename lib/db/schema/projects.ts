@@ -1,16 +1,19 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
-import { groups } from './groups';
 import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
+import { organization } from './auth';
 
 export const projects = pgTable("projects", {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
-    groupId: integer("group_id").notNull(),
+    
+    organizationId: text("organization_id").notNull(),
+
     repoId: integer("repo_id").notNull(),
     repoName: text('repo_name').notNull(),
     repoOwner: text('repo_owner').notNull(),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .$onUpdate(() => new Date())
@@ -18,9 +21,9 @@ export const projects = pgTable("projects", {
 });
 
 export const projectsRelations = relations(projects, ({ one }) => ({
-    group: one(groups, {
-        fields: [ projects.groupId ],
-        references: [ groups.id ],
+    organization: one(organization, {
+        fields: [ projects.organizationId ],
+        references: [ organization.id ],
     }),
 }));
 

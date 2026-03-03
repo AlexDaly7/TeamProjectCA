@@ -1,7 +1,9 @@
 import { betterAuth } from "better-auth/minimal";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import * as schema from './db/schema';
+import { organization } from "better-auth/plugins";
 
+import { ac, owner, admin, member } from './auth-permissions';
+import * as schema from './db/schema';
 import db from "./db";
 import env from "./env";
 
@@ -17,16 +19,14 @@ export const auth = betterAuth({
             scope: [ 'user:email', 'repo' ]
         },
     },
-    user: {
-        additionalFields: {
-            selectedGroup: {
-                type: 'number',
-                required: false,
-            },
-            selectedProject: {
-                type: 'number',
-                required: false,
-            },
-        },
-    },
+    plugins: [
+        organization({
+            ac,
+            roles: {
+                owner,
+                admin,
+                member,
+            }
+        }),
+    ],
 });
