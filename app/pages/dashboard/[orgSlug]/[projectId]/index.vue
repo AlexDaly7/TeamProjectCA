@@ -60,6 +60,8 @@ const pusher = new Pusher("e41e7620d6ab296d33aa", {
     cluster: 'eu'
 });
 
+Pusher.logToConsole = true;
+
 if(projectInfo.value) {
     var channel = pusher.subscribe("project"+projectInfo.value.id);
     channel.bind("update", taskRefresh);
@@ -228,10 +230,10 @@ async function modifyTask() {
   if (result.id) {
     // TODO: fix this not refreshing
     renderTask(startDate, endDate, taskName.value, result.id);
+    updateChannel();
   } else {
     alert("Failed to modify task");
   }
-  updateChannel();
 }
 
 function renderTask(
