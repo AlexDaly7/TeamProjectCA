@@ -1,6 +1,6 @@
 import Pusher from 'pusher';
 import env from './env';
-console.log(env.PUSHER_KEY+"Heye!!!");
+
 const pusher = new Pusher({
   appId: env.PUSHER_APP_ID,
   key: "e41e7620d6ab296d33aa",

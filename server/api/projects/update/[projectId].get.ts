@@ -9,7 +9,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         await ensureUserCanAccessProject(userId, projectId);
         console.log("hi!");
         await pusher.trigger("project"+projectId, "update", {});
-        return "Hi!";
+        return true;
     } catch(error: any) {
         console.log(error?.body);
         throw createError({
