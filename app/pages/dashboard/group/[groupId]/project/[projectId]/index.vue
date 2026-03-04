@@ -12,6 +12,8 @@ import {
   type InsertTaskSchema,
   type ModifyTaskSchema,
 } from "~~/lib/db/schema";
+import Pusher from 'pusher-js';
+import type { ApiResponse } from "~/composables/apiResponse";
 
 definePageMeta({
   sidebarType: "project",
@@ -52,6 +54,27 @@ const items = computed<TimelineItemWithData[]>(() => {
     };
   });
 });
+
+// Pusher
+const pusher = new Pusher("e41e7620d6ab296d33aa", {
+    cluster: 'eu'
+});
+
+Pusher.logToConsole = true;
+
+if(projectInfo.value) {
+    var channel = pusher.subscribe("project"+projectInfo.value.id);
+    channel.bind("update", taskRefresh);
+}
+
+async function updateChannel() {
+    if(projectInfo.value) {
+        const result = $csrfFetch(`/api/projects/update/`+projectInfo.value.id, {
+
+            method: "GET",
+        });
+    }
+}
 
 // How much time to put on the timeline as padding before the start of the ealiest task
 // and end of the latest task
@@ -165,12 +188,13 @@ async function addTask() {
 
   const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
 
-  if (result.id) {
-    // TODO: fix this not refreshing
-    renderTask(startDate, endDate, taskName.value, result.id);
-  } else {
-    alert("Failed to add task");
-  }
+    if (result.id) {
+        // TODO: fix this not refreshing
+        renderTask(startDate, endDate, taskName.value, result.id);
+    } else {
+        alert('Failed to add task');
+    }
+    updateChannel();
 }
 
 async function modifyTask() {
@@ -215,6 +239,7 @@ async function modifyTask() {
   if (result.id) {
     // TODO: fix this not refreshing
     renderTask(startDate, endDate, taskName.value, result.id);
+    updateChannel();
   } else {
     alert("Failed to modify task");
   }
