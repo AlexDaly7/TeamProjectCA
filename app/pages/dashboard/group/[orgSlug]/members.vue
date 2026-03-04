@@ -51,15 +51,9 @@ async function addUserToGroup() {
                 v-for="member in orgMembers.members"
                 class="flex flex-row gap-2 items-center bg-main-800 p-2 rounded-md ring-md"
                 :key="member.id">
-                <!-- todo: https://reka-ui.com/docs/components/avatar#avatar -->
-                <img 
-                    v-if="member.user.image"
-                    class="size-8 rounded-full"
-                    :src="member.user.image" 
-                    :alt="`Profile picture for ${member.user.name}`">
-                <div v-else class="size-8 rounded-full flex items-center justify-center bg-main-700">
-                    ?
-                </div>
+                <AppAvatar
+                    :image="member.user.image"
+                    :name="member.user.name" />
                 <span class="text-txt-primary">
                     {{ member.user.name }}
                 </span>
