@@ -3,6 +3,7 @@ import type { DateRange } from 'reka-ui';
 import { Timeline, type TimelineGroup, type TimelineItem } from 'vue-timeline-chart';
 import "vue-timeline-chart/style.css";
 import type { InsertTaskSchema } from '~~/lib/db/schema';
+import Pusher from 'pusher-js';
 
 definePageMeta({
     sidebarType: 'project',
@@ -15,7 +16,7 @@ const projectId = computed(() => route.params.projectId);
 
 const { data: projectInfo, pending: projectInfoPending, error: projectInfoError } = useFetch(() => `/api/project/${projectId.value}`, { method: 'GET' });
 
-const { data: tasksInfo, pending: tasksPending, error: tasksError } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
+const { data: tasksInfo, pending: tasksPending, error: tasksError, refresh: taskRefresh } = useFetch(() => `/api/tasks/${projectId.value}`, { method: 'GET' });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
@@ -33,6 +34,26 @@ const items = computed<TimelineItem[]>(() => {
         }
     })
 });
+
+// Pusher
+const pusher = new Pusher("18764a9bbb57f153f5fa", {
+    cluster: 'eu'
+});
+
+Pusher.logToConsole = true;
+
+if(projectInfo.value) {
+    var channel = pusher.subscribe("project"+projectInfo.value.id);
+    channel.bind("update", taskRefresh);
+}
+
+async function updateChannel() {
+    if(projectInfo.value) {
+        const result = useFetch(`./api/projects/update/`+projectInfo.value.id, {
+            method: "GET",
+        });
+    }
+}
 
 // How much time to put on the timeline as padding before the start of the ealiest task
 // and end of the latest task
@@ -117,6 +138,7 @@ async function addTask() {
     } else {
         alert('Failed to add task');
     }
+    updateChannel();
 }
 
 function renderTask(startTime: Date, endTime: Date, groupName: string, taskId: number) {
