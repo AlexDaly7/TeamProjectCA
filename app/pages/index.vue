@@ -58,4 +58,16 @@ function signIn() {
             <img class="border-main-500 border-[5px] rounded-xl" src="" alt="Graphic showing group page">
         </div>
     </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 my-4 text-center">
+        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
+            <h1 class="text-[50px]">AI Suggestions!</h1>
+            <p class="text-[25px]">Reduce time spent on planning and organisation with AI suggested tasks!</p>
+            <img class="border-main-500 border-[5px] rounded-xl" src="" alt="Graphic showing AI suggestions">
+        </div>
+        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
+            <h1 class="text-[50px]">Groups!</h1>
+            <p class="text-[25px]">Add collaborators to your project through groups!</p>
+            <img class="border-main-500 border-[5px] rounded-xl" src="" alt="Graphic showing group page">
+        </div>
+    </div>
 </template>

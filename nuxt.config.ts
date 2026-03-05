@@ -15,4 +15,10 @@ export default defineNuxtConfig({
     routeRules: {
         '/dashboard/**': { appLayout: 'dashboard' },
     },
+
+    app:{
+        head:{
+            link: [{rel: 'icon', type: 'image/x-icon', href: '/Ó.ico'}]
+        }
+    }
 });
