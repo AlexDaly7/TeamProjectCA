@@ -33,9 +33,9 @@ const auth = useAuth();
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
-                :to="{ name: 'dashboard-account-session' }">
+                :to="{ name: 'dashboard-account-sessions' }">
                 <Icon name="hugeicons:key-01" />
-                Session
+                Sessions
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"

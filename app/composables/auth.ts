@@ -12,9 +12,18 @@ export const useAuth =() => {
         });
     };
 
+    
+    const listSessions = async () => {
+        return await $authClient.listSessions();
+    }
+
+    const currentSessionToken = computed(() => $authSession.data.value?.session.token);
+
     return {
         user,
         isLoading,
         signInWithGitHub,
+        listSessions,
+        currentSessionToken,
     };
 }
