@@ -27,9 +27,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     // TODO: use the other function in validators for this
     await ensureUserInOrg(event, userId, project.organizationId);
 
-
     const tasks = getTasks(parsedProjectId);
-
 
     // const repoIssues = getRepoIssues(parsedProjectId);
 

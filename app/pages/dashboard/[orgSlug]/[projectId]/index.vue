@@ -8,12 +8,16 @@ import {
 } from "vue-timeline-chart";
 import "vue-timeline-chart/style.css";
 import {
+  ModifyTask,
   tasks,
   type InsertTaskSchema,
   type ModifyTaskSchema,
+  type TasksSchema,
 } from "~~/lib/db/schema";
 import Pusher from 'pusher-js';
 import type { ApiResponse } from "~/composables/apiResponse";
+import { z } from 'zod';
+import type { Task } from "better-auth/vue";
 
 definePageMeta({
   sidebarType: "project",
@@ -62,16 +66,66 @@ const pusher = new Pusher("e41e7620d6ab296d33aa", {
 
 Pusher.logToConsole = true;
 
-if(projectInfo.value) {
-    var channel = pusher.subscribe("project"+projectInfo.value.id);
-    channel.bind("update", taskRefresh);
+let updateTask = (event: any) => {
+  const taskData: TasksSchema = event.task[0];
+  if(!event.task[0]) {
+    console.log("There was an error importing changes");
+  } else {
+    let taskExists = false;
+    items.value.forEach(task => {
+      if(task.id==taskData.id.toString()) {
+        items.value.splice(items.value.findIndex((item)=> {
+          return item.id === taskData.id.toString();
+        }));
+        groups.value.forEach(group => {
+          if(group.id==taskData.id+"-group") {
+            group.label=taskData.title;
+          }
+        })
+        console.log("Task Changed");
+        renderUpdate(taskData);
+        taskExists = true;
+        
+        //console.log(task);
+        //console.log(items);
+      }
+    });
+    if(!taskExists) {
+      groups.value.push({
+        id: `${taskData.id}-group`,
+        label: taskData.title,
+      });
+    };
+    renderUpdate(taskData);
+  }
+    
 }
 
-async function updateChannel() {
+function renderUpdate(taskData: ApiResponse<"/api/tasks/:projectId", "get">[number]) {
+    const newTask: TimelineItemWithData = {
+      data: taskData,
+      start: new Date(taskData.startTime).getTime(),
+      end: new Date(taskData.endTime).getTime(),
+      type: "range",
+      group: taskData.title?.toString(),
+    }
+    items.value.push(newTask);
+    console.log(items);
+}
+
+if(projectInfo.value) {
+    var channel = pusher.subscribe("project"+projectInfo.value.id);
+    channel.bind("update", updateTask);
+}
+
+async function updateChannel(taskIdIn: number) {
     if(projectInfo.value) {
         const result = $csrfFetch(`/api/projects/update/`+projectInfo.value.id, {
-
-            method: "GET",
+            method: "POST",
+            body: {
+              orgId: projectInfo.value.organizationId,
+              taskId: taskIdIn,
+            }
         });
     }
 }
@@ -182,10 +236,10 @@ async function addTask() {
     if (result.id) {
         // TODO: fix this not refreshing
         renderTask(startDate, endDate, taskName.value, result.id);
+        updateChannel(result.id);
     } else {
         alert('Failed to add task');
     }
-    updateChannel();
 }
 
 async function modifyTask() {
@@ -230,7 +284,7 @@ async function modifyTask() {
   if (result.id) {
     // TODO: fix this not refreshing
     renderTask(startDate, endDate, taskName.value, result.id);
-    updateChannel();
+    updateChannel(result.id);
   } else {
     alert("Failed to modify task");
   }
