@@ -19,6 +19,11 @@ export const auth = betterAuth({
             scope: [ 'user:email', 'repo' ]
         },
     },
+    user: {
+        deleteUser: {
+            enabled: true,
+        },
+    },
     plugins: [
         organization({
             ac,
