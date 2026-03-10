@@ -109,21 +109,47 @@ const bounds = computed<{ lower: number; upper: number }>(() => {
     };
 });
 
+const groupsInfo = reactive<TimelineTaskGroup[]>([]);
+tasksInfo?.value?.forEach((task) => {
+    let visible = true;
+    if(task.parentId!==null) visible=false;
+    groupsInfo.push({
+        id: `${task.id}-group`,
+        label: task.title,
+        visible: visible,
+        parentId: task.parentId,
+    });
+});
+
 const groups = computed<TimelineGroup[]>(() => {
     if (!tasksInfo.value) return [];
 
-    return tasksInfo.value.map((task) => {
+    //return tasksInfo.value
+    //.filter(task => task.parentId==null)
+    //.map((task): TimelineGroup => {
+    //    return {
+    //        id: `${task.id}-group`,
+    //        label: task.title,
+    //    };
+    //});
+    return groupsInfo
+    .filter(group => group.visible==true)
+    .map((group): TimelineGroup =>{
         return {
-            id: `${task.id}-group`,
-            label: task.title,
+            id: group.id,
+            label: group.label,
         };
     });
 });
 
-// Is a task selected
+type TimelineTaskGroup = TimelineGroup & {
+    visible: boolean,
+    parentId: number | null,
+};
+
+
 
 const selectedTask = ref<TimelineItemWithData | null>(null);
-
 type TimelineItemWithData = TimelineItem & {
     data: ApiResponse<"/api/task/:projectId", "get">[number];
 };
@@ -181,7 +207,6 @@ async function addTask(subtaskId?: number) {
         description: taskDesc.value,
         parentId: subtaskId,
     };
-    
 
     const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
 
@@ -267,11 +292,27 @@ function renderTask(
     groupName: string,
     taskId: number,
 ) {
+    // TODO check whether sub-task or not and decide on how to render.
+    // Could also stop function from being called entirely.
     groups.value.push({
         id: taskId.toString(),
         label: groupName,
     });
     taskRefresh();
+}
+
+function renderSubTask(taskTitle: string | undefined) {
+    if(!tasksInfo.value||taskTitle===undefined) return;
+    const task = tasksInfo.value.find(task => task.title===taskTitle);
+    if(!task || !task.id) return;
+
+    let subTasks = groupsInfo.filter(group => group.parentId == task.id);
+    subTasks.forEach((group)=>{
+        group.visible = true;
+    });
+    
+    let visible = groupsInfo.find(group => group.label===taskTitle)?.visible;
+    visible = true;
 }
 </script>
 
@@ -297,7 +338,14 @@ function renderTask(
         <div v-else-if="tasksError">There was an error loading the timeline</div>
         <Timeline v-else :items :groups :initial-viewport-start="bounds.lower" :initial-viewport-end="bounds.upper"
             @click="taskSelect">
-            <template #group-label="{ group }">AAAAAAH {{ group.label }}</template>
+            <template #group-label="{ group }">
+                <form @submit.prevent="renderSubTask(group.label)">
+                    <ButtonPrimary type="submit">
+                        Drop
+                    </ButtonPrimary>
+                    {{ group.label }}
+                </form>
+            </template>
         </Timeline>
     </div>
 
