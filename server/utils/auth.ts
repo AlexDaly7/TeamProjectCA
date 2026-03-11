@@ -8,5 +8,7 @@ export async function getUserGitHubAuthToken(userId: string) {
         },
     });
 
+    console.log(token);
+
     return token.accessToken;
 }

@@ -29,3 +29,26 @@ export async function ensureUserInOrg(event: H3Event, userId: string, organizati
         });
     }
 }
+
+export async function getActiveOrganization(event: H3Event) {
+    const session = await auth.api.getSession({
+        headers: event.headers,
+    });
+
+    if (!session?.session.activeOrganizationId) {
+        throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+    }
+
+    const organization = await auth.api.getFullOrganization({
+        headers: event.headers,
+        query: {
+            organizationId: session.session.activeOrganizationId,
+        }
+    });
+
+    if (!organization) {
+        throw createError({ statusCode: 404, statusMessage: 'Organization not found' });
+    }
+
+    return { organization };
+}

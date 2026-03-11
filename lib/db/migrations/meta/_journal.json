@@ -8,6 +8,13 @@
       "when": 1772502976752,
       "tag": "0000_new_init_with_orgs",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773240948199,
+      "tag": "0001_task_sync",
+      "breakpoints": true
     }
   ]
 }

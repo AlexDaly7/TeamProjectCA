@@ -46,7 +46,7 @@ export async function getTasks(
   }
 }
 
-export async function createTask(values: InsertTaskSchema) {
+export async function insertTask(values: InsertTaskSchema) {
   return await db
     .insert(tasks)
     .values(values)
