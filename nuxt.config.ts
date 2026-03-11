@@ -18,7 +18,14 @@ export default defineNuxtConfig({
 
     app:{
         head:{
-            link: [{rel: 'icon', type: 'image/x-icon', href: '/Ó.ico'}]
+            title: 'Mórchlár',
+            htmlAttrs: {
+                lang: 'en',
+            },
+            link: [
+                { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+                { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon', sizes: "any", },
+            ]
         }
     }
 });
