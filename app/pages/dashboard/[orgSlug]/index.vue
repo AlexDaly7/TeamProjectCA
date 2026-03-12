@@ -59,19 +59,7 @@ function selectedRepoChanged(value: string) {
 </script>
 
 <template>
-    <div v-if="orgDataPending">
-        <span>Selected organization:</span>
-        <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
-        <span class="mt-4">Projects</span>
-    </div>
-    <div v-else-if="orgDataError || !orgData">
-        There was an error fetching organization info.
-    </div>
-    <div v-else class="flex flex-col">
-        <span>Selected organization:</span>
-        <h1 class="text-3xl font-bold">{{ orgData.organization.name }}</h1>
-        <span class="mt-4">Projects</span>
-    </div>
+    <h1 class="text-3xl font-bold">Projects</h1>
 
     <div 
         v-if="orgDataPending"
