@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import {
   tasks,
   type InsertTaskSchema,
@@ -47,23 +47,23 @@ export async function getTasks(
 }
 
 export async function createTask(values: InsertTaskSchema) {
-  return await db
-    .insert(tasks)
-    .values(values)
-    .returning({ id: tasks.projectId });
+    return await db
+        .insert(tasks)
+        .values(values)
+        .returning({ id: tasks.id });
 }
 
 export async function modifyTask(values: ModifyTaskSchema) {
   return await db
     .update(tasks)
     .set(values)
-    .where(sql`id = ${values.id}`)
+    .where(eq(tasks.id, values.id))
     .returning({ id: tasks.id });
 }
 
 export async function deleteTask(values: DeleteTaskSchema) {
   return await db
     .delete(tasks)
-    .where(sql`id = ${values.id}`)
+    .where(eq(tasks.id, values.id))
     .returning({ id: tasks.id });
 }
