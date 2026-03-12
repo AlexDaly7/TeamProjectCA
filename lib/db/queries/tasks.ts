@@ -43,6 +43,7 @@ export async function getTasks(
     );
   } catch (error) {
     throw error;
+  }
 }
 
 export async function createTask(values: InsertTaskSchema) {
