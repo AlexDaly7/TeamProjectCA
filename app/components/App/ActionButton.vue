@@ -78,45 +78,49 @@ function handleClick() {
             </AlertDialogTrigger>
 
             <AlertDialogPortal>
-                <AlertDialogOverlay class="bg-black/50 fixed inset-0 z-30" />
+                <Transition name="dialog-fade">
+                    <AlertDialogOverlay class="bg-black/50 fixed inset-0 z-30 backdrop-blur-xs" />
+                </Transition>
 
-                <AlertDialogContent class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
-                    bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
-                    focus:outline-none">
-                    <AlertDialogTitle class="text-xl font-semibold">
-                        {{ title }}
-                    </AlertDialogTitle>
+                <Transition name="dialog-scale">
+                    <AlertDialogContent class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
+                        bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
+                        focus:outline-none">
+                        <AlertDialogTitle class="text-xl font-semibold">
+                            {{ title }}
+                        </AlertDialogTitle>
 
-                    <AlertDialogDescription class="text-txt-secondary mt-4 mb-5 leading-normal">
-                        {{ description }}
-                    </AlertDialogDescription>
+                        <AlertDialogDescription class="text-txt-secondary mt-4 mb-5 leading-normal">
+                            {{ description }}
+                        </AlertDialogDescription>
 
-                    <div class="flex justify-end gap-4">
-                        <AlertDialogCancel :as-child="true">
-                            <slot name="cancel-button">
-                                <ButtonSecondary
-                                    class="min-w-24"
-                                    :disabled="isLoading"
-                                    @click="dialogOpen = false">
-                                    Cancel
-                                </ButtonSecondary>
-                            </slot>
-                        </AlertDialogCancel>
-                        
-                        <AlertDialogAction :as-child="true">
-                            <slot name="action-button">
-                                <ButtonPrimary
-                                    class="min-w-24"
-                                    :disabled="isLoading"
-                                    @click="performAction">
-                                    <LoadingSwap :is-loading="isLoading">
-                                        Confirm
-                                    </LoadingSwap>
-                                </ButtonPrimary>
-                            </slot>
-                        </AlertDialogAction>
-                    </div>
-                </AlertDialogContent>
+                        <div class="flex justify-end gap-4">
+                            <AlertDialogCancel :as-child="true">
+                                <slot name="cancel-button">
+                                    <ButtonSecondary
+                                        class="min-w-24"
+                                        :disabled="isLoading"
+                                        @click="dialogOpen = false">
+                                        Cancel
+                                    </ButtonSecondary>
+                                </slot>
+                            </AlertDialogCancel>
+                            
+                            <AlertDialogAction :as-child="true">
+                                <slot name="action-button">
+                                    <ButtonPrimary
+                                        class="min-w-24"
+                                        :disabled="isLoading"
+                                        @click="performAction">
+                                        <LoadingSwap :is-loading="isLoading">
+                                            Confirm
+                                        </LoadingSwap>
+                                    </ButtonPrimary>
+                                </slot>
+                            </AlertDialogAction>
+                        </div>
+                    </AlertDialogContent>
+                </Transition>
             </AlertDialogPortal>
         </AlertDialogRoot>
     </template>

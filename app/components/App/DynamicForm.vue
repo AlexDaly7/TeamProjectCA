@@ -39,7 +39,7 @@ defineProps<{
                         :disabled="isLoading"
                         :error="errors[name]"
                         v-bind="attrs"
-                        class="w-full outline-none ring-1 focus:ring-2 ring-main-50/10 focus:ring-main-50/25 p-2 rounded-md"
+                        class="bg-main-700 w-full h-8 ring-md focus:ring-2! focus:ring-main-50/25 px-4 rounded-md leading-none outline-none"
                         :class="{
                             'ring-danger-bg!': errors[name],
                             'opacity-50': isLoading,
@@ -54,9 +54,12 @@ defineProps<{
             <ButtonPrimary 
                 type="submit" 
                 :disabled="isLoading">
-                <Icon v-if="!isLoading" :name="submitBtn.icon" />
-                <LoadingIcon v-else />
-                {{ submitBtn.label }}
+                <LoadingSwap :is-loading="isLoading">
+                    <div class="inline-flex items-center gap-2">
+                        <Icon :name="submitBtn.icon" />
+                        {{ submitBtn.label }}
+                    </div>
+                </LoadingSwap>
             </ButtonPrimary>
         </div>
     </form>
