@@ -103,14 +103,15 @@ function onSelectOrg(org: Organization) {
                             v-for="organization in organizations.all"
                             bg-level="700"
                             class="inline-flex justify-between items-center px-2! text-sm"
-                            exact-active-class="group active"
+                            exact-active-class=""
                             :key="organization.id"
                             :to="{ name: 'dashboard-orgSlug', params: { orgSlug: organization.slug } }"
                             @click="onSelectOrg(organization)">
                             <span>{{ organization.name }}</span>
                             <Icon 
+                                v-if="organization.name === currentOrg"
                                 name="hugeicons:tick-02" 
-                                class="text-txt-secondary hidden group-[.active]:block" />
+                                class="text-txt-secondary" />
                         </ButtonTertiary>
                     </template>
                 </div>
