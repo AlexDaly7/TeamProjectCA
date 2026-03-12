@@ -3,7 +3,7 @@ const auth = useAuth();
 </script>
 
 <template>
-    <div class="flex flex-col gap-8 max-w-full md:max-w-3xl w-full mx-auto mt-8">
+    <div class="flex flex-col gap-8 h-full max-w-full md:max-w-3xl w-full mx-auto mt-8">
         <div v-if="!auth.user.value">
             Loading profile...
         </div>
@@ -23,32 +23,34 @@ const auth = useAuth();
                 class="inline-flex items-center justify-center gap-2"
                 :to="{ name: 'dashboard-account-profile' }">
                 <Icon name="hugeicons:user" />
-                Profile
+                <span class="hidden md:block">Profile</span>
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
                 :to="{ name: 'dashboard-account-security' }">
                 <Icon name="hugeicons:shield-01" />
-                Security
+                <span class="hidden md:block">Security</span>
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
-                :to="{ name: 'dashboard-account-session' }">
+                :to="{ name: 'dashboard-account-sessions' }">
                 <Icon name="hugeicons:key-01" />
-                Session
+                <span class="hidden md:block">Sessions</span>
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
                 :to="{ name: 'dashboard-account-accounts' }">
                 <Icon name="hugeicons:link-01" />
-                Accounts
+                <span class="hidden md:block">Accounts</span>
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
                 :to="{ name: 'dashboard-account-danger' }">
                 <Icon name="hugeicons:alert-01" />
-                Danger
+                <span class="hidden md:block">Danger</span>
             </ButtonTertiary>
         </div>
+
+        <slot />
     </div>
 </template>

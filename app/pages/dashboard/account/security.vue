@@ -5,7 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-    <div>
-        <AccountNav />
-    </div>
+    <AccountPageWrapper>
+        
+    </AccountPageWrapper>
 </template>
