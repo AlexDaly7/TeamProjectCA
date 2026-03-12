@@ -19,7 +19,8 @@ const isOpen = defineModel('isOpen', { default: false });
         <PopoverPortal>
             <PopoverContent 
                 class="bg-main-700 rounded-lg ring-md"
-                :side-offset="5">
+                :side-offset="5"
+                :collision-padding="5">
                 <slot name="content">
                     <span>placeholder popover content</span>
                 </slot>

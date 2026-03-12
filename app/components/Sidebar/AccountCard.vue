@@ -42,7 +42,7 @@ async function signOut() {
         </template>
 
         <template #content>
-            <div class="w-68">
+            <div class="min-w-68">
                 <div class="p-2">
                     <ButtonTertiary
                         bg-level="700"
