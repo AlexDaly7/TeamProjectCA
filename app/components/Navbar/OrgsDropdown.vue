@@ -65,7 +65,7 @@ watch(isOpen, (newValue) => {
 
 const activeOrg = $authClient.useActiveOrganization();
 
-const currentOrg = computed(() => activeOrg.value.data?.name ?? organizations.value?.active.name ?? 'Select an org');
+const currentOrg = computed(() => activeOrg.value.data?.name ?? organizations.value?.active?.name ?? 'Select an org');
 
 function onSelectOrg(org: Organization) {
     $authClient.organization.setActive({ organizationSlug: org.slug });
@@ -80,15 +80,15 @@ function onSelectOrg(org: Organization) {
             <div class="w-full p-2 rounded-lg inline-flex gap-2 items-center cursor-pointer select-none
                 hover:bg-main-700 transition-all duration-75"
                 :class="{ 'bg-main-700! ring-md': popoverOpen }">
-                <template v-if="loading || !organizations">
+                <div v-if="loading || !organizations">
                     Loading...
-                </template>
-                <template v-else>
-                    <div class="w-full font-bold inline-flex justify-between items-center">
-                        <span class="text-ellipsis overflow-hidden line-clamp-1">{{ currentOrg }}</span>
-                        <Icon name="hugeicons:arrow-up-down" />
-                    </div>
-                </template>
+                </div>
+                <div v-else class="w-full font-bold inline-flex justify-between items-center">
+                    <span class="text-ellipsis overflow-hidden line-clamp-1">
+                        {{ currentOrg }}
+                    </span>
+                    <Icon name="hugeicons:arrow-up-down" />
+                </div>
             </div>
         </template>
 
