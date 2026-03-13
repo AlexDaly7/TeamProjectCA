@@ -3,6 +3,7 @@ import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
 import { organization } from './auth';
+import { tasks } from './tasks';
 
 export const projects = pgTable("projects", {
     id: serial("id").primaryKey(),
@@ -20,11 +21,12 @@ export const projects = pgTable("projects", {
         .notNull(),
 });
 
-export const projectsRelations = relations(projects, ({ one }) => ({
+export const projectsRelations = relations(projects, ({ one, many }) => ({
     organization: one(organization, {
         fields: [ projects.organizationId ],
         references: [ organization.id ],
     }),
+    tasks: many(tasks),
 }));
 
 

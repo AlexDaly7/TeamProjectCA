@@ -46,6 +46,8 @@ export async function getTasks(
   }
 }
 
+export type TasksWithDepth = Awaited<ReturnType<typeof getTasks>>;
+
 export async function createTask(values: InsertTaskSchema) {
     return await db
         .insert(tasks)

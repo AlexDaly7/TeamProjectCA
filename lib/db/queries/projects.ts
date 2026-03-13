@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import db from '../../db';
 import { projects } from '../schema';
 
@@ -57,4 +57,13 @@ export async function getUserProject(userId: string, projectId: number) {
     } else {
         return null;
     }
+}
+
+export async function getProjectInOrg(projectId: number, organizationId: string) {
+    return await db.query.projects.findFirst({
+        where: and(
+            eq(projects.id, projectId),
+            eq(projects.organizationId, organizationId),
+        ),
+    });
 }

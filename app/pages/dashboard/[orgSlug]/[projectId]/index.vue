@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { DateRange, DateValue } from "reka-ui";
-import { fromDate, getLocalTimeZone, toCalendarDate } from '@internationalized/date'
+import type { DateRange } from "reka-ui";
 import {
     Timeline,
     type TimelineGroup,
@@ -8,22 +7,20 @@ import {
     type TimelineMarker,
 } from "vue-timeline-chart";
 import "vue-timeline-chart/style.css";
+
 import {
-    tasks,
     type InsertTaskSchema,
     type ModifyTaskSchema,
     type DeleteTaskSchema,
 } from "~~/lib/db/schema";
-import Pusher from "pusher-js";
 import type { ApiResponse } from "~/composables/apiResponse";
-import { ifError } from "node:assert";
 
 definePageMeta({
     sidebarType: "project",
 });
 
-const { $csrfFetch } = useNuxtApp();
-
+const { $csrfFetch} = useNuxtApp();
+const { subscribeToProject, updateChannel } = usePusher();
 const route = useRoute();
 const projectId = computed(() => route.params.projectId);
 
@@ -32,7 +29,7 @@ const {
     pending: projectInfoPending,
     error: projectInfoError,
 } = useFetch(() => `/api/project/${projectId.value}`, { method: "GET" });
-console.log(projectId.value);
+
 const {
     data: tasksInfo,
     pending: tasksPending,
@@ -59,29 +56,26 @@ const items = computed<TimelineItemWithData[]>(() => {
 });
 
 // TEST
-
 // Pusher
-const pusher = new Pusher("e41e7620d6ab296d33aa", {
-    cluster: "eu",
+
+// Sub to pusher channel for active project.
+watch(projectId, () => {
+    const projectIdFromInfo = projectInfo.value?.id;
+    if (!projectIdFromInfo) return;
+
+    subscribeToProject(projectIdFromInfo, (newTasks) => {
+        console.log('Received new tasks from pusher', newTasks);
+        tasksInfo.value = newTasks;
+    });
+}, {
+    immediate: true,
 });
 
-Pusher.logToConsole = true;
+function refreshChannel() {
+    const projectIdFromInfo = projectInfo.value?.id;
+    if (!projectIdFromInfo) return;
 
-if (projectInfo.value) {
-    var channel = pusher.subscribe("project" + projectInfo.value.id);
-    channel.bind("update", taskRefresh);
-}
-
-async function updateChannel() {
-    if (projectInfo.value) {
-        // TODO Change method
-        const result = $csrfFetch(`/api/projects/update/` + projectInfo.value.id, {
-            method: "POST",
-            body: {
-                orgId: projectInfo.value.organizationId,
-            }
-        });
-    }
+    updateChannel(projectIdFromInfo)
 }
 
 // How much time to put on the timeline as padding before the start of the earliest task
@@ -113,31 +107,36 @@ const bounds = computed<{ lower: number; upper: number }>(() => {
 });
 
 const groupsInfo = reactive<TimelineTaskGroup[]>([]);
-tasksInfo?.value?.forEach((task) => {
-    let visible = true;
-    if (task.parentId !== null) visible = false;
-    groupsInfo.push({
-        id: `${task.id}-group`,
-        label: task.title,
-        visible: visible,
-        parentId: task.parentId,
-    });
+watch(tasksInfo, (newTasks) => {
+    if (!newTasks) return;
+
+    const incoming = newTasks.map((task) => {
+        const existing = groupsInfo.find((g) => g.id === `${task.id}-group`);
+
+        return {
+            id: `${task.id}-group`,
+            label: task.title,
+            // Only visible if was visible before or root task
+            visible: existing ? existing.visible : task.parentId === null, 
+            expanded: existing?.expanded ?? false,
+            parentId: task.parentId,
+        };
+    })
+
+    // instead of re-assigning groupsInfo, we use this to simultaneously
+    // remove all items and add in new ones, causing the chart to catch the
+    // update and change accordingly
+    groupsInfo.splice(0, groupsInfo.length, ...incoming);
+}, {
+    immediate: true,
 });
 
 const groups = computed<TimelineGroup[]>(() => {
     if (!tasksInfo.value) return [];
 
-    //return tasksInfo.value
-    //.filter(task => task.parentId==null)
-    //.map((task): TimelineGroup => {
-    //    return {
-    //        id: `${task.id}-group`,
-    //        label: task.title,
-    //    };
-    //});
     return groupsInfo
         .filter(group => group.visible == true)
-        .map((group): TimelineTaskGroup => {
+        .map((group) => {
             return {
                 id: group.id,
                 label: group.label,
@@ -159,7 +158,6 @@ type TimelineItemWithData = TimelineItem & {
 };
 
 function taskSelect({
-    time,
     event,
     item,
 }: {
@@ -215,13 +213,12 @@ async function addTask(subtaskId?: number) {
 
     const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
 
-    if (result.id) {
-        // TODO: fix this not refreshing
-        renderTask(startDate, endDate, taskName.value, result.id);
-    } else {
+    if (!result.id) {
         alert("Failed to add task");
+        return;
     }
-    updateChannel();
+
+    refreshChannel();
 }
 
 async function modifyTask() {
@@ -263,13 +260,12 @@ async function modifyTask() {
 
     const result = await $csrfFetch(`/api/tasks`, { method: "PUT", body });
 
-    if (result.id) {
-        // TODO: fix this not refreshing
-        renderTask(startDate, endDate, taskName.value, result.id);
-        updateChannel();
-    } else {
+    if (!result.id) {
         alert("Failed to modify task");
-    }
+        return;
+    } 
+    
+    refreshChannel();
 }
 
 async function deleteTask() {
@@ -282,52 +278,12 @@ async function deleteTask() {
 
     const result = await $csrfFetch(`/api/tasks`, { method: "DELETE", body });
 
-    if (result.id) {
-        taskRefresh();
-        updateChannel();
-        groupsInfo.splice(groupsInfo.findIndex((group)=> group.id === (taskId+"-group")), 1);
-    } else {
+    if (!result.id) {
         alert("Failed to delete task");
+        return;
     }
-}
 
-async function renderTask(
-    startTime: Date,
-    endTime: Date,
-    groupName: string,
-    taskId: number,
-) {
-    await taskRefresh();
-    console.log("Rendering Task: "+groupName);
-    const task = tasksInfo.value?.find(task=>task.id===taskId);
-    const group = groupsInfo.find(group=>group.id===(taskId+"-group"));
-    if(!task) {console.log("no Task"); return;}
-    if(!group || task.parentId) {
-        console.log("Adding Group");
-        groupsInfo.push({
-            id: taskId.toString()+"-group",
-            label: groupName,
-            visible: true,
-            parentId: task.parentId,
-        });
-    } else {
-        if(!group || !group.label) return;
-        group.id = taskId+"-group";
-        group.label = groupName;
-    }
-    console.log(groupsInfo);
-    if(task?.parentId) {
-        const parent = groupsInfo.find(group=>group.id===(task.parentId+"-group"));
-        console.log("renderSubTask in renderTask");
-        if(!parent?.expanded) {
-            const parentParent = groupsInfo.find(group=>group.id===parent?.id);
-            renderSubTask(parentParent?.label);
-        } else {
-            renderSubTask(parent.label);
-        }
-        
-    }
-    
+    refreshChannel();
 }
 
 function renderSubTask(taskTitle: string | undefined) {
