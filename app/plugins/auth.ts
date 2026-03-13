@@ -10,11 +10,13 @@ const relativeFetch = (<T>(url: string, opts?: UseFetchOptions<T>) => {
     return useFetch(url, opts);
 });
 
+
 export default defineNuxtPlugin(async () => {
     const { csrf } = useCsrf();
+    const config = useRuntimeConfig();
 
     const authClient = createAuthClient({
-        baseURL: 'http://localhost:3000/api/auth',
+        baseURL: config.public.betterAuthBaseUrl,
         fetchOptions: {
             headers: {
                 'csrf-token': csrf,

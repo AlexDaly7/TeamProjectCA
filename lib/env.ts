@@ -27,6 +27,7 @@ const EnvSchema = z.object({
 
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.string(),
+    NUXT_PUBLIC_BETTER_AUTH_BASE_URL: z.string(),
 
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),

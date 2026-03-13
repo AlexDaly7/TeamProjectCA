@@ -20,5 +20,11 @@ export default defineNuxtConfig({
         head:{
             link: [{rel: 'icon', type: 'image/x-icon', href: '/Ó.ico'}]
         }
+    },
+
+    runtimeConfig: {
+        public: {
+            betterAuthBaseUrl: '' // Overriden in envs
+        }
     }
 });
