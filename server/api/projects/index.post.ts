@@ -27,7 +27,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         
         const createdProjectId = await createProject(repoStatus.id, repoStatus.name, repoStatus.owner, bodyData.title, bodyData.organizationId);
 
-        return { id: createdProjectId };
+        return { id: createdProjectId?.id };
     } catch (error) {
         if (error instanceof Error) {
             console.error(error);

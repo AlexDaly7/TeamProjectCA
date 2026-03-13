@@ -30,7 +30,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const tasks = await getTasks(project.id);
 
     try {
-        console.log(projectId);
         await pusher.trigger(`project-${projectId}`, "project-updated", tasks);
         // Success, no response body
         setResponseStatus(event, 204);

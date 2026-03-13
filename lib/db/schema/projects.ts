@@ -48,8 +48,13 @@ export const ClientInsertProject = createInsertSchema(projects).omit({
     createdAt: true,
     updatedAt: true,
     repoId: true,
+    repoName: true,
+    repoOwner: true,
 }).extend({
     repo: z.string(),
 });
-
 export type ClientInsertProjectSchema = z.infer<typeof ClientInsertProject>;
+
+// The actual form on the client
+export const ClientInsertProjectForm = ClientInsertProject.omit({ organizationId: true });
+export type ClientInsertProjectFormSchema = z.infer<typeof ClientInsertProjectForm>;

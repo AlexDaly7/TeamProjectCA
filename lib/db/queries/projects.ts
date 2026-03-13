@@ -9,10 +9,12 @@ export async function createProject(
     title: string,
     organizationId: string
 ) {
-    return await db
+    const [ project ] = await db
         .insert(projects)
         .values({ repoId, title, organizationId, repoName, repoOwner })
-        .returning({ id: projects.id })
+        .returning({ id: projects.id });
+
+    return project;
 }
 
 export async function getProject(projectId: number) {
