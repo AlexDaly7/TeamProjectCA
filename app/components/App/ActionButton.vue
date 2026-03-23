@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { ActionButtonResult } from '~/utils/types/actionButton';
+
 const props = withDefaults(defineProps<{
-    action: () => Promise<{ error: boolean, message?: string }>,
+    action: (() => Promise<ActionButtonResult>) | Promise<ActionButtonResult>,
     title?: string,
     description?: string,
     requireAreYouSure?: boolean,
@@ -11,6 +13,10 @@ const props = withDefaults(defineProps<{
     requireAreYouSure: false,
     variant: 'secondary',
 });
+
+const emit = defineEmits<{
+    onSuccess: [],
+}>();
 
 const variantMap: Record<
     'primary' | 'secondary' | 'tertiary' | 'danger', 
@@ -28,12 +34,19 @@ const dialogOpen = ref(false);
 async function performAction() {
     isLoading.value = true;
     try {
-        const data = await props.action();
+        let data: ActionButtonResult;
+        if (typeof props.action === 'function') {
+            data = await props.action();
+        } else {
+            data = await props.action;
+        }
+
         if (data.error) {
             // todo: replace with toast or in-ui error box
             alert(`Error: ${data.message ?? 'Unknown error'}`);
         } else {
             // todo: toast for success maybe?
+            emit('onSuccess');
         }
     } finally {
         isLoading.value = false;

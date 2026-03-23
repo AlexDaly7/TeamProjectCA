@@ -4,6 +4,7 @@ import type { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from 
 const props = withDefaults(defineProps<{
     to?: string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric | undefined;
     type?: 'button' | 'reset' | 'submit';
+    disabled?: boolean,
 }>(), {
     to: undefined,
     type: 'button',
@@ -20,6 +21,7 @@ const tag = computed(() => {
         :is="tag"
         :to="to || undefined"
         :type="!to ? type : undefined"
+        :disabled="disabled"
         class="
             bg-txt-primary text-main-900 ring-md p-2 px-4 rounded-md cursor-pointer
             not-disabled:hover:bg-main-200 not-disabled:hover:scale-102

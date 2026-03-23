@@ -80,7 +80,7 @@ function selectedRepoChanged(value: string) {
             :key="project.id"
             class="bg-main-800 flex flex-col gap-2 max-h-40 p-4 ring-md rounded-lg hover:bg-main-700 cursor-pointer transition-all duration-75"
             :to="{ name: 'dashboard-orgSlug-projectId', params: { orgSlug, projectId: project.id }  }">
-            <span class="text-lg font-semibold">{{ project.title }}</span>
+            <span class="text-lg font-bold">{{ project.title }}</span>
         </NuxtLink>
 
         <AppDialog
