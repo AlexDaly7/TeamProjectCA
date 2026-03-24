@@ -220,10 +220,16 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     return { error: false };
 }
 
+function testIssue() {
+    
+}
 </script>
 
 <template>
     <div class="mb-4">
+        <ButtonPrimary @click="testIssue">
+
+        </ButtonPrimary>
         <div v-if="projectInfoPending">
             <span>Selected project:</span>
             <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
