@@ -29,7 +29,7 @@ const {
                 <div class="ring-md p-4 rounded-lg flex flex-col gap-2 relative">
                     <div class="inline-flex items-center gap-2">
                         <Icon name="hugeicons:link-01" />
-                        <span class="text-lg font-semibold">GitHub Integration</span>
+                        <span class="text-lg font-bold">GitHub Integration</span>
                         <ButtonPrimary
                             class="ml-auto"
                             :to="data.manageUrl"
