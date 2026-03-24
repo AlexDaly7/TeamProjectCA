@@ -1,5 +1,4 @@
 import { Octokit } from "octokit";
-import env from "~~/lib/env";
 
 export async function verifyGitHubRepoAccess(ghToken: string, fullRepo: string): Promise<{ valid: false } | { valid: true, id: number, name: string, owner: string }> {
     const [ owner, repo ] = fullRepo.split('/');
@@ -17,37 +16,4 @@ export async function verifyGitHubRepoAccess(ghToken: string, fullRepo: string):
         name: repo,
         owner,
     };
-}
-
-const serverOctokit = new Octokit({ auth: env.GITHUB_CLIENT_SECRET });
-
-export async function canCreateIssue(owner: string, repo: string) {
-    try {
-        console.log(`Checking if we can create issues in repo ${owner}/${repo}`);
-        
-        const { data } = await serverOctokit.rest.repos.get({ owner, repo });
-
-        const hasIssuesEnabled = data.has_issues;
-        const hasWritePermission = data.permissions?.push || data.permissions?.admin;
-
-        console.dir({
-            hasIssuesEnabled,
-            hasWritePermission,
-            pushPerms: data.permissions?.push,
-            adminPerms: data.permissions?.admin,
-            canCreateIssue: hasIssuesEnabled && hasWritePermission,
-        });
-
-        return hasIssuesEnabled && hasWritePermission;
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error checking if we can create issues in github repo", error);
-        }
-
-        return false;
-    }
-}
-
-export async function getRepoIssues(projectId: number) {
-
 }
