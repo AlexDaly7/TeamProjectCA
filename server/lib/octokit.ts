@@ -3,7 +3,9 @@ import env from "~~/lib/env";
 
 const privateKey = env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, "\n");
 
-export const ghApp = new App({
+const githubApp = new App({
     appId: env.GITHUB_APP_ID,
     privateKey,
 });
+
+export default githubApp;

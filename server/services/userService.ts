@@ -1,4 +1,5 @@
 import { githubService } from ".";
+import githubApp from "../lib/octokit";
 import { userRepository } from "../repositories";
 
 type UserGitHubIntegrationStatus = {
@@ -16,7 +17,7 @@ type UserGitHubIntegrationStatus = {
 
 export async function getGitHubIntegrationsStatus(userId: string): Promise<UserGitHubIntegrationStatus> {
     // Get the app integration's management URL
-    const installationUrl = await ghApp.getInstallationUrl()
+    const installationUrl = await githubApp.getInstallationUrl()
 
     // Get their GitHub OAuth info from the DB
     const userGhAccount = await userRepository.getGithubAccount(userId);
@@ -30,7 +31,7 @@ export async function getGitHubIntegrationsStatus(userId: string): Promise<UserG
 
     // Get the morchlar GitHub app's installation for that user
     const { data, error } = 
-        await tryCatch(ghApp.octokit.rest.apps.getUserInstallation({ username: ghUserInfo.login }));
+        await tryCatch(githubApp.octokit.rest.apps.getUserInstallation({ username: ghUserInfo.login }));
 
     if (error) {
         console.log('Error getting GitHub app integration in userService', error);
@@ -38,7 +39,7 @@ export async function getGitHubIntegrationsStatus(userId: string): Promise<UserG
     }
 
     let allRepos: { owner: string, repo: string, image: string }[] = [];
-    await ghApp.eachRepository({ installationId: data.data.id }, ({ repository }) => {
+    await githubApp.eachRepository({ installationId: data.data.id }, ({ repository }) => {
         allRepos.push({
             owner: repository.owner.login,
             repo: repository.name,

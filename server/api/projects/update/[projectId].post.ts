@@ -1,4 +1,4 @@
-import pusher from '~~/lib/pusher';
+import pusher from '~~/server/lib/pusher';
 import { auth } from '~~/lib/auth';
 import { getProjectInOrg } from '~~/lib/db/queries/projects';
 import { getTasks } from '~~/lib/db/queries/tasks';

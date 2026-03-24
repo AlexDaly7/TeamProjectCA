@@ -6,7 +6,7 @@ import { ac, owner, admin, member } from './auth-permissions';
 import * as schema from './db/schema';
 import db from "./db";
 import env from "./env";
-import { resend } from "./resend";
+import resend from "../server/lib/resend";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
