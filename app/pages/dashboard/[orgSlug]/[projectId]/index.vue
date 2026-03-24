@@ -17,13 +17,13 @@ const {
     data: projectInfo,
     pending: projectInfoPending,
     error: projectInfoError,
-} = useFetch(() => `/api/project/${projectId.value}`, { method: "GET" });
+} = useFetch(() => `/api/projects/by-id/${projectId.value}`, { method: "GET" });
 
 const {
     data: tasksInfo,
     pending: tasksPending,
     error: tasksError,
-} = useFetch(() => `/api/task/${projectId.value}`, { method: "GET" });
+} = useFetch(() => `/api/tasks/${projectId.value}`, { method: "GET" });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example

@@ -1,5 +1,5 @@
 export const useGitHubAppStatus = () => {
-    const { data, pending, error, refresh } = useFetch('/api/github/app/status');
+    const { data, pending, error, refresh } = useFetch('/api/github/status');
 
     return {
         data,

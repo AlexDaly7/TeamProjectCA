@@ -8,12 +8,12 @@ const props = withDefaults(defineProps<{
     fieldName: 'repo',
 });
 
-const { data, pending, error } = useFetch('/api/github/repos', { method: 'get', lazy: true });
-
-const repos = computed(() => {
-    if (pending.value || error.value || !data.value) return [];
-    return data.value;
-});
+const {
+    data,
+    pending,
+    error,
+    availableRepositories: repos,
+} = useGitHubAppStatus();
 
 const placeholderText = computed(() => {
     if (pending.value) {
@@ -70,17 +70,17 @@ const value = defineModel('repo', {
                                 :key="index"
                                 class="leading-none rounded-md flex items-center h-8 pr-8 pl-6 relative select-none
                                 data-highlighted:outline-none data-highlighted:bg-main-200 data-highlighted:text-main-900"
-                                :value="`${repo.owner}/${repo.name}`">
+                                :value="`${repo.owner}/${repo.repo}`">
                                 <SelectItemIndicator class="absolute left-1 w-6 inline-flex items-center jusify-center">
                                     <Icon name="hugeicons:tick-02" />
                                 </SelectItemIndicator>
                                 <SelectItemText class="inline-flex">
                                     <img
                                         class="size-4 rounded-full mr-2"
-                                        :src="repo.icon"
+                                        :src="repo.image"
                                         referrerpolicy="no-referrer" />
                                     <span>
-                                        {{ repo.owner }}/{{ repo.name }}
+                                        {{ repo.owner }}/{{ repo.repo }}
                                     </span>
                                 </SelectItemText>
                             </SelectItem>
