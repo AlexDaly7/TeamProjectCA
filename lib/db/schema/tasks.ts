@@ -92,6 +92,8 @@ export const ModifyTask = createUpdateSchema(tasks, {
     .omit({
         createdAt: true,
         updatedAt: true,
+        issueId: true,
+        projectId: true,
     });
 
 export const DeleteTask = createUpdateSchema(tasks, {
