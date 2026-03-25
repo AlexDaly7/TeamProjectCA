@@ -21,7 +21,7 @@ const tag = computed(() => {
         :to="to || undefined"
         :type="!to ? type : undefined"
         class="
-            bg-main-700 text-txt-primary ring-md py-2 px-4 rounded-md cursor-pointer
+            bg-main-700 text-txt-primary ring-md py-2 px-4 rounded-md cursor-pointer select-none
             not-disabled:hover:bg-main-600 not-disabled:hover:scale-102
             not-disabled:active:bg-main-800 not-disabled:active:scale-98
             disabled:opacity-60 disabled:cursor-default

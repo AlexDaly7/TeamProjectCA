@@ -29,7 +29,9 @@
 }
 
 body {
-    @apply bg-main-900 text-txt-primary;
+    color: var(--color-txt-primary);
+    background-color: var(--color-main-900);
+    font-family: 'Geist', sans-serif;
 }
 
 @layer components {
