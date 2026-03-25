@@ -106,50 +106,6 @@ const taskDesc = ref<string | null>(null);
 // TODO: type this
 const dateValue = ref<DateRange | undefined>();
 
-async function addTask(subtaskId?: number) {
-    // TODO: better validation
-    if (
-        !taskName.value ||
-        !taskDesc.value ||
-        !dateValue.value ||
-        !projectId.value
-    )
-        return;
-    if (isNaN(Number(projectId.value))) return;
-
-    if (!dateValue.value.start || !dateValue.value.end) return;
-
-    const startDate = new Date(
-        dateValue.value.start.year,
-        dateValue.value.start.month - 1,
-        dateValue.value.start.day,
-    );
-
-    const endDate = new Date(
-        dateValue.value.end.year,
-        dateValue.value.end.month - 1,
-        dateValue.value.end.day,
-    );
-
-    const body: ClientInsertTaskSchema = {
-        title: taskName.value,
-        startTime: startDate,
-        endTime: endDate,
-        description: taskDesc.value,
-        parentId: subtaskId,
-    };
-
-    try {
-        await $csrfFetch(`/api/projects/${projectId.value}/tasks`, { method: "POST", body });
-    } catch (error) {
-        console.error('error adding task:', error);
-        alert("Failed to add task");
-        return;
-    }
-
-    refreshChannel();
-}
-
 async function modifyTask() {
     //copy of addTask could probably be turned into one function
     // TODO: better validation
@@ -232,11 +188,20 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
 
     <div class="ring-md touch-none">
         <AppGanttFallback
-            v-if="projectInfoPending || projectInfoError">
+            v-if="projectInfoPending || projectInfoError"
+            class="text-txt-secondary text-sm animate-pulse">
             {{ projectInfoPending
                 ? 'Loading chart...' 
                 : 'There was an error loading the timeline. Please try again' }}
         </AppGanttFallback>
+
+        <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
+            <span>Looks like there's no added tasks.</span>
+            <ButtonPrimary>
+                New Task
+            </ButtonPrimary>
+        </AppGanttFallback>
+
         <AppGantt 
             v-else
             :items
@@ -245,25 +210,12 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>
-    <AppDialog 
-        title="Add a new task" 
-        description="Select a title, description, and date range.">
+    <ProjectAddDialog @on-added="refreshChannel">
         <template #trigger>
-            <ButtonSecondary> New Task </ButtonSecondary>
+            New Task
         </template>
-        <template #body>
-            <form 
-                class="flex flex-col gap-2" 
-                @submit.prevent="addTask()">
-                <AppFormInput v-model="taskName" label="Title" name="title" placeholder="My Task" />
-                <AppFormInput v-model="taskDesc" label="Description" name="description" placeholder="We need to..." />
-                <DatePicker date-picker-label="Timespan" v-model="dateValue" />
-                <div class="flex justify-end mt-4">
-                    <ButtonPrimary type="submit"> Create Task </ButtonPrimary>
-                </div>
-            </form>
-        </template>
-    </AppDialog>
+    </ProjectAddDialog>
+
     <ProjectDrawer v-model:isOpen="taskSelected" :selected-task="selectedTask">
         <AppDialog title="Modify a task" description="Select a title, description, and date range.">
             <template #trigger>
@@ -293,24 +245,22 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
             </template>
         </AppActionButton>
 
-        <div>
-            <h2 class="mt-4">Add a new task:</h2>
-            <AppDialog title="Add a new sub-task" description="Select a title, description, and date range.">
+        <div v-if="selectedTask?.id">
+            <h2 class="mt-4">Add a new sub-task:</h2>
+            <ProjectAddDialog 
+                popup-title="Add a new sub-task"
+                :parent-id="Number(selectedTask.id)"
+                @on-added="refreshChannel">
                 <template #trigger>
-                    <ButtonSecondary> New Sub-Task </ButtonSecondary>
+                    New Sub-Task
                 </template>
-                <template #body>
-                    <form class="flex flex-col gap-2" @submit.prevent="addTask(selectedTask?.data.id)">
-                        <AppFormInput v-model="taskName" label="Title" name="title" placeholder="My Task" />
-                        <AppFormInput v-model="taskDesc" label="Description" name="description"
-                            placeholder="We need to..." />
-                        <DatePicker date-picker-label="Timespan" v-model="dateValue" />
-                        <div class="flex justify-end mt-4">
-                            <ButtonPrimary type="submit"> Create Sub-Task </ButtonPrimary>
-                        </div>
-                    </form>
+                <template #submit>
+                    Create sub-task
                 </template>
-            </AppDialog>
+            </ProjectAddDialog>
+        </div>
+        <div v-else>
+            Subtask menu loading...
         </div>
     </ProjectDrawer>
 </template>
