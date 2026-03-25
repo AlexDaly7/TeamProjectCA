@@ -1,12 +1,10 @@
-import { deleteTask } from "~~/lib/db/queries/tasks";
-import { DeleteTask } from "~~/lib/db/schema";
-import { githubService, projectService, taskService } from "~~/server/services";
-import { validateBody } from "~~/server/utils/validation";
+import { githubService, taskService } from "~~/server/services";
 
 export default defineAuthenticatedEventHandler(async (event) => {
-    const body = await validateBody(event, DeleteTask);
+    const taskId = validateRouterParam(event, 'id');
 
-    const taskWithProject = await taskService.getTaskWithProject(body.id)
+    // Get task from DB
+    const taskWithProject = await taskService.getTaskWithProject(taskId)
     if (!taskWithProject) throw createError({
         status: 404,
         statusText: 'Task not found',
@@ -14,12 +12,14 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const { organizationId, repoOwner, repoName } = taskWithProject.project;
 
+    // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
         task: ['delete']
     });
 
+    // Delete on GitHub
     try {
-        await githubService.deleteIssue(repoOwner, repoName, Number(taskWithProject.issueId));
+        await githubService.deleteIssue(repoOwner, repoName, taskWithProject.ghIssueNodeId);
     } catch (error) {
         console.error('Error deleting issue:', error);
         throw createError({
@@ -28,12 +28,15 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const result = await deleteTask(body);
-    if (!result[0] || !result[0].id) {
+    // Delete in DB
+    const result = await taskService.deleteTask(taskId);;
+    if (result.length === 0) {
         throw createError({
-            statusCode: 400,
-            statusMessage: "Bad Request",
+            statusCode: 500,
+            statusMessage: "Internal Server Error",
             message: "There was a problem while deleting the task.",
         });
     }
+
+    setResponseStatus(event, 204);
 });

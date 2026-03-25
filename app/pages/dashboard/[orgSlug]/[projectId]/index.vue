@@ -2,7 +2,7 @@
 import type { DateRange } from "reka-ui";
 
 import type { TimelineItemWithData, TimelineTaskGroup } from "~/utils/types/timeline";
-import type { ModifyTaskSchema, DeleteTaskSchema, ClientInsertTaskSchema } from "~~/lib/db/schema";
+import type { ModifyTaskSchema, ClientInsertTaskSchema } from "~~/lib/db/schema";
 
 definePageMeta({
     sidebarType: "project",
@@ -17,21 +17,15 @@ const {
     data: projectInfo,
     pending: projectInfoPending,
     error: projectInfoError,
-} = useFetch(() => `/api/projects/by-id/${projectId.value}`, { method: "GET" });
-
-const {
-    data: tasksInfo,
-    pending: tasksPending,
-    error: tasksError,
-} = useFetch(() => `/api/tasks/${projectId.value}`, { method: "GET" });
+} = useFetch(() => `/api/projects/${projectId.value}`, { method: "GET" });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
 
 const items = computed<TimelineItemWithData[]>(() => {
-    if (!tasksInfo.value) return [];
+    if (!projectInfo.value) return [];
 
-    return tasksInfo.value.map((task) => {
+    return projectInfo.value.tasks.map((task) => {
         return {
             id: task.id.toString(),
             group: `${task.id}-group`,
@@ -53,7 +47,9 @@ watch(projectId, () => {
 
     subscribeToProject(projectIdFromInfo, (newTasks) => {
         console.log('Received new tasks from pusher', newTasks);
-        tasksInfo.value = newTasks;
+        if (!projectInfo.value) return;
+
+        projectInfo.value.tasks = newTasks;
     });
 }, {
     immediate: true,
@@ -68,7 +64,7 @@ function refreshChannel() {
 
 // Groups
 const groupsInfo = reactive<TimelineTaskGroup[]>([]);
-watch(tasksInfo, (newTasks) => {
+watch(() => projectInfo.value?.tasks, (newTasks) => {
     if (!newTasks) return;
 
     const incoming = newTasks.map<TimelineTaskGroup>((task) => {
@@ -137,16 +133,16 @@ async function addTask(subtaskId?: number) {
 
     const body: ClientInsertTaskSchema = {
         title: taskName.value,
-        projectId: Number(projectId.value.toString()),
         startTime: startDate,
         endTime: endDate,
         description: taskDesc.value,
         parentId: subtaskId,
     };
 
-    const result = await $csrfFetch(`/api/tasks`, { method: "POST", body });
-
-    if (!result.id) {
+    try {
+        await $csrfFetch(`/api/projects/${projectId.value}/tasks`, { method: "POST", body });
+    } catch (error) {
+        console.error('error adding task:', error);
         alert("Failed to add task");
         return;
     }
@@ -184,19 +180,18 @@ async function modifyTask() {
 
     const body: ModifyTaskSchema = {
         title: taskName.value,
-        projectId: Number(projectId.value.toString()),
-        id: selectedTask.value.data.id,
         startTime: startDate,
         endTime: endDate,
         description: taskDesc.value,
     };
 
-    const result = await $csrfFetch(`/api/tasks`, { method: "PUT", body });
-
-    if (!result.id) {
+    try {
+        await $csrfFetch(`/api/tasks/${selectedTask.value.data.id}`, { method: "PUT", body });
+    } catch (error) {
+        console.error('failed to modify task:', error);
         alert("Failed to modify task");
         return;
-    } 
+    }
     
     refreshChannel();
 }
@@ -205,31 +200,21 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     if (!selectedTask.value) return { error: true, message: 'No selected task' };
     const taskId = selectedTask.value.data.id;
 
-    const body: DeleteTaskSchema = {
-        id: taskId,
-    };
-
-    const result = await $csrfFetch(`/api/tasks`, { method: "DELETE", body });
-
-    if (!result.id) {
-        console.error(result)
-        return { error: true, message: 'Unknown error deleting task. Please try again later.' }
+    try {
+        await $csrfFetch(`/api/tasks/${taskId}`, { method: "DELETE" });
+    } catch (error) {
+        console.error('failed to delete task:', error);
+        alert("Failed to delete task");
+        return { error: true, message: String(error ?? 'Unknown error deleting task.') };
     }
 
     refreshChannel();
     return { error: false };
 }
-
-function testIssue() {
-    
-}
 </script>
 
 <template>
     <div class="mb-4">
-        <ButtonPrimary @click="testIssue">
-
-        </ButtonPrimary>
         <div v-if="projectInfoPending">
             <span>Selected project:</span>
             <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
@@ -247,8 +232,8 @@ function testIssue() {
 
     <div class="ring-md touch-none">
         <AppGanttFallback
-            v-if="tasksPending || tasksError">
-            {{ tasksPending 
+            v-if="projectInfoPending || projectInfoError">
+            {{ projectInfoPending
                 ? 'Loading chart...' 
                 : 'There was an error loading the timeline. Please try again' }}
         </AppGanttFallback>

@@ -25,7 +25,7 @@ export const tasks = pgTable("tasks", {
         onDelete: "cascade",
     }),
 
-    issueId: text('issue_id').notNull(),
+    ghIssueNodeId: text('gh_issue_node_id').notNull(),
 
     startTime: timestamp("start_time").notNull(),
     endTime: timestamp("end_time").notNull(),
@@ -64,6 +64,7 @@ const preprocessDate = z.preprocess((value) => {
 }, z.date());
 
 
+// Create
 export const InsertTask = createInsertSchema(tasks, {
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
@@ -77,34 +78,30 @@ export type InsertTaskSchema = z.infer<typeof InsertTask>;
 
 
 export const ClientInsertTask = InsertTask.omit({
-    issueId: true,
+    ghIssueNodeId: true,
+    projectId: true,
 });
 
 export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
 
 
+// READ
+export type TasksSchema = typeof tasks.$inferSelect;
+
+// UPDATE
 export const ModifyTask = createUpdateSchema(tasks, {
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
     id: () => z.number(),
 })
-    .required({ id: true })
     .omit({
         createdAt: true,
         updatedAt: true,
-        issueId: true,
+        ghIssueNodeId: true,
         projectId: true,
+        id: true,
     });
-
-export const DeleteTask = createUpdateSchema(tasks, {
-    id: () => z.number(),
-})
-    .required({ id: true })
-    .pick({ id: true });
-
-export type TasksSchema = typeof tasks.$inferSelect;
-
 
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;
 
-export type DeleteTaskSchema = z.infer<typeof DeleteTask>;
+// DELETE doesn't need body

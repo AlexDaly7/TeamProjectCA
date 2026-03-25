@@ -4,15 +4,16 @@ import { validateBody } from "~~/server/utils/validation";
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const body = await validateBody(event, ModifyTask);
+    const taskId = validateRouterParam(event, 'id');
 
-    const result = await modifyTask(body);
-    if (!result[0] || !result[0].id) {
+    const result = await modifyTask(taskId, body);
+    if (result.length === 0) {
         throw createError({
-            statusCode: 400,
-            statusMessage: "Bad Request",
-            message: "There was a problem while modifying the task.",
+            statusCode: 404,
+            statusMessage: "Not Found",
+            message: "Task to update not found.",
         });
     }
 
-    return { id: result[0].id };
+    setResponseStatus(event, 204)
 });

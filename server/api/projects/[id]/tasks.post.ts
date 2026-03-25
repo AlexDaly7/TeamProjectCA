@@ -5,18 +5,22 @@ import { validateBody } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const body = await validateBody(event, ClientInsertTask);
+    const projectId = validateRouterParam(event, 'id');
 
-    const project = await projectService.getProjectById(body.projectId);
+    // Get project from router param
+    const project = await projectService.getProjectById(projectId);
     if (!project) throw createError({
         status: 404,
         statusText: 'Project not found',
     });
 
+    // Ensure user has permission in project's org
     await ensureOrganizationPermission(event, project.organizationId, {
         task: ['create']
     });
 
-    const createdIssueId = await githubService.createIssue(
+    // Create the issue on GitHub
+    const createdIssueNodeid = await githubService.createIssue(
         project.repoOwner,
         project.repoName,
         body.title,
@@ -25,9 +29,11 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const insertionBody: InsertTaskSchema = {
         ...body,
-        issueId: String(createdIssueId),
+        ghIssueNodeId: createdIssueNodeid,
+        projectId,
     };
 
+    // Insert the task into DB
     const result = await createTask(insertionBody);
     if (!result[0] || !result[0].id) {
         throw createError({
@@ -37,5 +43,5 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    return { id: result[0].id };
+    setResponseStatus(event, 204);
 });
