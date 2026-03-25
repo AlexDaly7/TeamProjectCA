@@ -17,9 +17,9 @@ const {
     currentProject,
 } = useCurrentProject();
 
-const route = useRoute();
+const { orgSlug } = useCurrentOrg()
 
-const orgSlug = computed(() => route.params.orgSlug);
+const route = useRoute();
 
 const sidebarType = computed(() => route.meta.sidebarType);
 
@@ -47,7 +47,7 @@ const sidebarType = computed(() => route.meta.sidebarType);
             <nav 
                 class="flex flex-row gap-2 p-2 min-h-14
                 bg-main-800 border-b border-main-50/10">
-                <AppPopover>
+                <AppPopover v-if="orgSlug">
                     <template #trigger>
                         <ButtonTertiary
                             class="inline-flex gap-2 items-center text-sm font-medium"
