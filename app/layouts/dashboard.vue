@@ -14,21 +14,26 @@ const sidebarType = computed(() => route.meta.sidebarType);
 
 <template>
     <div class="w-full min-h-dvh max-h-dvh overflow-hidden flex flex-row">
-        <aside class="min-w-3xs max-w-3xs bg-main-800 border-r border-main-50/10 p-2 flex flex-col justify-between">
-            <div class="flex flex-col gap-2">
+        <aside class="min-w-3xs max-w-3xs bg-main-800 border-r border-main-50/10 flex flex-col">
+            <div class="p-2 border-b border-main-50/10">
                 <NavbarOrgsDropdown />
+            </div>
+            
+            <div class="flex flex-col gap-2 p-2">
                 <UserSidebar v-if="sidebarType === 'user'" />
                 <OrgSidebar v-else-if="sidebarType === 'org'" />
                 <ProjectSidebar v-else-if="sidebarType === 'project'" />
             </div>
 
-            <SidebarAccountCard />
+            <div class="p-2 mt-auto border-t border-main-50/10">
+                <SidebarAccountCard />
+            </div>
         </aside>
 
         <div class="grow flex flex-col min-h-0">
             <nav 
                 class="flex flex-row gap-2 p-2
-                bg-main-800 ring-1 ring-inset ring-main-50/10">
+                bg-main-800 border-b border-main-50/10">
                 <ButtonSecondary
                     v-if="projectId"
                     class="inline-flex items-center gap-2"
