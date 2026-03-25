@@ -19,7 +19,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
         statusMessage: 'No active organization.'
     });
 
-    await ensureUserInOrg(event, userId, activeOrgId);
+    await ensureOrganizationPermission(event, activeOrgId, {
+        project: ['update'],
+    })
 
     const project = await getProjectInOrg(projectId, activeOrgId);
     if (!project) throw createError({

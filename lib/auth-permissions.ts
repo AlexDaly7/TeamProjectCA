@@ -17,12 +17,12 @@ const owner = ac.newRole({
 }); 
 
 const admin = ac.newRole({ 
-    project: ["create", "update"], 
+    project: ["create", "update", "delete"], 
     ...adminAc.statements,
 }); 
 
 const member = ac.newRole({ 
-    project: ['update'], 
+    project: ['create', "update"], 
     ...memberAc.statements,
 }); 
 

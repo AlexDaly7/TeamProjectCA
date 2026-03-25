@@ -1,3 +1,5 @@
+import type { ActionButtonResult } from "~/utils/types/actionButton";
+
 export const useCurrentOrg = () => {
     const route = useRoute();
     // https://nuxt.com/docs/4.x/api/composables/use-fetch#reactive-keys-and-shared-state
@@ -11,6 +13,35 @@ export const useCurrentOrg = () => {
         }
     );
 
+    async function renameProject(project: CurrentOrgProject, newName: string): Promise<ActionButtonResult> {
+        const { $csrfFetch } = useNuxtApp();
+        
+        try {
+            await $csrfFetch(`/api/projects/${project.id}`, { 
+                method: 'PATCH',
+                body: {
+                    title: newName,
+                }
+            });
+            return { error: false }; 
+        } catch (error) {
+            return { error: true, message: 'Error renaming project.' };
+        }
+    }
+
+    async function deleteProject(project: CurrentOrgProject): Promise<ActionButtonResult> {
+        const { $csrfFetch } = useNuxtApp();
+
+        try {
+            await $csrfFetch(`/api/projects/${project.id}`, { 
+                method: 'DELETE',
+            });
+            return { error: false }; 
+        } catch (error) {
+            return { error: true, message: 'Error deleting project.' };
+        }
+    }
+
     return {
         orgSlug,
         orgData: data,
@@ -18,6 +49,10 @@ export const useCurrentOrg = () => {
         projects: computed(() => data.value?.projects ?? []),
         pending,
         error,
-        refresh
+        refresh,
+        renameProject,
+        deleteProject,
     };
 }
+
+export type CurrentOrgProject = NonNullable<ReturnType<typeof useCurrentOrg>['orgData']['value']>['projects'][number];
