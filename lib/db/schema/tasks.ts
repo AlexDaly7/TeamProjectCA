@@ -7,6 +7,7 @@ import {
     timestamp,
     type AnyPgColumn,
     real,
+    bigint,
 } from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
@@ -23,6 +24,8 @@ export const tasks = pgTable("tasks", {
     parentId: integer("parent_id").references((): AnyPgColumn => tasks.id, {
         onDelete: "cascade",
     }),
+
+    issueId: text('issue_id').notNull(),
 
     startTime: timestamp("start_time").notNull(),
     endTime: timestamp("end_time").notNull(),
@@ -60,6 +63,7 @@ const preprocessDate = z.preprocess((value) => {
     return value;
 }, z.date());
 
+
 export const InsertTask = createInsertSchema(tasks, {
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
@@ -68,6 +72,16 @@ export const InsertTask = createInsertSchema(tasks, {
     createdAt: true,
     updatedAt: true,
 });
+
+export type InsertTaskSchema = z.infer<typeof InsertTask>;
+
+
+export const ClientInsertTask = InsertTask.omit({
+    issueId: true,
+});
+
+export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
+
 
 export const ModifyTask = createUpdateSchema(tasks, {
     startTime: () => preprocessDate,
@@ -88,7 +102,6 @@ export const DeleteTask = createUpdateSchema(tasks, {
 
 export type TasksSchema = typeof tasks.$inferSelect;
 
-export type InsertTaskSchema = z.infer<typeof InsertTask>;
 
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;
 

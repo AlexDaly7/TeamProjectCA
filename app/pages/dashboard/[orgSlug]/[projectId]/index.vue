@@ -2,7 +2,7 @@
 import type { DateRange } from "reka-ui";
 
 import type { TimelineItemWithData, TimelineTaskGroup } from "~/utils/types/timeline";
-import type { InsertTaskSchema, ModifyTaskSchema, DeleteTaskSchema } from "~~/lib/db/schema";
+import type { ModifyTaskSchema, DeleteTaskSchema, ClientInsertTaskSchema } from "~~/lib/db/schema";
 
 definePageMeta({
     sidebarType: "project",
@@ -135,7 +135,7 @@ async function addTask(subtaskId?: number) {
         dateValue.value.end.day,
     );
 
-    const body: InsertTaskSchema = {
+    const body: ClientInsertTaskSchema = {
         title: taskName.value,
         projectId: Number(projectId.value.toString()),
         startTime: startDate,
