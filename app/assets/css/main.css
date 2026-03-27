@@ -63,12 +63,22 @@ body {
 }
 
 /*Drawer Transition*/
-.dialog-drawer-enter-active,
-.dialog-drawer-leave-active {
-    transition: transform 0.1s, opacity 0.1s;
+.drawer-fade-enter-active,
+.drawer-fade-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.dialog-drawer-enter-from,
-.dialog-drawer-leave-to {
-    transform: translate(20, 0, 0);
-    opacity: 0;
+
+.drawer-fade-enter-from,
+.drawer-fade-leave-to {
+  opacity: 0;
+}
+
+.drawer-slide-enter-active,
+.drawer-slide-leave-active {
+  transition: right 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drawer-slide-enter-from,
+.drawer-slide-leave-to {
+  right: -24rem;
 }
