@@ -1,2 +1,5 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Disallow: 
+Disallow: /dashboard/
+Disallow: /view-task/
+Disallow: /accept-invitation/

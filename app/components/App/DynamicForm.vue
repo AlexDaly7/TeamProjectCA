@@ -32,19 +32,14 @@ defineProps<{
                     {{ label }}
                 </span>
                 <div class="flex flex-row gap-2">
-                    <Field
+                    <AppInput
                         :as="asType"
                         :name
                         :type
                         :disabled="isLoading"
                         :error="errors[name]"
-                        v-bind="attrs"
-                        class="bg-main-700 w-full h-8 ring-md focus:ring-2! focus:ring-main-50/25 px-4 rounded-md leading-none outline-none"
-                        :class="{
-                            'ring-danger-bg!': errors[name],
-                            'opacity-50': isLoading,
-                        }">
-                    </Field>
+                        v-bind="attrs">
+                    </AppInput>
                 </div>
                 <ErrorMessage :name class="text-sm text-danger-txt" />
             </label>

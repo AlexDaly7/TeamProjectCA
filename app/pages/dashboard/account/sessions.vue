@@ -42,14 +42,14 @@ function revokeOtherSessions() {
                 v-else
                 class="flex flex-col gap-2">
                 <template v-if="currentSession">
-                    <span class="text-xl font-bold">Current Session</span>
+                    <span class="text-xl font-semibold">Current Session</span>
                     <SessionListItem
                         :session="currentSession"
                         :is-current-session="true" />
                 </template>
 
                 <div class="flex flex-row justify-between my-2 items-center">
-                    <span class="text-xl font-bold">Other Active Sessions</span>
+                    <span class="text-xl font-semibold">Other Active Sessions</span>
                     <ButtonDanger @click="revokeOtherSessions">
                         Revoke Other Sessons
                     </ButtonDanger>
