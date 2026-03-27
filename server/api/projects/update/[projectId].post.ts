@@ -28,7 +28,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     });
 
     try {
-        await pusher.trigger(`project-${projectId}`, "project-updated", null);
+        await pusher.trigger(`project-${projectId}`, "tasks-updated", null);
         // Success, no response body
         setResponseStatus(event, 204);
     } catch(error: any) {

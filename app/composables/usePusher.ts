@@ -11,7 +11,7 @@ export const usePusher = () => {
         onUpdate: () => void,
     ) {
         const channel = $pusher.subscribe(`project-${projectId}`);
-        channel.bind("project-updated", onUpdate);
+        channel.bind("tasks-updated", onUpdate);
 
         return channel;
     }
