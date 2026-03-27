@@ -62,10 +62,25 @@ export const useCurrentProject = () => {
         }
     }
 
+    async function deleteTask(taskId: number): Promise<{ error: boolean, message?: string }> {
+        const { $csrfFetch } = useNuxtApp();
+
+        try {
+            await $csrfFetch(`/api/tasks/${taskId}`, { method: "DELETE" });
+        } catch (error) {
+            console.error('failed to delete task:', error);
+            alert("Failed to delete task");
+            return { error: true, message: String(error ?? 'Unknown error deleting task.') };
+        }
+
+        return { error: false };
+    }
+
     return {
         currentProjectId,
         currentProject,
         addTask,
         modifyTask,
+        deleteTask,
     };
 }

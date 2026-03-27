@@ -1,25 +1,19 @@
 <script setup lang="ts">
-import type { DateRange } from "reka-ui";
-
 import type { TimelineItemWithData, TimelineTaskGroup } from "~/utils/types/timeline";
-import type { ModifyTaskSchema } from "~~/lib/db/schema";
-import { parseDate } from "@internationalized/date";
 
 definePageMeta({
     sidebarType: "project",
 });
 
-const { $csrfFetch } = useNuxtApp();
 const { subscribeToProject } = usePusher();
-const route = useRoute();
-const projectId = computed(() => route.params.projectId);
+const { currentProjectId } = useCurrentProject();
 
 const {
     data: projectInfo,
     pending: projectInfoPending,
     error: projectInfoError,
     refresh: refreshProjectInfo
-} = useFetch(() => `/api/projects/${projectId.value}`, { method: "GET" });
+} = useFetch(() => `/api/projects/${currentProjectId.value}`, { method: "GET" });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
@@ -39,10 +33,9 @@ const items = computed<TimelineItemWithData[]>(() => {
     });
 });
 
-// TEST
 // Pusher
 // Sub to pusher channel for active project.
-watch(projectId, () => {
+watch(currentProjectId, () => {
     const projectIdFromInfo = projectInfo.value?.id;
     if (!projectIdFromInfo) return;
 
@@ -88,22 +81,6 @@ function selectTask(item: TimelineItemWithData) {
         selectedTask.value = item;
         isDrawerOpen.value = true;
     }
-}
-
-async function deleteTask(): Promise<{ error: boolean, message?: string }> {
-    if (!selectedTask.value) return { error: true, message: 'No selected task' };
-    const taskId = selectedTask.value.data.id;
-
-    try {
-        await $csrfFetch(`/api/tasks/${taskId}`, { method: "DELETE" });
-    } catch (error) {
-        console.error('failed to delete task:', error);
-        alert("Failed to delete task");
-        return { error: true, message: String(error ?? 'Unknown error deleting task.') };
-    }
-
-    isDrawerOpen.value = false;
-    return { error: false };
 }
 </script>
 
@@ -165,33 +142,5 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     <ProjectDrawer 
         v-model:isOpen="isDrawerOpen" 
         :selected-task="selectedTask">
-        <AppActionButton 
-            :action="deleteTask"
-            description="Are you sure you want to delete this task?"
-            :require-are-you-sure="true"
-            variant="danger">
-            <template #trigger>
-                Delete Task
-            </template>
-        </AppActionButton>
-
-        <div v-if="selectedTask?.id">
-            <h2 class="mt-4">Add a new sub-task:</h2>
-            <ProjectAddDialog 
-                popup-title="Add a new sub-task"
-                :parent-id="Number(selectedTask.id)" >
-                <template #trigger>
-                    <ButtonSecondary>
-                        New Sub-Task
-                    </ButtonSecondary>
-                </template>
-                <template #submit>
-                    Create sub-task
-                </template>
-            </ProjectAddDialog>
-        </div>
-        <div v-else>
-            Subtask menu loading...
-        </div>
     </ProjectDrawer>
 </template>

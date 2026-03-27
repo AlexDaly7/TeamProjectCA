@@ -2,12 +2,16 @@
 import type { TimelineItemWithData } from '~/utils/types/timeline';
 import { ClientModifyTask, type ClientModifyTaskSchema } from '~~/lib/db/schema';
 import z from 'zod';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 const props = defineProps<{
     selectedTask: TimelineItemWithData | null
 }>()
 
-const { modifyTask } = useCurrentProject();
+const { 
+    modifyTask,
+    deleteTask: deleteTaskHelper,
+} = useCurrentProject();
 
 const isOpen = defineModel('isOpen', { default: false });
 
@@ -62,6 +66,18 @@ const onSubmit = submitHandler(
         console.log('on success', data);
     }
 );
+
+async function deleteTask(): Promise<ActionButtonResult> {
+    if (!props.selectedTask) return { error: true, message: 'No selected task.' };
+
+    try {
+        await deleteTaskHelper(props.selectedTask.data.id);
+        isOpen.value = false;
+        return { error: false };
+    } catch (error) {
+        return { error: true, message: 'Unknown error deleting task.' };
+    }
+}
 </script>
 
 <template>
@@ -83,7 +99,6 @@ const onSubmit = submitHandler(
                     </div>
                     <div v-else class="px-4 py-2">
                         <span class="text-sm font-medium">Selected task:</span>
-                        {{ submitError }}
                         <form class="flex flex-col pt-2" @submit.prevent="onSubmit">
                             <label for="title">
                                 <span class="font-medium">Title</span>
@@ -134,9 +149,34 @@ const onSubmit = submitHandler(
                             </div>
                         </form>
 
-                        <div class="bottom-0 pt-2">
-                            <slot></slot>
+                        <div v-if="selectedTask?.id">
+                            <h2 class="mt-4">Add a new sub-task:</h2>
+                            <ProjectAddDialog 
+                                popup-title="Add a new sub-task"
+                                :parent-id="Number(selectedTask.data.id)" >
+                                <template #trigger>
+                                    <ButtonSecondary>
+                                        New Sub-Task
+                                    </ButtonSecondary>
+                                </template>
+                                <template #submit>
+                                    Create sub-task
+                                </template>
+                            </ProjectAddDialog>
                         </div>
+                        <div v-else>
+                            Subtask menu loading...
+                        </div>
+
+                        <AppActionButton 
+                            :action="deleteTask"
+                            description="Are you sure you want to delete this task?"
+                            :require-are-you-sure="true"
+                            variant="danger">
+                            <template #trigger>
+                                Delete Task
+                            </template>
+                        </AppActionButton>
                     </div>
                 </DialogContent>
             </Transition>
