@@ -150,7 +150,7 @@ async function modifyTask() {
 
     isModifyTaskLoading.value = true;
     try {
-        await $csrfFetch(`/api/tasks/${selectedTask.value.data.id}`, { method: "PUT", body });
+        await $csrfFetch(`/api/tasks/${selectedTask.value.data.id}`, { method: "PATCH", body });
     } catch (error) {
         console.error('failed to modify task:', error);
         alert("Failed to modify task");
