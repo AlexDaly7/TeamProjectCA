@@ -7,10 +7,6 @@ const props = defineProps<{
     parentId?: number,
 }>();
 
-const emit = defineEmits<{
-    (e: 'onAdded'): void,
-}>();
-
 const {
     addTask: addTaskHelper
 } = useCurrentProject();
@@ -40,10 +36,7 @@ async function addTask() {
     if (result.error) {
         alert(result.message);
         return;
-    } else {
-        emit('onAdded');
     }
-
 }
 </script>
 

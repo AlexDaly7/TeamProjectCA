@@ -1,6 +1,7 @@
 import { createTask } from '~~/lib/db/queries/tasks';
 import { ClientInsertTask, InsertTaskSchema } from '~~/lib/db/schema';
-import { githubService, projectService, taskService } from '~~/server/services';
+import { notifyPusherChannel } from '~~/server/lib/pusher';
+import { githubService, projectService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -45,6 +46,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
             message: "There was a problem inserting task into table."
         });
     }
+
+    // Notify users in pusher channel
+    await notifyPusherChannel(projectId);
 
     setResponseStatus(event, 204);
 });

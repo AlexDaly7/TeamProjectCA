@@ -1,5 +1,6 @@
 import { modifyTask } from "~~/lib/db/queries/tasks";
 import { ModifyTask } from "~~/lib/db/schema";
+import { notifyPusherChannel, pusher } from "~~/server/lib/pusher";
 import { githubService, taskService } from "~~/server/services";
 import { validateBody } from "~~/server/utils/validation";
 
@@ -14,7 +15,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         statusText: 'Task not found',
     });
 
-    const { organizationId, repoOwner, repoName } = taskWithProject.project;
+    const { organizationId, repoOwner, repoName, id: projectId } = taskWithProject.project;
 
     // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
@@ -33,6 +34,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     // Update in DB
     await modifyTask(taskId, body);
+
+    // Notify users in pusher channel
+    await notifyPusherChannel(projectId);
 
     setResponseStatus(event, 204)
 });

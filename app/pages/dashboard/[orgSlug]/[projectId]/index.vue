@@ -9,7 +9,7 @@ definePageMeta({
 });
 
 const { $csrfFetch } = useNuxtApp();
-const { subscribeToProject, updateChannel } = usePusher();
+const { subscribeToProject } = usePusher();
 const route = useRoute();
 const projectId = computed(() => route.params.projectId);
 
@@ -50,13 +50,6 @@ watch(projectId, () => {
 }, {
     immediate: true,
 });
-
-function refreshChannel() {
-    const projectIdFromInfo = projectInfo.value?.id;
-    if (!projectIdFromInfo) return;
-
-    updateChannel(projectIdFromInfo)
-}
 
 // Groups
 const groupsInfo = reactive<TimelineTaskGroup[]>([]);
@@ -143,9 +136,7 @@ async function modifyTask() {
         console.error('failed to modify task:', error);
         alert("Failed to modify task");
         return;
-    }
-    
-    refreshChannel();
+    }   
 }
 
 async function deleteTask(): Promise<{ error: boolean, message?: string }> {
@@ -160,7 +151,6 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
         return { error: true, message: String(error ?? 'Unknown error deleting task.') };
     }
 
-    refreshChannel();
     return { error: false };
 }
 </script>
@@ -179,7 +169,7 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
             <span>Selected project:</span>
             <div class="inline-flex justify-between">
                 <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
-                <ProjectAddDialog @on-added="refreshChannel">
+                <ProjectAddDialog>
                     <template #trigger>
                         <ButtonPrimary class="inline-flex items-center gap-1">
                             <Icon name="hugeicons:add-01" />
@@ -203,7 +193,7 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
 
         <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
             <span>Looks like there's no added tasks.</span>
-            <ProjectAddDialog @on-added="refreshChannel">
+            <ProjectAddDialog>
                 <template #trigger>
                     <ButtonPrimary>
                         New Task
@@ -253,8 +243,7 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
             <h2 class="mt-4">Add a new sub-task:</h2>
             <ProjectAddDialog 
                 popup-title="Add a new sub-task"
-                :parent-id="Number(selectedTask.id)"
-                @on-added="refreshChannel">
+                :parent-id="Number(selectedTask.id)" >
                 <template #trigger>
                     <ButtonSecondary>
                         New Sub-Task

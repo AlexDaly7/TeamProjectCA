@@ -1,3 +1,4 @@
+import { notifyPusherChannel } from "~~/server/lib/pusher";
 import { githubService, taskService } from "~~/server/services";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -10,7 +11,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         statusText: 'Task not found',
     });
 
-    const { organizationId, repoOwner, repoName } = taskWithProject.project;
+    const { organizationId, repoOwner, repoName, id: projectId } = taskWithProject.project;
 
     // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
@@ -37,6 +38,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
             message: "There was a problem while deleting the task.",
         });
     }
+
+    // Notify users in pusher channel
+    await notifyPusherChannel(projectId);
 
     setResponseStatus(event, 204);
 });

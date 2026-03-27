@@ -8,3 +8,8 @@ export const pusher = new Pusher({
     cluster: env.PUSHER_CLUSTER,
     useTLS: true
 });
+
+
+export async function notifyPusherChannel(projectId: number) {
+    await pusher.trigger(`project-${projectId}`, "tasks-updated", null);
+}

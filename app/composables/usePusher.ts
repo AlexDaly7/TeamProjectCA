@@ -1,10 +1,5 @@
 export const usePusher = () => {
-    const { $pusher, $csrfFetch } = useNuxtApp();
-
-    async function updateChannel(projectId: number) {
-        console.log('triggering channel update', projectId)
-        $csrfFetch(`/api/projects/update/${projectId}`, { method: "POST" });
-    }
+    const { $pusher } = useNuxtApp();
 
     function subscribeToProject(
         projectId: number, 
@@ -17,7 +12,6 @@ export const usePusher = () => {
     }
 
     return {
-        updateChannel,
         subscribeToProject,
     };
 }
