@@ -15,6 +15,8 @@ const taskName = ref('');
 const taskDesc = ref('');
 const dateValue = ref<DateRange | undefined>();
 
+const isOpen = ref(false);
+const isLoading = ref(false);
 
 async function addTask() {
     // TODO: better validation
@@ -26,22 +28,27 @@ async function addTask() {
 
     if (!dateValue.value.start || !dateValue.value.end) return;
 
+    isLoading.value = true;
     const result = await addTaskHelper(
         taskName.value,
         taskDesc.value,
         dateValue.value,
         props.parentId
     );
+    isLoading.value = false;
 
     if (result.error) {
         alert(result.message);
         return;
     }
+
+    isOpen.value = false;
 }
 </script>
 
 <template>
-    <AppDialog 
+    <AppDialog
+        v-model:is-open="isOpen" 
         :title="popupTitle ?? 'Add a new task'" 
         :description="popupdescription ?? 'Select a title, description, and date range.'">
         <template #trigger>
@@ -55,10 +62,12 @@ async function addTask() {
                 <AppFormInput v-model="taskDesc" label="Description" name="description" placeholder="We need to..." />
                 <DatePicker date-picker-label="Timespan" v-model="dateValue" />
                 <div class="flex justify-end mt-4">
-                    <ButtonPrimary type="submit">
-                        <slot name="submit">
-                            Create Task
-                        </slot>
+                    <ButtonPrimary type="submit" :disabled="isLoading">
+                        <LoadingSwap :is-loading="isLoading">
+                            <slot name="submit">
+                                Create Task
+                            </slot>
+                        </LoadingSwap>
                     </ButtonPrimary>
                 </div>
             </form>

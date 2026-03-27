@@ -11,5 +11,5 @@ export type TimelineTaskGroup = TimelineGroup & {
 };
 
 export type TimelineItemWithData = TimelineItem & {
-    data: ApiResponse<"/api/task/:projectId", "get">[number];
+    data: ApiResponse<"/api/projects/:id", "get">['tasks'][number];
 };

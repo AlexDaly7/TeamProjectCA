@@ -2,7 +2,8 @@
 import type { DateRange } from "reka-ui";
 
 import type { TimelineItemWithData, TimelineTaskGroup } from "~/utils/types/timeline";
-import type { ModifyTaskSchema, ClientInsertTaskSchema } from "~~/lib/db/schema";
+import type { ModifyTaskSchema } from "~~/lib/db/schema";
+import { parseDate } from "@internationalized/date";
 
 definePageMeta({
     sidebarType: "project",
@@ -82,18 +83,35 @@ watch(() => projectInfo.value?.tasks, (newTasks) => {
 
 // Selected task
 const selectedTask = ref<TimelineItemWithData | null>(null);
-let taskSelected = ref<boolean>();
+const isDrawerOpen = ref<boolean>(false);
 function selectTask(item: TimelineItemWithData) {
     if (item.type === "range") {
         selectedTask.value = item;
-        taskSelected.value = true;
+        isDrawerOpen.value = true;
     }
 }
 
+watch(selectedTask, (selected) => {
+    if (!selected) {
+        taskName.value = null;
+        taskDesc.value = null;
+        dateValue.value = undefined;
+    } else {
+        taskName.value = selected.data.title;
+        taskDesc.value = selected.data.description;
+        dateValue.value = {
+            start: parseDate(new Date(selected.data.startTime).toISOString().split('T')[0]!),
+            end: parseDate(new Date(selected.data.endTime).toISOString().split('T')[0]!),
+        };
+    }
+})
+
 const taskName = ref<string | null>(null);
 const taskDesc = ref<string | null>(null);
-// TODO: type this
 const dateValue = ref<DateRange | undefined>();
+
+const isModifyTaskDialogOpen = ref(false);
+const isModifyTaskLoading = ref(false);
 
 async function modifyTask() {
     //copy of addTask could probably be turned into one function
@@ -130,13 +148,19 @@ async function modifyTask() {
         description: taskDesc.value,
     };
 
+    isModifyTaskLoading.value = true;
     try {
         await $csrfFetch(`/api/tasks/${selectedTask.value.data.id}`, { method: "PUT", body });
     } catch (error) {
         console.error('failed to modify task:', error);
         alert("Failed to modify task");
         return;
-    }   
+    } finally {
+        isModifyTaskLoading.value = false;
+    }
+
+    isModifyTaskDialogOpen.value = false;
+    isDrawerOpen.value = false;
 }
 
 async function deleteTask(): Promise<{ error: boolean, message?: string }> {
@@ -151,6 +175,7 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
         return { error: true, message: String(error ?? 'Unknown error deleting task.') };
     }
 
+    isDrawerOpen.value = false;
     return { error: false };
 }
 </script>
@@ -210,20 +235,32 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     </div>
 
 
-    <ProjectDrawer v-model:isOpen="taskSelected" :selected-task="selectedTask">
-        <AppDialog title="Modify a task" description="Select a title, description, and date range.">
+    <ProjectDrawer 
+        v-model:isOpen="isDrawerOpen" 
+        :selected-task="selectedTask">
+        <AppDialog 
+            v-model:is-open="isModifyTaskDialogOpen"
+            title="Modify a task" 
+            description="Select a title, description, and date range.">
             <template #trigger>
                 <ButtonSecondary> Modify Task </ButtonSecondary>
             </template>
             <template #body>
                 <form class="flex flex-col gap-2" @submit.prevent="modifyTask">
-                    <AppFormInput v-model="taskName" label="Title" name="title"
+                    <AppFormInput 
+                        v-model="taskName" 
+                        label="Title" 
+                        name="title"
                         :placeholder="selectedTask?.data?.title" />
                     <AppFormInput v-model="taskDesc" label="Description" name="description"
                         :placeholder="selectedTask?.data?.description || 'We need to...'" />
                     <DatePicker date-picker-label="Timespan" v-model="dateValue" />
                     <div class="flex mt-4 max-w-48">
-                        <ButtonPrimary type="submit"> Modify Task </ButtonPrimary>
+                        <ButtonPrimary type="submit" :disabled="isModifyTaskLoading">
+                            <LoadingSwap :is-loading="isModifyTaskLoading">
+                                Modify Task
+                            </LoadingSwap>
+                        </ButtonPrimary>
                     </div>
                 </form>
             </template>
