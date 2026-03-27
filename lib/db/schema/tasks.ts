@@ -69,6 +69,8 @@ const preprocessDate = z.preprocess((value) => {
 
 // Create
 export const InsertTask = createInsertSchema(tasks, {
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!').optional(),
+    description: z.string().max(2000, 'Too long!').optional(),
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
 }).omit({
@@ -94,6 +96,8 @@ export type TasksSchema = typeof tasks.$inferSelect;
 
 // UPDATE
 export const ModifyTask = createUpdateSchema(tasks, {
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!').optional(),
+    description: z.string().max(2000, 'Too long!').optional(),
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
     id: () => z.number(),
@@ -108,5 +112,9 @@ export const ModifyTask = createUpdateSchema(tasks, {
     });
 
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;
+
+export const ClientModifyTask = ModifyTask;
+
+export type ClientModifyTaskSchema = z.infer<typeof ClientModifyTask>;
 
 // DELETE doesn't need body

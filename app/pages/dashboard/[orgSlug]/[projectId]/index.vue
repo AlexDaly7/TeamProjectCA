@@ -41,7 +41,6 @@ const items = computed<TimelineItemWithData[]>(() => {
 
 // TEST
 // Pusher
-
 // Sub to pusher channel for active project.
 watch(projectId, () => {
     const projectIdFromInfo = projectInfo.value?.id;
@@ -89,78 +88,6 @@ function selectTask(item: TimelineItemWithData) {
         selectedTask.value = item;
         isDrawerOpen.value = true;
     }
-}
-
-watch(selectedTask, (selected) => {
-    if (!selected) {
-        taskName.value = null;
-        taskDesc.value = null;
-        dateValue.value = undefined;
-    } else {
-        taskName.value = selected.data.title;
-        taskDesc.value = selected.data.description;
-        dateValue.value = {
-            start: parseDate(new Date(selected.data.startTime).toISOString().split('T')[0]!),
-            end: parseDate(new Date(selected.data.endTime).toISOString().split('T')[0]!),
-        };
-    }
-})
-
-const taskName = ref<string | null>(null);
-const taskDesc = ref<string | null>(null);
-const dateValue = ref<DateRange | undefined>();
-
-const isModifyTaskDialogOpen = ref(false);
-const isModifyTaskLoading = ref(false);
-
-async function modifyTask() {
-    //copy of addTask could probably be turned into one function
-    // TODO: better validation
-    if (
-        !taskName.value ||
-        !taskDesc.value ||
-        !dateValue.value ||
-        !projectId.value
-    )
-        return;
-    if (isNaN(Number(projectId.value))) return;
-
-    if (!dateValue.value.start || !dateValue.value.end) return;
-
-    if (!selectedTask.value) return;
-
-    const startDate = new Date(
-        dateValue.value.start.year,
-        dateValue.value.start.month - 1,
-        dateValue.value.start.day,
-    );
-
-    const endDate = new Date(
-        dateValue.value.end.year,
-        dateValue.value.end.month - 1,
-        dateValue.value.end.day,
-    );
-
-    const body: ModifyTaskSchema = {
-        title: taskName.value,
-        startTime: startDate,
-        endTime: endDate,
-        description: taskDesc.value,
-    };
-
-    isModifyTaskLoading.value = true;
-    try {
-        await $csrfFetch(`/api/tasks/${selectedTask.value.data.id}`, { method: "PATCH", body });
-    } catch (error) {
-        console.error('failed to modify task:', error);
-        alert("Failed to modify task");
-        return;
-    } finally {
-        isModifyTaskLoading.value = false;
-    }
-
-    isModifyTaskDialogOpen.value = false;
-    isDrawerOpen.value = false;
 }
 
 async function deleteTask(): Promise<{ error: boolean, message?: string }> {
@@ -238,34 +165,6 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
     <ProjectDrawer 
         v-model:isOpen="isDrawerOpen" 
         :selected-task="selectedTask">
-        <AppDialog 
-            v-model:is-open="isModifyTaskDialogOpen"
-            title="Modify a task" 
-            description="Select a title, description, and date range.">
-            <template #trigger>
-                <ButtonSecondary> Modify Task </ButtonSecondary>
-            </template>
-            <template #body>
-                <form class="flex flex-col gap-2" @submit.prevent="modifyTask">
-                    <AppFormInput 
-                        v-model="taskName" 
-                        label="Title" 
-                        name="title"
-                        :placeholder="selectedTask?.data?.title" />
-                    <AppFormInput v-model="taskDesc" label="Description" name="description"
-                        :placeholder="selectedTask?.data?.description || 'We need to...'" />
-                    <DatePicker date-picker-label="Timespan" v-model="dateValue" />
-                    <div class="flex mt-4 max-w-48">
-                        <ButtonPrimary type="submit" :disabled="isModifyTaskLoading">
-                            <LoadingSwap :is-loading="isModifyTaskLoading">
-                                Modify Task
-                            </LoadingSwap>
-                        </ButtonPrimary>
-                    </div>
-                </form>
-            </template>
-        </AppDialog>
-
         <AppActionButton 
             :action="deleteTask"
             description="Are you sure you want to delete this task?"

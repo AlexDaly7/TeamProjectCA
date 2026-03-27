@@ -60,7 +60,13 @@ async function addTask() {
                 @submit.prevent="addTask()">
                 <AppFormInput v-model="taskName" label="Title" name="title" placeholder="My Task" />
                 <AppFormInput v-model="taskDesc" label="Description" name="description" placeholder="We need to..." />
-                <DatePicker date-picker-label="Timespan" v-model="dateValue" />
+                <Label class="flex flex-col gap-2">
+                    <span 
+                        class="text-sm text-txt-secondary">
+                        Timespan
+                    </span>
+                    <DatePicker v-model="dateValue" />
+                </Label>
                 <div class="flex justify-end mt-4">
                     <ButtonPrimary type="submit" :disabled="isLoading">
                         <LoadingSwap :is-loading="isLoading">

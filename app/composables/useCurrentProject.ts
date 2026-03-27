@@ -1,6 +1,6 @@
 import type { DateRange } from "reka-ui";
 import type { ActionButtonResult } from "~/utils/types/actionButton";
-import type { ClientInsertTaskSchema } from "~~/lib/db/schema";
+import type { ClientInsertTaskSchema, ClientModifyTaskSchema } from "~~/lib/db/schema";
 
 export const useCurrentProject = () => {
     const route = useRoute();
@@ -50,9 +50,22 @@ export const useCurrentProject = () => {
         }
     }
 
+    async function modifyTask(taskId: number, data: ClientModifyTaskSchema) {
+        const { $csrfFetch } = useNuxtApp();
+
+        try {
+            await $csrfFetch(`/api/tasks/${taskId}`, { method: "PATCH", body: data });
+        } catch (error) {
+            console.error('failed to modify task:', error);
+            alert("Failed to modify task");
+            return;
+        }
+    }
+
     return {
         currentProjectId,
         currentProject,
         addTask,
+        modifyTask,
     };
 }
