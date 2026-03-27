@@ -10,6 +10,11 @@ export type TimelineTaskGroup = TimelineGroup & {
     path: number[],
 };
 
+export type TimelineLine = TimelineGroup & {
+    svgPath: string,
+    colour: string,
+}
+
 export type TimelineItemWithData = TimelineItem & {
     data: ApiResponse<"/api/task/:projectId", "get">[number];
 };

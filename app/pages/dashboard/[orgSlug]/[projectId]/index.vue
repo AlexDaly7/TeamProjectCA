@@ -246,11 +246,11 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
                 ? 'Loading chart...' 
                 : 'There was an error loading the timeline. Please try again' }}
         </AppGanttFallback>
-        <AppGantt 
+        <AppGantt
             v-else
             :items
             :groupsInfo
-            @selected-task="selectTask" />
+            @selected-task="selectTask"/>
     </div>
 
     <h2 class="mt-4">Add a new task:</h2>
@@ -260,8 +260,9 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
         <template #trigger>
             <ButtonSecondary> New Task </ButtonSecondary>
         </template>
+        
         <template #body>
-            <form 
+            <form
                 class="flex flex-col gap-2" 
                 @submit.prevent="addTask()">
                 <AppFormInput v-model="taskName" label="Title" name="title" placeholder="My Task" />
