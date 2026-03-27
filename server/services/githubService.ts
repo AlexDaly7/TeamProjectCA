@@ -1,8 +1,8 @@
 import { Octokit } from "octokit"
 import githubApp from "../lib/octokit";
-import { ClientInsertTaskSchema, TasksSchema } from "~~/lib/db/schema";
+import { type ClientInsertTaskSchema, type TasksSchema } from "~~/lib/db/schema";
 import { taskService } from ".";
-import { Endpoints } from "@octokit/types";
+import { type Endpoints } from "@octokit/types";
 
 export const user = {
     getInfo: async (token: string) => {

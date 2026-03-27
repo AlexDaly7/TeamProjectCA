@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ApiResponse } from "~/composables/apiResponse";
 import { UAParser } from 'ua-parser-js';
+import type { ApiResponse } from '~/utils/types/apiResponse';
 
 const props = withDefaults(defineProps<{
     session: ApiResponse<"/api/user/get-sessions", "get">[number],

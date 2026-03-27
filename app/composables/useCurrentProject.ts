@@ -1,6 +1,6 @@
 import type { DateRange } from "reka-ui";
 import type { ActionButtonResult } from "~/utils/types/actionButton";
-import type { ClientInsertTaskSchema, ClientModifyTaskSchema } from "~~/lib/db/schema";
+import type { ClientInsertTaskSchema, ModifyTaskSchema } from "~~/lib/db/schema";
 
 export const useCurrentProject = () => {
     const route = useRoute();
@@ -50,7 +50,7 @@ export const useCurrentProject = () => {
         }
     }
 
-    async function modifyTask(taskId: number, data: ClientModifyTaskSchema) {
+    async function modifyTask(taskId: number, data: ModifyTaskSchema) {
         const { $csrfFetch } = useNuxtApp();
 
         try {

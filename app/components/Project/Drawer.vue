@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TimelineItemWithData } from '~/utils/types/timeline';
-import { ClientModifyTask, type ClientModifyTaskSchema } from '~~/lib/db/schema';
+import { ModifyTask, type ModifyTaskSchema } from '~~/lib/db/schema';
 import z from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
@@ -30,7 +30,7 @@ watch(isOpen, () => {
     });
 })
 
-const FormSchema = ClientModifyTask.omit({
+const FormSchema = ModifyTask.omit({
     endTime: true,
     startTime: true,
 }).extend({
@@ -50,7 +50,7 @@ const onSubmit = submitHandler(
     async (values) => {
         if (!props.selectedTask) return { error: true, message: 'No selected task.' };
 
-        const payload: ClientModifyTaskSchema = {
+        const payload: ModifyTaskSchema = {
             title: values.title,
             description: values.description,
             order: values.order,

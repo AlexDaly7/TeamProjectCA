@@ -1,4 +1,4 @@
-import { User } from 'better-auth';
+import { type User } from 'better-auth';
 import type { H3Event, H3EventContext } from 'h3';
 
 type AuthenticatedEvent = H3Event & {
