@@ -1,6 +1,6 @@
 import { createTask } from '~~/lib/db/queries/tasks';
 import { ClientInsertTask, InsertTaskSchema } from '~~/lib/db/schema';
-import { githubService, projectService } from '~~/server/services';
+import { githubService, projectService, taskService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -19,17 +19,20 @@ export default defineAuthenticatedEventHandler(async (event) => {
         task: ['create']
     });
 
+
     // Create the issue on GitHub
-    const createdIssueNodeid = await githubService.createIssue(
+    const createdIssue = await githubService.createIssue(
         project.repoOwner,
         project.repoName,
-        body.title,
+        project.id
+        body,
         event.context.user.name,
     );
 
     const insertionBody: InsertTaskSchema = {
         ...body,
-        ghIssueNodeId: createdIssueNodeid,
+        ghIssueNodeId: createdIssue.node_id,
+        ghIssueNumber: createdIssue.number,
         projectId,
     };
 

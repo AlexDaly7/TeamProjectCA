@@ -181,7 +181,17 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
         </div>
         <div v-else class="flex flex-col">
             <span>Selected project:</span>
-            <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
+            <div class="inline-flex justify-between">
+                <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
+                <ProjectAddDialog @on-added="refreshChannel">
+                    <template #trigger>
+                        <ButtonPrimary class="inline-flex items-center gap-1">
+                            <Icon name="hugeicons:add-01" />
+                            New Task
+                        </ButtonPrimary>
+                    </template>
+                </ProjectAddDialog>
+            </div>
             <span class="mt-4">Tasks:</span>
         </div>
     </div>
@@ -197,9 +207,13 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
 
         <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
             <span>Looks like there's no added tasks.</span>
-            <ButtonPrimary>
-                New Task
-            </ButtonPrimary>
+            <ProjectAddDialog @on-added="refreshChannel">
+                <template #trigger>
+                    <ButtonPrimary>
+                        New Task
+                    </ButtonPrimary>
+                </template>
+            </ProjectAddDialog>
         </AppGanttFallback>
 
         <AppGantt 
@@ -209,12 +223,6 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
             @selected-task="selectTask" />
     </div>
 
-    <h2 class="mt-4">Add a new task:</h2>
-    <ProjectAddDialog @on-added="refreshChannel">
-        <template #trigger>
-            New Task
-        </template>
-    </ProjectAddDialog>
 
     <ProjectDrawer v-model:isOpen="taskSelected" :selected-task="selectedTask">
         <AppDialog title="Modify a task" description="Select a title, description, and date range.">
@@ -252,7 +260,9 @@ async function deleteTask(): Promise<{ error: boolean, message?: string }> {
                 :parent-id="Number(selectedTask.id)"
                 @on-added="refreshChannel">
                 <template #trigger>
-                    New Sub-Task
+                    <ButtonSecondary>
+                        New Sub-Task
+                    </ButtonSecondary>
                 </template>
                 <template #submit>
                     Create sub-task

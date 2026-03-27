@@ -52,9 +52,7 @@ async function addTask() {
         :title="popupTitle ?? 'Add a new task'" 
         :description="popupdescription ?? 'Select a title, description, and date range.'">
         <template #trigger>
-            <ButtonSecondary>
-                <slot name="trigger" />
-            </ButtonSecondary>
+            <slot name="trigger" />
         </template>
         <template #body>
             <form 

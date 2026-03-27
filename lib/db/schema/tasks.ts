@@ -7,11 +7,11 @@ import {
     timestamp,
     type AnyPgColumn,
     real,
-    bigint,
 } from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
+import { taskAssignees } from "./taskAssignees";
 
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
@@ -21,11 +21,13 @@ export const tasks = pgTable("tasks", {
     projectId: integer("project_id")
         .references(() => projects.id, { onDelete: "cascade" })
         .notNull(),
-    parentId: integer("parent_id").references((): AnyPgColumn => tasks.id, {
+    parentId: integer("parent_id")
+        .references((): AnyPgColumn => tasks.id, {
         onDelete: "cascade",
     }),
 
     ghIssueNodeId: text('gh_issue_node_id').notNull(),
+    ghIssueNumber: integer('gh_issue_number').notNull(),
 
     startTime: timestamp("start_time").notNull(),
     endTime: timestamp("end_time").notNull(),
@@ -52,6 +54,7 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
     subtasks: many(tasks, {
         relationName: "subtasks",
     }),
+    assignees: many(taskAssignees),
 }));
 
 const preprocessDate = z.preprocess((value) => {
@@ -79,6 +82,7 @@ export type InsertTaskSchema = z.infer<typeof InsertTask>;
 
 export const ClientInsertTask = InsertTask.omit({
     ghIssueNodeId: true,
+    ghIssueNumber: true,
     projectId: true,
 });
 
@@ -98,6 +102,7 @@ export const ModifyTask = createUpdateSchema(tasks, {
         createdAt: true,
         updatedAt: true,
         ghIssueNodeId: true,
+        ghIssueNumber: true,
         projectId: true,
         id: true,
     });

@@ -2,6 +2,13 @@ import { eq } from "drizzle-orm";
 import db from "~~/lib/db";
 import { tasks } from "~~/lib/db/schema";
 
+// Read
+export async function getTask(id: number) {
+    return await db.query.tasks.findFirst({
+        where: eq(tasks.id, id),
+    });
+}
+
 export async function getTaskWithProject(id: number) {
     return await db.query.tasks.findFirst({
         where: eq(tasks.id, id),
