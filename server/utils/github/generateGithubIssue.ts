@@ -37,7 +37,7 @@ ${task.description != null ? task.description : '(No description provided).' }
 ---
 
 ## Metadata
-**Created by**: ${morchlar.taskCreatorName}
+**Last modified by**: ${morchlar.taskCreatorName}
 [**View on Mórchlár**](${env.BETTER_AUTH_URL}/view-task/${morchlar.projectId})
 `
     } 

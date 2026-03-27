@@ -1,7 +1,8 @@
 import { Octokit } from "octokit"
 import githubApp from "../lib/octokit";
-import { ClientInsertTaskSchema } from "~~/lib/db/schema";
+import { ClientInsertTaskSchema, TasksSchema } from "~~/lib/db/schema";
 import { taskService } from ".";
+import { Endpoints } from "@octokit/types";
 
 export const user = {
     getInfo: async (token: string) => {
@@ -70,6 +71,87 @@ export async function createIssue(
     return createdIssue.data;
 }
 
+// Update
+export async function updateIssue(
+    repoOwner: string,
+    repoName: string,
+    projectId: number,
+    values: ClientInsertTaskSchema,
+    taskUpdaterName: string,
+    prevValues: TasksSchema,
+) {
+    const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
+    if (!repoInstallation.data) {
+        console.error('Failed to get installation data.');
+
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Internal server error',
+        });
+    }
+
+    const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
+
+    const updatePayload: Endpoints['PATCH /repos/{owner}/{repo}/issues/{issue_number}']['parameters'] = {
+        ...generateGithubIssue(
+            {
+                name: repoName,
+                owner: repoOwner,
+            },
+            values,
+            {
+                taskCreatorName: taskUpdaterName,
+                projectId,
+            }
+        ),
+        issue_number: prevValues.ghIssueNumber
+    }
+
+    const updatedIssue = await installationOctokit.rest.issues.update(updatePayload)
+
+    if (!updatedIssue) {
+        console.error('Failed to update GitHub issue', repoOwner, repoName, values);
+
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Internal Server Error',
+        });
+    }
+
+    // Parent ID changed
+    if ((values.parentId ?? null) !== (prevValues.parentId ?? null)) {
+        // If the parent changed and the parentId is now blank, remove the subtask
+        if (!values.parentId && prevValues.parentId) {
+            await installationOctokit.rest.issues.removeSubIssue({
+                issue_number: prevValues.parentId,
+                owner: repoOwner,
+                repo: repoName,
+                sub_issue_id: Number(prevValues.ghIssueNodeId),
+            });
+        } else if (values.parentId) {
+            // otherwise set new parent ID
+            const parentTask = await taskService.getTask(values.parentId); 
+            if (!parentTask) throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request', // parent doesn't exist
+                message: 'Parent task doesn\'t exist.'
+            })
+
+            await installationOctokit.rest.issues.addSubIssue({
+                issue_number: parentTask.ghIssueNumber,
+                owner: repoOwner,
+                repo: repoName,
+                sub_issue_id: updatedIssue.data.id,
+            });
+        }
+        // Otherwise if we have no parent Id but also previously had no parentID, do nothing
+    }
+
+    return updatedIssue.data;
+}
+
+
+// Delete
 export async function deleteIssue(repoOwner: string, repoName: string, issueNodeId: string) {
     const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
     if (!repoInstallation.data) {

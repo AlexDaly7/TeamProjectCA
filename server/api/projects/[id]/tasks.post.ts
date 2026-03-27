@@ -24,7 +24,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const createdIssue = await githubService.createIssue(
         project.repoOwner,
         project.repoName,
-        project.id
+        project.id,
         body,
         event.context.user.name,
     );
