@@ -1,10 +1,8 @@
-import pusher from '~~/server/lib/pusher';
+import { pusher } from '~~/server/lib/pusher';
 import { auth } from '~~/lib/auth';
 import { getProjectInOrg } from '~~/lib/db/queries/projects';
-import { getTasks } from '~~/lib/db/queries/tasks';
 
 export default defineAuthenticatedEventHandler(async (event) => {
-    const userId = event.context.user.id;
     const projectId = validateRouterParam(event, 'projectId');
 
     const session = await auth.api.getSession({ headers: event.headers });
@@ -20,7 +18,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     });
 
     await ensureOrganizationPermission(event, activeOrgId, {
-        project: ['update'],
+        project: ['read'],
     })
 
     const project = await getProjectInOrg(projectId, activeOrgId);
@@ -29,11 +27,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
         statusMessage: 'Forbidden',
     });
 
-    const tasks = await getTasks(project.id);
-
     try {
-        console.log(projectId);
-        await pusher.trigger(`project-${projectId}`, "project-updated", tasks);
+        await pusher.trigger(`project-${projectId}`, "project-updated", null);
         // Success, no response body
         setResponseStatus(event, 204);
     } catch(error: any) {

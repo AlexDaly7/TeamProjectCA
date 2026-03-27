@@ -17,6 +17,7 @@ const {
     data: projectInfo,
     pending: projectInfoPending,
     error: projectInfoError,
+    refresh: refreshProjectInfo
 } = useFetch(() => `/api/projects/${projectId.value}`, { method: "GET" });
 
 // maybe add controls later on
@@ -45,12 +46,7 @@ watch(projectId, () => {
     const projectIdFromInfo = projectInfo.value?.id;
     if (!projectIdFromInfo) return;
 
-    subscribeToProject(projectIdFromInfo, (newTasks) => {
-        console.log('Received new tasks from pusher', newTasks);
-        if (!projectInfo.value) return;
-
-        projectInfo.value.tasks = newTasks;
-    });
+    subscribeToProject(projectIdFromInfo, () => refreshProjectInfo());
 }, {
     immediate: true,
 });
