@@ -77,7 +77,7 @@ export async function updateIssue(
     repoName: string,
     projectId: number,
     values: ClientInsertTaskSchema,
-    taskUpdaterName: string,
+    creatorName: string,
     prevValues: TasksSchema,
 ) {
     const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
@@ -92,15 +92,17 @@ export async function updateIssue(
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
 
+    const body = Object.assign(prevValues, values);
+
     const updatePayload: Endpoints['PATCH /repos/{owner}/{repo}/issues/{issue_number}']['parameters'] = {
         ...generateGithubIssue(
             {
                 name: repoName,
                 owner: repoOwner,
             },
-            values,
+            body,
             {
-                taskCreatorName: taskUpdaterName,
+                taskCreatorName: creatorName,
                 projectId,
             }
         ),

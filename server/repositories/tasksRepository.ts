@@ -20,6 +20,12 @@ export async function getTaskWithProject(id: number) {
                     repoOwner: true,
                     repoName: true,
                 }
+            },
+            creator: {
+                columns: {
+                    id: true,
+                    name: true
+                }
             }
         }
     });

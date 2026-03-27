@@ -17,6 +17,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const { organizationId, repoOwner, repoName, id: projectId } = taskWithProject.project;
 
+
     // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
         task: ['update']
@@ -27,8 +28,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
         repoOwner,
         repoName,
         taskWithProject.project.id,
-        { ...taskWithProject, ...body },
-        event.context.user.name,
+        Object.assign(taskWithProject, body),
+        taskWithProject.creator.name,
         taskWithProject,
     );
 

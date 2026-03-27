@@ -12,6 +12,7 @@ import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { taskAssignees } from "./taskAssignees";
+import { user } from "./auth";
 
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
@@ -35,6 +36,10 @@ export const tasks = pgTable("tasks", {
 
     order: integer("order").default(0), // Order as sibling
 
+    creatorId: text('creator_id')
+        .references(() => user.id)
+        .notNull(),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .$onUpdate(() => new Date())
@@ -50,6 +55,10 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
         fields: [tasks.parentId],
         references: [tasks.id],
         relationName: "subtasks",
+    }),
+    creator: one(user, {
+        fields: [tasks.creatorId],
+        references: [user.id],
     }),
     subtasks: many(tasks, {
         relationName: "subtasks",
@@ -69,8 +78,8 @@ const preprocessDate = z.preprocess((value) => {
 
 // Create
 export const InsertTask = createInsertSchema(tasks, {
-    title: z.string().min(3, 'Too short!').max(100, 'Too long!').optional(),
-    description: z.string().max(2000, 'Too long!').optional(),
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!'),
+    description: z.string().max(2000, 'Too long!').nullable(),
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
 }).omit({
@@ -86,6 +95,7 @@ export const ClientInsertTask = InsertTask.omit({
     ghIssueNodeId: true,
     ghIssueNumber: true,
     projectId: true,
+    creatorId: true,
 });
 
 export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
@@ -96,8 +106,8 @@ export type TasksSchema = typeof tasks.$inferSelect;
 
 // UPDATE
 export const ModifyTask = createUpdateSchema(tasks, {
-    title: z.string().min(3, 'Too short!').max(100, 'Too long!').optional(),
-    description: z.string().max(2000, 'Too long!').optional(),
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!').nullable(),
+    description: z.string().max(2000, 'Too long!').nullable(),
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
     id: () => z.number(),
@@ -109,6 +119,7 @@ export const ModifyTask = createUpdateSchema(tasks, {
         ghIssueNumber: true,
         projectId: true,
         id: true,
+        creatorId: true,
     });
 
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;

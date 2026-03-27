@@ -35,6 +35,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         ghIssueNodeId: createdIssue.node_id,
         ghIssueNumber: createdIssue.number,
         projectId,
+        creatorId: event.context.user.id,
     };
 
     // Insert the task into DB
