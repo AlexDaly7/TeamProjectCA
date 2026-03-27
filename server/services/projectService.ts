@@ -1,4 +1,4 @@
-import { UpdateProjectSchema } from "~~/lib/db/schema";
+import { type UpdateProjectSchema } from "~~/lib/db/schema";
 import { projectRepository } from "../repositories";
 
 // Read

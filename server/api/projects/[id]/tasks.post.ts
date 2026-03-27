@@ -1,5 +1,5 @@
 import { createTask } from '~~/lib/db/queries/tasks';
-import { ClientInsertTask, InsertTaskSchema } from '~~/lib/db/schema';
+import { ClientInsertTask, type InsertTaskSchema } from '~~/lib/db/schema';
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';

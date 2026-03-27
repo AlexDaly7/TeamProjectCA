@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import db from "~~/lib/db";
-import { projects, UpdateProjectSchema } from "~~/lib/db/schema";
+import { projects, type UpdateProjectSchema } from "~~/lib/db/schema";
 
 
 // Read
