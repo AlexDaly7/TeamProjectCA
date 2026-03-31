@@ -4,10 +4,16 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: false }, // TODO: debug and find out why this throws warnings on projects page
-    modules: ['nuxt-csurf', '@pinia/nuxt', 'reka-ui/nuxt', '@nuxt/icon', '@vee-validate/nuxt', '@nuxt/fonts', '@vercel/analytics'],
+    modules: [
+        'nuxt-csurf',
+        'reka-ui/nuxt',
+        '@nuxt/icon',
+        '@vee-validate/nuxt',
+        '@nuxt/fonts',
+        '@vercel/analytics'
+    ],
     vite: {
         plugins: [
-            // @ts-expect-error - See https://github.com/tailwindlabs/tailwindcss/discussions/19655
             tailwindcss()
         ],
     },
