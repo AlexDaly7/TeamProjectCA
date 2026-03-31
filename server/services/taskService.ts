@@ -12,6 +12,7 @@ export async function insertTask(values: InsertTaskSchema): Promise<Result<null>
     return { data: null, error: null };
 }
 
+// Read
 export async function getTask(id: number) {
     return await tasksRepository.getTask(id);
 }
@@ -20,6 +21,11 @@ export async function getTaskWithProject(id: number) {
     return await tasksRepository.getTaskWithProject(id);
 }
 
+export async function getTasksWithDepthAndPath(projectId: number) {
+    return await tasksRepository.getTasksWithDepthAndPath(projectId);
+}
+
+// Update
 export async function updateTask(taskId: number, values: ModifyTaskSchema): Promise<Result<null>> {
     const modified = await tasksRepository.modifyTask(taskId, values);
 
@@ -30,6 +36,7 @@ export async function updateTask(taskId: number, values: ModifyTaskSchema): Prom
     return { data: null, error: null };
 }
 
+// Delete
 export async function deleteTask(id: number) {
     return await tasksRepository.deleteTask(id);
 }

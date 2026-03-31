@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import db from "~~/lib/db";
-import { InsertTaskSchema, ModifyTaskSchema, tasks } from "~~/lib/db/schema";
+import { InsertTaskSchema, ModifyTaskSchema, tasks, TasksSchema } from "~~/lib/db/schema";
 
 // Create
 export async function insertTask(values: InsertTaskSchema) {
@@ -38,6 +38,45 @@ export async function getTaskWithProject(id: number) {
         }
     });
 }
+
+export async function getTasksWithDepthAndPath(
+    projectId: number,
+): Promise<(TasksSchema & { depth: number; path: number[] })[]> {
+    const snakeToCamel = (text: string) =>
+        text.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+    const mapKeys = <T>(row: Record<string, unknown>): T =>
+        Object.fromEntries(
+            Object.entries(row).map(([k, v]) => [snakeToCamel(k), v]),
+        ) as T;
+
+    try {
+        const result = await db.execute(sql`
+            WITH RECURSIVE task_tree AS (
+                -- top-level tasks
+                SELECT *, 0 AS depth, ARRAY[id] AS path
+                FROM tasks
+                WHERE parent_id is NULL AND project_id = ${projectId}
+
+                UNION ALL
+
+                -- recurse children
+                SELECT t.*, tt.depth + 1, tt.path || t.id
+                FROM tasks t
+                INNER JOIN task_tree tt ON t.parent_id = tt.id
+            )
+            SELECT * FROM task_tree
+            ORDER BY path
+        `);
+
+        return result.rows.map((row) =>
+            mapKeys<TasksSchema & { depth: number; path: number[] }>(row),
+        );
+    } catch (error) {
+        throw error;
+    }
+}
+export type TasksWithDepth = Awaited<ReturnType<typeof getTasksWithDepthAndPath>>;
 
 // Update
 export async function modifyTask(taskId: number, values: ModifyTaskSchema) {
