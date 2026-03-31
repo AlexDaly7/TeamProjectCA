@@ -110,18 +110,15 @@ export const ModifyTask = createUpdateSchema(tasks, {
     description: z.string().max(2000, 'Too long!').optional(),
     startTime: () => preprocessDate,
     endTime: () => preprocessDate,
-    id: () => z.number(),
-})
-    .omit({
-        createdAt: true,
-        updatedAt: true,
-        ghIssueNodeId: true,
-        ghIssueNumber: true,
-        projectId: true,
-        id: true,
-        creatorId: true,
-    });
+    id: () => z.number() 
+}).omit({
+    createdAt: true,
+    updatedAt: true,
+    ghIssueNodeId: true,
+    ghIssueNumber: true,
+    projectId: true,
+    id: true,
+    creatorId: true,
+});
 
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;
-
-// DELETE doesn't need body

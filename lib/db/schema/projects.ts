@@ -29,10 +29,6 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
     tasks: many(tasks),
 }));
 
-
-
-export type ProjectSchema = typeof projects.$inferSelect;
-
 // Used on server
 export const InsertProject = createInsertSchema(projects).omit({
     id: true,
