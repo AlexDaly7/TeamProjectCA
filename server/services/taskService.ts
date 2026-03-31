@@ -1,6 +1,6 @@
-import { InsertTaskSchema, ModifyTaskSchema } from "~~/lib/db/schema";
+import type { InsertTaskSchema, ModifyTaskSchema } from "~~/lib/db/schema";
 import { tasksRepository } from "../repositories";
-import { Result } from "#shared/types/results";
+import type { Result } from "#shared/types/results";
 
 export async function insertTask(values: InsertTaskSchema): Promise<Result<null>> {
     const inserted = await tasksRepository.insertTask(values);

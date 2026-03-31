@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Organization } from 'better-auth/plugins';
-
 const { $authClient } = useNuxtApp();
-const organizationsStore = useOrganizationsStore();
-const { organizations, loading } = storeToRefs(organizationsStore);
+const {
+    organizations,
+    organizationsPending: loading,
+} = useOrganizations();
 
 const popoverOpen = ref(false);
 
@@ -11,8 +11,8 @@ const activeOrg = $authClient.useActiveOrganization();
 
 const currentOrg = computed(() => activeOrg.value.data?.name ?? organizations.value?.active?.name ?? 'Select an org');
 
-function onSelectOrg(org: Organization) {
-    $authClient.organization.setActive({ organizationSlug: org.slug });
+function onSelectOrg(slug: string) {
+    $authClient.organization.setActive({ organizationSlug: slug });
     popoverOpen.value = false;
 }
 
@@ -57,7 +57,7 @@ function onSelectOrg(org: Organization) {
                             exact-active-class=""
                             :key="organization.id"
                             :to="{ name: 'dashboard-orgSlug', params: { orgSlug: organization.slug } }"
-                            @click="onSelectOrg(organization)">
+                            @click="onSelectOrg(organization.slug)">
                             <div class="inline-flex gap-2">
                                 <img
                                     class="size-6 rounded-full"

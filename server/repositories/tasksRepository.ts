@@ -1,6 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import db from "~~/lib/db";
-import { InsertTaskSchema, ModifyTaskSchema, tasks, TasksSchema } from "~~/lib/db/schema";
+import { tasks } from "~~/lib/db/schema";
+import type { InsertTaskSchema, ModifyTaskSchema, TasksSchema } from "~~/lib/db/schema";
 
 // Create
 export async function insertTask(values: InsertTaskSchema) {

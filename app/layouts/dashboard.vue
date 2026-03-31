@@ -2,14 +2,9 @@
 // https://github.com/nuxt/nuxt/issues/10545#issuecomment-1175012962
 import { NuxtLink } from '#components';
 
-const organizationsStore = useOrganizationsStore();
-
-await callOnce('organizationsStore', () => organizationsStore.fetchOrganizations());
-
 const {
     orgData,
     pending: orgDataPending,
-    error: orgDataError
 } = useCurrentOrg();
 
 const {
