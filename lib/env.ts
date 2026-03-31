@@ -27,7 +27,6 @@ const EnvSchema = z.object({
 
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.string(),
-    NUXT_PUBLIC_BETTER_AUTH_BASE_URL: z.string(),
 
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
@@ -41,9 +40,6 @@ const EnvSchema = z.object({
 
     RESEND_API_KEY: z.string(),
 });
-
-
-export type EnvSchema = z.infer<typeof EnvSchema>;
 
 tryParseEnv(EnvSchema);
 
