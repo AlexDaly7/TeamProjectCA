@@ -1,5 +1,15 @@
-import { type UpdateProjectSchema } from "~~/lib/db/schema";
+import { InsertProjectSchema, type UpdateProjectSchema } from "~~/lib/db/schema";
 import { projectRepository } from "../repositories";
+
+// Create
+export async function createProject(data: InsertProjectSchema) {
+    const created = await projectRepository.createProject(data);
+    if (created.length === 0) {
+        throw new Error('Failed to create project');
+    }
+
+    return created[0]!;
+}
 
 // Read
 export async function getProjectById(projectId: number) {

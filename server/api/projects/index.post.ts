@@ -1,5 +1,5 @@
-import { createProject } from "~~/lib/db/queries/projects";
-import { ClientInsertProject } from "~~/lib/db/schema";
+import { ClientInsertProject, InsertProjectSchema } from "~~/lib/db/schema";
+import { projectService } from "~~/server/services";
 import { getUserGitHubAuthToken } from "~~/server/utils/auth";
 import { verifyGitHubRepoAccess } from "~~/server/utils/github";
 import { validateBody } from "~~/server/utils/validation";
@@ -26,10 +26,25 @@ export default defineAuthenticatedEventHandler(async (event) => {
                 message: 'Invalid repo'
             });
         }
-        
-        const createdProjectId = await createProject(repoStatus.id, repoStatus.name, repoStatus.owner, bodyData.title, bodyData.organizationId);
 
-        return { id: createdProjectId };
+        const projectData: InsertProjectSchema = {
+            repoId: repoStatus.id,
+            repoName: repoStatus.name,
+            repoOwner: repoStatus.owner,
+            title: bodyData.title,
+            organizationId: bodyData.organizationId,
+        };
+
+        const { data: createdProject, error } = await tryCatch(projectService.createProject(projectData));
+        if (error) {
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Internal Server Error',
+                message: 'Failed to create project'
+            });
+        }
+
+        return { id: createdProject.id };
     } catch (error) {
         if (error instanceof Error) {
             console.error(error);
