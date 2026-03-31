@@ -3,10 +3,10 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { organization } from "better-auth/plugins";
 
 import { ac, owner, admin, member } from './auth-permissions';
-import * as schema from './db/schema';
-import db from "./db";
-import env from "./env";
-import resend from "../server/lib/resend";
+import * as schema from '../../../lib/db/schema';
+import db from "../../../lib/db";
+import env from "../../../lib/env";
+import resend from "../resend";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {

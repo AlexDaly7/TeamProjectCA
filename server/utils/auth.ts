@@ -1,4 +1,4 @@
-import { auth } from "~~/lib/auth";
+import { auth } from "~~/server/lib/auth/auth";
 
 export async function getUserGitHubAuthToken(userId: string) {
     const token = await auth.api.getAccessToken({
