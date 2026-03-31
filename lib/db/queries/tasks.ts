@@ -1,8 +1,5 @@
-import { sql, eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
-  tasks,
-  type InsertTaskSchema,
-  type ModifyTaskSchema,
   type TasksSchema,
 } from "../schema";
 import db from "../index";
@@ -46,18 +43,3 @@ export async function getTasks(
 }
 
 export type TasksWithDepth = Awaited<ReturnType<typeof getTasks>>;
-
-export async function createTask(values: InsertTaskSchema) {
-    return await db
-        .insert(tasks)
-        .values(values)
-        .returning({ id: tasks.id });
-}
-
-export async function modifyTask(taskId: number, values: ModifyTaskSchema) {
-  return await db
-    .update(tasks)
-    .set(values)
-    .where(eq(tasks.id, taskId))
-    .returning({ id: tasks.id });
-}
