@@ -5,7 +5,7 @@ import { organization } from "better-auth/plugins";
 import { ac, owner, admin, member } from './auth-permissions';
 import * as schema from '../../../lib/db/schema';
 import db from "../../../lib/db";
-import env from "../../../lib/env";
+import env from "../env";
 import resend from "../resend";
 
 export const auth = betterAuth({

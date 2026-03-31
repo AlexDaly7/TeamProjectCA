@@ -1,5 +1,5 @@
 import { type Endpoints } from "@octokit/types";
-import env from "~~/lib/env";
+import env from "~~/server/lib/env";
 
 export function generateGithubIssue(
     repo: {
