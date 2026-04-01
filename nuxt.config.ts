@@ -10,7 +10,8 @@ export default defineNuxtConfig({
         '@nuxt/icon',
         '@vee-validate/nuxt',
         '@nuxt/fonts',
-        '@vercel/analytics'
+        '@vercel/analytics',
+        '@nuxt/test-utils/module',
     ],
     vite: {
         plugins: [
