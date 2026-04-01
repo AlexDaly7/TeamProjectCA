@@ -2,8 +2,8 @@ import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import z from 'zod';
-import { organization } from './auth';
-import { tasks } from './tasks';
+import { organization } from '../../../../lib/db/schema/auth';
+import { tasks } from '../../../../lib/db/schema/tasks';
 
 export const projects = pgTable("projects", {
     id: serial("id").primaryKey(),
@@ -37,8 +37,6 @@ export const InsertProject = createInsertSchema(projects).omit({
 });
 
 export type InsertProjectSchema = z.infer<typeof InsertProject>;
-
-// Used in client requests, since checking a GitHub repo's details with just the numeric ID is a pain in the ass
 
 
 export const UpdateProject = createUpdateSchema(projects).omit({

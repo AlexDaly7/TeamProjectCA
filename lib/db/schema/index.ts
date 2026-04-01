@@ -1,4 +1,4 @@
 export * from './auth';
-export * from './projects';
+export * from '../../../server/lib/db/schema/projects';
 export * from './tasks';
-export * from './taskAssignees';
+export * from '../../../server/lib/db/schema/taskAssignees';

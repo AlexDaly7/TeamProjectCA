@@ -1,10 +1,11 @@
-import { ModifyTask } from "~~/lib/db/schema";
+import { ModifyTaskSchema } from "~~/lib/db/schema";
 import { notifyPusherChannel } from "~~/server/lib/pusher";
 import { githubService, taskService } from "~~/server/services";
 import { validateBody } from "~~/server/utils/validation";
+import { ClientModifyTask } from "~~/shared/validation";
 
 export default defineAuthenticatedEventHandler(async (event) => {
-    const body = await validateBody(event, ModifyTask);
+    const body = await validateBody(event, ClientModifyTask);
     const taskId = validateRouterParam(event, 'id');
 
     // Get task from DB
@@ -22,12 +23,22 @@ export default defineAuthenticatedEventHandler(async (event) => {
         task: ['update']
     });
 
+    const updateData: ModifyTaskSchema = {
+        title: body.title,
+        description: body.description,
+        parentId: body.parentId,
+        startTime: body.dateRange?.start,
+        endTime: body.dateRange?.end,
+        progress: body.progress,
+        order: body.order
+    }
+
     // Update on GitHub
     await githubService.updateIssue(
         repoOwner,
         repoName,
         taskWithProject.project.id,
-        Object.assign(taskWithProject, body),
+        Object.assign(taskWithProject, updateData),
         taskWithProject.creator.name,
         taskWithProject,
     );

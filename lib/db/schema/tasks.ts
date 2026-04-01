@@ -8,11 +8,12 @@ import {
     type AnyPgColumn,
     real,
 } from "drizzle-orm/pg-core";
-import { projects } from "./projects";
+import { projects } from "../../../server/lib/db/schema/projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
-import { taskAssignees } from "./taskAssignees";
+import { taskAssignees } from "../../../server/lib/db/schema/taskAssignees";
 import { user } from "./auth";
+import { preprocessDate } from "~~/shared/utils/preprocessDate";
 
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
@@ -66,14 +67,7 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
     assignees: many(taskAssignees),
 }));
 
-const preprocessDate = z.preprocess((value) => {
-    // Since we submit the values as a date string, but we need
-    // to format them into a Date instance back on the server, just
-    // throw it into a new Date
-    if (typeof value === "string" && value.trim() !== "") return new Date(value);
 
-    return value;
-}, z.date());
 
 
 // Create
