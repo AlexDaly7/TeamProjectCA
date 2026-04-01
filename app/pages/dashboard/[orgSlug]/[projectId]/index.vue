@@ -135,7 +135,7 @@ function selectTask(item: TimelineItemWithData) {
             v-else
             :items
             :groupsInfo
-            @selected-task="selectTask" />
+            @selected-task="selectTask"/>
     </div>
 
 
