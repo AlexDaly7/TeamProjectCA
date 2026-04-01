@@ -13,6 +13,43 @@ export const useCurrentOrg = () => {
         }
     );
 
+    const currentOrg = computed(() => data.value?.organization);
+
+    async function renameCurrentOrg(newName: string): Promise<ActionButtonResult> {
+        const { $authClient } = useNuxtApp();
+
+        if (!currentOrg.value) {
+            return { error: true, message: 'No selected organization.' };
+        }
+
+        const { error } = await $authClient.organization.update({
+            organizationId: currentOrg.value.id,
+            data: { name: newName }
+        });
+
+        if (error) {
+            return { error: true, message: error.message ?? 'An unknown error occurred.' };
+        }
+
+        return { error: false };
+    }
+
+    async function deleteCurrentOrg(): Promise<ActionButtonResult> {
+        const { $authClient } = useNuxtApp();
+
+        if (!currentOrg.value) {
+            return { error: true, message: 'No selected organization.' };
+        }
+
+        const { error } = await $authClient.organization.delete({ organizationId: currentOrg.value.id });
+
+        if (error) {
+            return { error: true, message: error.message ?? 'An unknown error occurred.' };
+        }
+
+        return { error: false };
+    }
+
     async function renameProject(project: CurrentOrgProject, newName: string): Promise<ActionButtonResult> {
         const { $csrfFetch } = useNuxtApp();
         
@@ -45,10 +82,12 @@ export const useCurrentOrg = () => {
     return {
         orgSlug,
         orgData: data,
-        org: computed(() => data.value?.organization),
+        org: currentOrg,
         projects: computed(() => data.value?.projects ?? []),
         pending,
         error,
+        renameCurrentOrg,
+        deleteCurrentOrg,
         refresh,
         renameProject,
         deleteProject,

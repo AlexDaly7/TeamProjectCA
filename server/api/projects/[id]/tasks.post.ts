@@ -1,7 +1,6 @@
-import { createTask } from '~~/lib/db/queries/tasks';
 import { ClientInsertTask, type InsertTaskSchema } from '~~/lib/db/schema';
 import { notifyPusherChannel } from '~~/server/lib/pusher';
-import { githubService, projectService } from '~~/server/services';
+import { githubService, projectService, taskService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -39,12 +38,12 @@ export default defineAuthenticatedEventHandler(async (event) => {
     };
 
     // Insert the task into DB
-    const result = await createTask(insertionBody);
-    if (!result[0] || !result[0].id) {
+    const { error } = await taskService.insertTask(insertionBody);
+    if (error) {
         throw createError({
-            statusCode: 400,
-            statusMessage: "Bad Request",
-            message: "There was a problem inserting task into table."
+            statusCode: 500,
+            statusMessage: "Internal Server Error",
+            message: "There was a problem creating the task."
         });
     }
 

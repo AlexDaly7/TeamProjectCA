@@ -15,7 +15,11 @@ function signIn() {
 
 <template>
     <div class="h-full grow flex flex-col items-center justify-center">
-        <img class="w-200" src="/media/landing/logo.png" alt="The Logo for Mórchlár">
+        <img 
+            class="w-200" 
+            src="/media/landing/logo.png" 
+            alt="The Logo for Mórchlár"
+            data-testid="logo">
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
         <ButtonPrimary 
             class="inline-flex gap-2 items-center"

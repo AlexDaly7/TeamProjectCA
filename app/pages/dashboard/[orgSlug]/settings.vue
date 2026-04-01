@@ -4,26 +4,20 @@ definePageMeta({
 });
 
 const router = useRouter();
-
-const organizationsStore = useOrganizationsStore();
 const activeOrg = useCurrentOrg();
+const { refreshOrganizations } = useOrganizations();
 
 async function deleteOrg() {
-    if (!activeOrg.org.value?.id) {
-        // This should't run since the button will be disabled
-        return { error: true, message: 'No selected org.' }; 
-    }
-
-    return organizationsStore.deleteOrganization(activeOrg.org.value.id);
+    return activeOrg.deleteCurrentOrg();
 }
 
 async function renameOrg() {
-    if (!activeOrg.org.value?.id) {
-        // This should't run since the button will be disabled
-        return { error: true, message: 'No selected org.' }; 
-    }
+    return activeOrg.renameCurrentOrg(newOrgName.value);
+}
 
-    return organizationsStore.renameOrganization(activeOrg.org.value.id, newOrgName.value);
+function onRename() {
+    activeOrg.refresh(); 
+    refreshOrganizations();
 }
 
 const newOrgName = ref<string>('');
@@ -36,7 +30,8 @@ watch(activeOrg.org, (value) => {
     <div class="flex flex-col gap-8 md:p-4">
         <SettingsCard
             :action-disabled="activeOrg.org.value === undefined || newOrgName === activeOrg.org.value.name"
-            :action="renameOrg">
+            :action="renameOrg"
+            @on-success="onRename">
             <template #title>
                 Organization Name
             </template>
@@ -64,7 +59,7 @@ watch(activeOrg.org, (value) => {
                 Delete Organization
             </template>
             <template #description>
-                Permanently delete this organization from Mórchlár. This action is not reversible.
+                Permanently remove this organization from Mórchlár. This action is not reversible.
             </template>
             <template #action>
                 Delete Organization

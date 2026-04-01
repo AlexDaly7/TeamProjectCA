@@ -1,5 +1,5 @@
 import { User } from "better-auth";
-import { auth } from "~~/lib/auth"
+import { auth } from "~~/server/lib/auth/auth"
 
 const UNAUTHED_ONLY_ROUTES = ['/'];
 

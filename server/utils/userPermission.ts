@@ -1,6 +1,6 @@
-import { auth } from "~~/lib/auth";
+import { auth } from "~~/server/lib/auth/auth";
 import { type H3Event } from "h3";
-import { ac } from "~~/lib/auth-permissions";
+import { ac } from "~~/server/lib/auth/auth-permissions";
 
 // -readonly strips modifier, iterator unwraps readonly
 type Writeable<T> = { -readonly [K in keyof T]: T[K] extends readonly (infer U)[] ? U[] : T[K] };

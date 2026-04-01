@@ -10,12 +10,12 @@
     "postinstall": "nuxt prepare",
     "db:generate": "bun drizzle-kit generate",
     "db:migrate": "bun drizzle-kit migrate",
-    "db:studio": "bun drizzle-kit studio"
+    "db:studio": "bun drizzle-kit studio",
+    "test": "bunx vitest"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@nuxt/fonts": "0.14.0",
-    "@pinia/nuxt": "0.11.3",
     "@tailwindcss/vite": "^4.2.2",
     "@vee-validate/nuxt": "^4.15.1",
     "@vee-validate/zod": "^4.15.1",
@@ -31,7 +31,6 @@
     "pusher-js": "^8.4.3",
     "reka-ui": "^2.8.2",
     "resend": "^6.9.4",
-    "slug": "^11.0.1",
     "tailwindcss": "^4.2.2",
     "ua-parser-js": "^2.0.9",
     "vue": "^3.5.31",
@@ -42,10 +41,19 @@
   "devDependencies": {
     "@iconify-json/hugeicons": "^1.2.24",
     "@nuxt/icon": "^2.2.1",
+    "@nuxt/test-utils": "^4.0.0",
     "@octokit/types": "^16.0.0",
     "@types/node": "^25.3.0",
     "@types/slug": "^5.0.9",
+    "@vue/test-utils": "^2.4.6",
     "drizzle-kit": "^0.31.10",
-    "tsx": "^4.21.0"
+    "happy-dom": "^20.8.9",
+    "playwright-core": "^1.59.0",
+    "tsx": "^4.21.0",
+    "vitest": "^4.1.2",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }
