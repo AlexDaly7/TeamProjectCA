@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { auth } from "~~/server/lib/auth/auth";
-import db from "~~/lib/db";
-import { organization } from "~~/lib/db/schema";
+import db from "~~/server/lib/db";
+import { organization } from "~~/server/lib/db/schema";
 import { organizationService } from "~~/server/services";
 import validateRouterParam from "~~/server/utils/validateRouterParam";
 

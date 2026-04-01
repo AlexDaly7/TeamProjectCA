@@ -1,6 +1,6 @@
 import { Octokit } from "octokit"
 import githubApp from "../lib/octokit";
-import { InsertTaskSchema, type TasksSchema } from "~~/lib/db/schema";
+import { InsertTaskSchema, type TasksSchema } from "~~/server/lib/db/schema";
 import { taskService } from ".";
 import { type Endpoints } from "@octokit/types";
 

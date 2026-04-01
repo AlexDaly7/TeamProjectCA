@@ -7,7 +7,7 @@ import {
     index,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { projects } from "../../../server/lib/db/schema/projects";
+import { projects } from "./projects";
 import { createInsertSchema } from "drizzle-zod";
 import z from "zod";
 

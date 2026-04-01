@@ -12,7 +12,7 @@ import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { taskAssignees } from "./taskAssignees";
-import { user } from "../../../../lib/db/schema/auth";
+import { user } from "./auth";
 import { preprocessDate } from "~~/shared/utils/preprocessDate";
 
 export const tasks = pgTable("tasks", {

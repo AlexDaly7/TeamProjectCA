@@ -1,4 +1,4 @@
-import { type InsertTaskSchema } from '~~/lib/db/schema';
+import { type InsertTaskSchema } from '~~/server/lib/db/schema';
 import { ClientInsertTask } from "~~/shared/validation";
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService, taskService } from '~~/server/services';

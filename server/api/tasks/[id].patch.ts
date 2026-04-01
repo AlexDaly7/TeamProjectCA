@@ -1,4 +1,4 @@
-import { ModifyTaskSchema } from "~~/lib/db/schema";
+import { ModifyTaskSchema } from "~~/server/lib/db/schema";
 import { notifyPusherChannel } from "~~/server/lib/pusher";
 import { githubService, taskService } from "~~/server/services";
 import { validateBody } from "~~/server/utils/validation";
