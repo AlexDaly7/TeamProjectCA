@@ -3,7 +3,7 @@ import { InsertOrganization } from '~~/lib/db/schema';
 
 const { $authClient } = useNuxtApp();
 const router = useRouter();
-const organizationsStore = useOrganizationsStore();
+const { refreshOrganizations } = useOrganizations();
 
 const { handleSubmit, errors, meta, setErrors, resetForm } = useForm({
     validationSchema: toTypedSchema(InsertOrganization),
@@ -40,6 +40,7 @@ const onSubmit = submitHandler(
             if (created.error) {
                 return { error: true, message: created.error.message ?? 'Unknown error creating org.' }
             } else {
+                refreshOrganizations();
                 return { error: false, data: created.data };
             }
         } catch (e) {   
@@ -48,7 +49,6 @@ const onSubmit = submitHandler(
     }, 
     async ({ slug }) => {
         router.push({ name: 'dashboard-orgSlug', params: { orgSlug: slug } });
-        organizationsStore.fetchOrganizations();
         emit('onSubmit');
     }
 );

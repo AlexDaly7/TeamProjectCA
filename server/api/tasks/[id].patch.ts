@@ -1,6 +1,5 @@
-import { modifyTask } from "~~/lib/db/queries/tasks";
 import { ModifyTask } from "~~/lib/db/schema";
-import { notifyPusherChannel, pusher } from "~~/server/lib/pusher";
+import { notifyPusherChannel } from "~~/server/lib/pusher";
 import { githubService, taskService } from "~~/server/services";
 import { validateBody } from "~~/server/utils/validation";
 
@@ -34,7 +33,13 @@ export default defineAuthenticatedEventHandler(async (event) => {
     );
 
     // Update in DB
-    await modifyTask(taskId, body);
+    const { error } = await taskService.updateTask(taskId, body);
+    if (error) {
+        throw createError({
+            status: 400,
+            statusText: error.message
+        });
+    }
 
     // Notify users in pusher channel
     await notifyPusherChannel(projectId);

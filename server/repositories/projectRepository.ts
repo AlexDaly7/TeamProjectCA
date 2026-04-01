@@ -1,6 +1,15 @@
 import { and, eq } from "drizzle-orm";
 import db from "~~/lib/db";
-import { projects, type UpdateProjectSchema } from "~~/lib/db/schema";
+import { projects } from "~~/lib/db/schema";
+import type { InsertProjectSchema, UpdateProjectSchema } from "~~/lib/db/schema";
+
+// Create
+export async function createProject(data: InsertProjectSchema) {
+    return await db
+        .insert(projects)
+        .values(data)
+        .returning({ id: projects.id })
+}
 
 
 // Read

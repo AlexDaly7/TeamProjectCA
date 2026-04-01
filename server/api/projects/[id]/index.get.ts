@@ -1,5 +1,4 @@
-import { getTasks } from "~~/lib/db/queries/tasks";
-import { projectService } from "~~/server/services";
+import { projectService, taskService } from "~~/server/services";
 import validateRouterParam from "~~/server/utils/validateRouterParam";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -16,7 +15,14 @@ export default defineAuthenticatedEventHandler(async (event) => {
         project: ['read']
     });
 
-    const tasks = await getTasks(projectId);
+    const { data: tasks, error } = await tryCatch(taskService.getTasksWithDepthAndPath(projectId));
+    if (error) {
+        throw createError({
+            statusCode: 500,
+            statusText: 'Failed to fetch tasks.'
+        });
+    }
+
 
     return {
         ...project,

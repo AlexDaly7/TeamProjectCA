@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { auth } from "~~/lib/auth";
+import { auth } from "~~/server/lib/auth/auth";
 import db from "~~/lib/db";
 import { organization } from "~~/lib/db/schema";
 import { organizationService } from "~~/server/services";
