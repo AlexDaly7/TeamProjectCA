@@ -39,14 +39,6 @@ export const InsertProject = createInsertSchema(projects).omit({
 export type InsertProjectSchema = z.infer<typeof InsertProject>;
 
 // Used in client requests, since checking a GitHub repo's details with just the numeric ID is a pain in the ass
-export const ClientInsertProject = createInsertSchema(projects).omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    repoId: true,
-}).extend({
-    repo: z.string(),
-});
 
 
 export const UpdateProject = createUpdateSchema(projects).omit({
@@ -60,6 +52,3 @@ export const UpdateProject = createUpdateSchema(projects).omit({
 });
 
 export type UpdateProjectSchema = z.infer<typeof UpdateProject>;
-
-
-export type ClientInsertProjectSchema = z.infer<typeof ClientInsertProject>;

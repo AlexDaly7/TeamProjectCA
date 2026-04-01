@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientInsertProjectSchema } from '~~/lib/db/schema';
+import { type ClientInsertProjectSchema } from "~~/shared/validation";
 
 const { $csrfFetch } = useNuxtApp();
 
@@ -20,7 +20,6 @@ async function createProject() {
 
     const body: ClientInsertProjectSchema = {
         organizationId: props.organizationId,
-        repo: selectedRepo.value,
         title: title.value,
         repoOwner,
         repoName,

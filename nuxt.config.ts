@@ -44,5 +44,9 @@ export default defineNuxtConfig({
 
     fonts: {
         families: [ { name: 'Geist', provider: 'local' } ],
+    },
+
+    imports: {
+        dirs: [ 'shared/validation/**/*' ]
     }
 });
