@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import z from 'zod';
 import { organization } from './auth';
 import { tasks } from './tasks';
@@ -51,5 +51,19 @@ export const ClientInsertProject = createInsertSchema(projects).omit({
 }).extend({
     repo: z.string(),
 });
+
+
+export const UpdateProject = createUpdateSchema(projects).omit({
+    id: true,
+    organizationId: true,
+    repoId: true,
+    repoName: true,
+    repoOwner: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
+export type UpdateProjectSchema = z.infer<typeof UpdateProject>;
+
 
 export type ClientInsertProjectSchema = z.infer<typeof ClientInsertProject>;

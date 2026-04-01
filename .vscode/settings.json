@@ -1,10 +1,17 @@
 {
     "tailwindCSS.experimental.configFile": "app/assets/css/main.css",
-    "typescript.preferences.autoImportFileExcludePatterns": ["process", "node:process"],
+    "js/ts.preferences.autoImportFileExcludePatterns": ["process", "node:process"],
     "files.associations": {
         "*.css": "tailwindcss",
     },
     "explorer.autoRevealExclude": {
         "**/.vite": true
-    }
+    },
+    "nuxtr.defaultPackageManager": "Bun",
+    "nuxtr.vueFiles.template.defaultLanguage": "html",
+    "nuxtr.vueFiles.firstTag": "script",
+    "nuxtr.vueFiles.script.type": "setup",
+    "nuxtr.vueFiles.script.defaultLanguage": "ts",
+    "nuxtr.vueFiles.style.addStyleTag": false,
+    "nuxtr.piniaFiles.defaultTemplate": "setup",
 }

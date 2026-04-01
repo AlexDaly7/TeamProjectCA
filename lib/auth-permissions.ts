@@ -5,24 +5,28 @@ import { defaultStatements, ownerAc, adminAc, memberAc } from 'better-auth/plugi
 
 const statement = {
     ...defaultStatements,
-    project: ["create", "share", "update", "delete"],
+    project: ["create", "read", "update", "delete"],
+    task: ["create", "read", "update", "delete"],
 } as const;
 
 const ac = createAccessControl(statement);
 
 
 const owner = ac.newRole({ 
-    project: ["create", "update", "delete"], 
+    project: ["create", "read", "update", "delete"], 
+    task: ["create", "read", "update", "delete"],
     ...ownerAc.statements,
 }); 
 
 const admin = ac.newRole({ 
-    project: ["create", "update"], 
+    project: ["create", "read", "update", "delete"], 
+    task: ["create", "read", "update", "delete"],
     ...adminAc.statements,
 }); 
 
 const member = ac.newRole({ 
-    project: ['update'], 
+    project: ["read"], 
+    task: ["create", "read", "update", "delete"],
     ...memberAc.statements,
 }); 
 

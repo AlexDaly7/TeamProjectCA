@@ -31,6 +31,8 @@ const EnvSchema = z.object({
 
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
+    GITHUB_APP_ID: z.string(),
+    GITHUB_APP_PRIVATE_KEY: z.string(),
 
     PUSHER_APP_ID: z.string(),
     PUSHER_KEY: z.string(),

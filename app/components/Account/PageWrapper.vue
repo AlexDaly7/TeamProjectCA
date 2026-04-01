@@ -39,9 +39,9 @@ const auth = useAuth();
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"
-                :to="{ name: 'dashboard-account-accounts' }">
-                <Icon name="hugeicons:link-01" />
-                <span class="hidden md:block">Accounts</span>
+                :to="{ name: 'dashboard-account-github' }">
+                <Icon name="hugeicons:github-01" />
+                <span class="hidden md:block">GitHub</span>
             </ButtonTertiary>
             <ButtonTertiary 
                 class="inline-flex items-center justify-center gap-2"

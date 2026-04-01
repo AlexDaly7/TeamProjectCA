@@ -1,95 +1,127 @@
 import { relations } from "drizzle-orm";
 import {
-  pgTable,
-  serial,
-  text,
-  integer,
-  timestamp,
-  type AnyPgColumn,
-  real,
+    pgTable,
+    serial,
+    text,
+    integer,
+    timestamp,
+    type AnyPgColumn,
+    real,
 } from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
+import { taskAssignees } from "./taskAssignees";
+import { user } from "./auth";
 
 export const tasks = pgTable("tasks", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    description: text("description"),
 
-  projectId: integer("project_id")
-    .references(() => projects.id, { onDelete: "cascade" })
-    .notNull(),
-  parentId: integer("parent_id").references((): AnyPgColumn => tasks.id, {
-    onDelete: "cascade",
-  }),
+    projectId: integer("project_id")
+        .references(() => projects.id, { onDelete: "cascade" })
+        .notNull(),
+    parentId: integer("parent_id")
+        .references((): AnyPgColumn => tasks.id, {
+        onDelete: "cascade",
+    }),
 
-  startTime: timestamp("start_time").notNull(),
-  endTime: timestamp("end_time").notNull(),
-  progress: real("progress").default(0), // 0.00 to 1.00 as %
+    ghIssueNodeId: text('gh_issue_node_id').notNull(),
+    ghIssueNumber: integer('gh_issue_number').notNull(),
 
-  order: integer("order").default(0), // Order as sibling
+    startTime: timestamp("start_time").notNull(),
+    endTime: timestamp("end_time").notNull(),
+    progress: real("progress").default(0), // 0.00 to 1.00 as %
 
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .$onUpdate(() => new Date())
-    .notNull(),
+    order: integer("order").default(0), // Order as sibling
+
+    creatorId: text('creator_id')
+        .references(() => user.id)
+        .notNull(),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => new Date())
+        .notNull(),
 });
 
 export const taskRelations = relations(tasks, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [tasks.projectId],
-    references: [projects.id],
-  }),
-  parent: one(tasks, {
-    fields: [tasks.parentId],
-    references: [tasks.id],
-    relationName: "subtasks",
-  }),
-  subtasks: many(tasks, {
-    relationName: "subtasks",
-  }),
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id],
+    }),
+    parent: one(tasks, {
+        fields: [tasks.parentId],
+        references: [tasks.id],
+        relationName: "subtasks",
+    }),
+    creator: one(user, {
+        fields: [tasks.creatorId],
+        references: [user.id],
+    }),
+    subtasks: many(tasks, {
+        relationName: "subtasks",
+    }),
+    assignees: many(taskAssignees),
 }));
 
 const preprocessDate = z.preprocess((value) => {
-  // Since we submit the values as a date string, but we need
-  // to format them into a Date instance back on the server, just
-  // throw it into a new Date
-  if (typeof value === "string" && value.trim() !== "") return new Date(value);
+    // Since we submit the values as a date string, but we need
+    // to format them into a Date instance back on the server, just
+    // throw it into a new Date
+    if (typeof value === "string" && value.trim() !== "") return new Date(value);
 
-  return value;
+    return value;
 }, z.date());
 
-export const InsertTask = createInsertSchema(tasks, {
-  startTime: () => preprocessDate,
-  endTime: () => preprocessDate,
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
 
-export const ModifyTask = createUpdateSchema(tasks, {
-  startTime: () => preprocessDate,
-  endTime: () => preprocessDate,
-  id: () => z.number(),
-})
-  .required({ id: true })
-  .omit({
+// Create
+export const InsertTask = createInsertSchema(tasks, {
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!'),
+    description: z.string().max(2000, 'Too long!').nullable(),
+    startTime: () => preprocessDate,
+    endTime: () => preprocessDate,
+}).omit({
+    id: true,
     createdAt: true,
     updatedAt: true,
-  });
-
-export const DeleteTask = createUpdateSchema(tasks, {
-  id: () => z.number(),
-})
-  .required({ id: true })
-  .pick({ id: true });
-
-export type TasksSchema = typeof tasks.$inferSelect;
+});
 
 export type InsertTaskSchema = z.infer<typeof InsertTask>;
 
+
+export const ClientInsertTask = InsertTask.omit({
+    ghIssueNodeId: true,
+    ghIssueNumber: true,
+    projectId: true,
+    creatorId: true,
+});
+
+export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
+
+
+// READ
+export type TasksSchema = typeof tasks.$inferSelect;
+
+// UPDATE
+export const ModifyTask = createUpdateSchema(tasks, {
+    title: z.string().min(3, 'Too short!').max(100, 'Too long!').optional(),
+    description: z.string().max(2000, 'Too long!').optional(),
+    startTime: () => preprocessDate,
+    endTime: () => preprocessDate,
+    id: () => z.number(),
+})
+    .omit({
+        createdAt: true,
+        updatedAt: true,
+        ghIssueNodeId: true,
+        ghIssueNumber: true,
+        projectId: true,
+        id: true,
+        creatorId: true,
+    });
+
 export type ModifyTaskSchema = z.infer<typeof ModifyTask>;
 
-export type DeleteTaskSchema = z.infer<typeof DeleteTask>;
+// DELETE doesn't need body

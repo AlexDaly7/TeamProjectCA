@@ -10,7 +10,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const bodyData = await validateBody(event, ClientInsertProject);
 
-    await ensureUserInOrg(event, userId, bodyData.organizationId);
+    await ensureOrganizationPermission(event, bodyData.organizationId, {
+        project: ['create']
+    })
 
     try {
         // Validate GitHub repo id

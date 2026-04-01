@@ -1,4 +1,4 @@
-import { H3Event } from "#imports";
+import { H3Event } from "h3";
 
 export default function validateRouterParam(event: H3Event, paramName: string, ensureInt?: true): number;
 export default function validateRouterParam(event: H3Event, paramName: string, ensureInt: false): string;

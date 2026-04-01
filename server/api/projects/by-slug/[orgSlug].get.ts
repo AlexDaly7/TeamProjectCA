@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { auth } from "~~/lib/auth";
 import db from "~~/lib/db";
-import { listProjects } from "~~/lib/db/queries/projects";
 import { organization } from "~~/lib/db/schema";
+import { organizationService } from "~~/server/services";
 import validateRouterParam from "~~/server/utils/validateRouterParam";
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -38,7 +38,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const orgProjects = await listProjects(org.id);
+    const orgProjects = await organizationService.listProjectsWithDetails(org.id);
 
     return {
         projects: orgProjects,

@@ -1,27 +1,33 @@
 import { auth } from "~~/lib/auth";
 import { type H3Event } from "h3";
+import { ac } from "~~/lib/auth-permissions";
 
-// todo: make this check specific permissions in the function params
-export async function ensureUserInOrg(event: H3Event, userId: string, organizationId: string) {
+// -readonly strips modifier, iterator unwraps readonly
+type Writeable<T> = { -readonly [K in keyof T]: T[K] extends readonly (infer U)[] ? U[] : T[K] };
+type Permissions = Partial<Writeable<Parameters<typeof ac.newRole>[0]>>;
+
+export async function ensureOrganizationPermission(
+    event: H3Event,
+    organizationId: string,
+    permissions: Permissions,
+) {
     const { success, error } = await auth.api.hasPermission({
         headers: event.headers,
         body: {
-            permissions: {
-                project: [ 'update' ],
-            },
             organizationId,
-        },
+            permissions,
+        }
     });
 
     if (error) {
-        // todo: use logger
-        console.log('error getting permissions for user', userId, organizationId);
+        console.error('Permissions check failed', { organizationId, permissions, error });
+
         throw createError({
-            statusCode: 500,
-            statusMessage: 'Internal Server Error',
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
         });
     }
-    
+
     if (!success) {
         throw createError({
             statusCode: 404,

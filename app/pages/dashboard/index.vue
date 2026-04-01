@@ -7,7 +7,14 @@ definePageMeta({
 </script>
 
 <template>
-    <div class="flex items-center justify-center h-full text-txt-secondary">
-        Create a new organization from the top-left dropdown, or check pending invites to accept organization invites.
+    <div class="flex flex-col items-center justify-center h-full text-txt-secondary">
+        <h1 class="text-xl font-semibold">Welcome to Mórchlár!</h1>
+        <span class="text-sm mb-4">Create a new organization, or check your email for pending invites.</span>
+        <ButtonCreateOrg>
+            <ButtonPrimary class="inline-flex items-center gap-2 pl-3">
+                <Icon name="hugeicons:add-01" />
+                Create organization
+            </ButtonPrimary>
+        </ButtonCreateOrg>
     </div>
 </template>

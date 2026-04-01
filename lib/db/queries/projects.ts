@@ -28,12 +28,6 @@ export async function getRepoId(projectId: number) {
     .where(eq(projects.id, projectId));
 }
 
-export async function listProjects(organizationId: string) {
-    return await db.query.projects.findMany({
-        where: eq(projects.organizationId, organizationId),
-    });
-}
-
 export async function getUserProject(userId: string, projectId: number) {
     const projectGroupInfo = await db.query.projects.findFirst({
         where: eq(projects.id, projectId),
