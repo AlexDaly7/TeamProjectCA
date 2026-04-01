@@ -8,11 +8,11 @@ import {
     type AnyPgColumn,
     real,
 } from "drizzle-orm/pg-core";
-import { projects } from "../../../server/lib/db/schema/projects";
+import { projects } from "./projects";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
-import { taskAssignees } from "../../../server/lib/db/schema/taskAssignees";
-import { user } from "./auth";
+import { taskAssignees } from "./taskAssignees";
+import { user } from "../../../../lib/db/schema/auth";
 import { preprocessDate } from "~~/shared/utils/preprocessDate";
 
 export const tasks = pgTable("tasks", {
@@ -83,17 +83,6 @@ export const InsertTask = createInsertSchema(tasks, {
 });
 
 export type InsertTaskSchema = z.infer<typeof InsertTask>;
-
-
-export const ClientInsertTask = InsertTask.omit({
-    ghIssueNodeId: true,
-    ghIssueNumber: true,
-    projectId: true,
-    creatorId: true,
-});
-
-export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
-
 
 // READ
 export type TasksSchema = typeof tasks.$inferSelect;

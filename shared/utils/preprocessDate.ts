@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const preprocessDate = z.preprocess((value) => {
+export const preprocessDate = z.preprocess((value: string | Date) => {
     // Since we submit the values as a date string, but we need
     // to format them into a Date instance back on the server, just
     // throw it into a new Date

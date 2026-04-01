@@ -1,6 +1,6 @@
 import { Octokit } from "octokit"
 import githubApp from "../lib/octokit";
-import { type ClientInsertTaskSchema, type TasksSchema } from "~~/lib/db/schema";
+import { InsertTaskSchema, type TasksSchema } from "~~/lib/db/schema";
 import { taskService } from ".";
 import { type Endpoints } from "@octokit/types";
 
@@ -16,7 +16,7 @@ export async function createIssue(
     repoOwner: string,
     repoName: string,
     projectId: number,
-    values: ClientInsertTaskSchema,
+    values: Omit<InsertTaskSchema, 'creatorId' | 'ghIssueNodeId' | 'ghIssueNumber' | 'projectId'>,
     taskCreatorName: string,
 ) {
     const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
@@ -36,11 +36,17 @@ export async function createIssue(
             name: repoName,
             owner: repoOwner,
         },
-        values,
+        {
+            title: values.title,
+            description: values.description ?? undefined,
+            progress: 0,
+            startTime: values.startTime,
+            endTime: values.endTime,
+        },
         {
             taskCreatorName,
             projectId,
-        }
+        },
     ));
 
     if (!createdIssue) {
@@ -76,7 +82,7 @@ export async function updateIssue(
     repoOwner: string,
     repoName: string,
     projectId: number,
-    values: ClientInsertTaskSchema,
+    values: InsertTaskSchema,
     creatorName: string,
     prevValues: TasksSchema,
 ) {
@@ -92,7 +98,19 @@ export async function updateIssue(
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
 
-    const body = Object.assign(prevValues, values);
+    const issueGeneratorBody: InsertTaskSchema = {
+        title: values.title ?? prevValues.title,
+        description: values.description ?? prevValues.description,
+        parentId: values.parentId ?? prevValues.parentId,
+        startTime: values.startTime ?? prevValues.startTime,
+        endTime: values.endTime ?? prevValues.endTime,
+        order: values.order ?? prevValues.order,
+        creatorId: prevValues.creatorId,
+        ghIssueNodeId: prevValues.ghIssueNodeId,
+        ghIssueNumber: prevValues.ghIssueNumber,
+        projectId: prevValues.projectId,
+        progress: values.progress ?? prevValues.progress,
+    };
 
     const updatePayload: Endpoints['PATCH /repos/{owner}/{repo}/issues/{issue_number}']['parameters'] = {
         ...generateGithubIssue(
@@ -100,7 +118,7 @@ export async function updateIssue(
                 name: repoName,
                 owner: repoOwner,
             },
-            body,
+            issueGeneratorBody,
             {
                 taskCreatorName: creatorName,
                 projectId,

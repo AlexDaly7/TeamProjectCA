@@ -5,10 +5,9 @@ export const ClientInsertTask = z.object({
     description: z.string().optional(),
     parentId: z.number().nullable().optional(),
     dateRange: z.object({ // vee-validate DateRange object
-        start: z.date(),
-        end: z.date(),
+        start: preprocessDate,
+        end: preprocessDate,
     }),
-    progress: z.number().nullable().optional(),
     order: z.number().nullable().optional(),
 });
 
@@ -20,8 +19,8 @@ export const ClientModifyTask = z.object({
     description: z.string().optional(),
     parentId: z.number().nullable().optional(),
     dateRange: z.object({ // vee-validate DateRange object
-        start: z.date().optional(),
-        end: z.date().optional(),
+        start: preprocessDate,
+        end: preprocessDate,
     }).optional(),
     progress: z.number().nullable().optional(),
     order: z.number().nullable().optional(),

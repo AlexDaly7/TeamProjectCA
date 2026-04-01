@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { TimelineItemWithData } from '~/utils/types/timeline';
-import { ModifyTask } from '~~/lib/db/schema';
 import { type ClientModifyTaskSchema, ClientModifyTask } from '~~/shared/validation'
-import z from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 const props = defineProps<{

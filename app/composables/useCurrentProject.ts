@@ -1,7 +1,6 @@
 import type { DateRange } from "reka-ui";
 import type { ActionButtonResult } from "~/utils/types/actionButton";
-import type { ClientInsertTaskSchema } from "~~/lib/db/schema";
-import type { ClientModifyTaskSchema } from "~~/shared/validation";
+import type { ClientModifyTaskSchema, ClientInsertTaskSchema } from "~~/shared/validation";
 
 export const useCurrentProject = () => {
     const route = useRoute();
@@ -19,24 +18,14 @@ export const useCurrentProject = () => {
         const { $csrfFetch } = useNuxtApp();
         if (!dateRange.start || !dateRange.end) return { error: true, message: 'No date range start/end.' };
 
-        const startDate = new Date(
-            dateRange.start.year,
-            dateRange.start.month - 1,
-            dateRange.start.day,
-        );
-
-        const endDate = new Date(
-            dateRange.end.year,
-            dateRange.end.month - 1,
-            dateRange.end.day,
-        );
-
         // Since parentId is optional, if we don't provide one it doesn't get a parent and
         // won't be a subtask
         const body: ClientInsertTaskSchema = {
             title,
-            startTime: startDate,
-            endTime: endDate,
+            dateRange: {
+                start: dateRange.start.toDate('utc'),
+                end: dateRange.end.toDate('utc'),
+            },
             description,
             parentId,
         };

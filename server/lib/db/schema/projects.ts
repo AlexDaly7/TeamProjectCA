@@ -3,7 +3,7 @@ import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import z from 'zod';
 import { organization } from '../../../../lib/db/schema/auth';
-import { tasks } from '../../../../lib/db/schema/tasks';
+import { tasks } from './tasks';
 
 export const projects = pgTable("projects", {
     id: serial("id").primaryKey(),

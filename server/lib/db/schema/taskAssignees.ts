@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import z from "zod";
-import { tasks } from "../../../../lib/db/schema/tasks";
+import { tasks } from "./tasks";
 import { user } from "../../../../lib/db/schema/auth";
 
 export const taskAssignees = pgTable("task_assignees", {
