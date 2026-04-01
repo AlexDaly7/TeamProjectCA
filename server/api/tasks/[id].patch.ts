@@ -44,7 +44,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
     );
 
     // Update in DB
-    const { error } = await taskService.updateTask(taskId, body);
+    const { error } = await taskService.updateTask(taskId, updateData);
     if (error) {
         throw createError({
             status: 400,
