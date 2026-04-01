@@ -38,7 +38,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         repoOwner,
         repoName,
         taskWithProject.project.id,
-        Object.assign(taskWithProject, updateData),
+        { ...taskWithProject, ...updateData },
         taskWithProject.creator.name,
         taskWithProject,
     );
