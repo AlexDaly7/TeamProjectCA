@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import db from "~~/lib/db";
-import { account } from "~~/lib/db/schema";
+import { account } from "~~/server/lib/db/schema";
+import db from "../lib/db";
 
 export async function getGithubAccount(userId: string) {
     return await db.query.account.findFirst({

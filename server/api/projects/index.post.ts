@@ -1,4 +1,4 @@
-import type { InsertProjectSchema } from "~~/lib/db/schema";
+import type { InsertProjectSchema } from "~~/server/lib/db/schema";
 import { projectService } from "~~/server/services";
 import { getUserGitHubAuthToken } from "~~/server/utils/auth";
 import { verifyGitHubRepoAccess } from "~~/server/utils/github";

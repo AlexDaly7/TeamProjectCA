@@ -1,4 +1,4 @@
-import type { InsertTaskSchema, ModifyTaskSchema } from "~~/lib/db/schema";
+import type { InsertTaskSchema, ModifyTaskSchema } from "~~/server/lib/db/schema";
 import { tasksRepository } from "../repositories";
 import type { Result } from "#shared/types/results";
 

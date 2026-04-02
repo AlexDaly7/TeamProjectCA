@@ -1,4 +1,5 @@
-import { ClientInsertTask, type InsertTaskSchema } from '~~/lib/db/schema';
+import { type InsertTaskSchema } from '~~/server/lib/db/schema';
+import { ClientInsertTask } from "~~/shared/validation";
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService, taskService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';
@@ -19,26 +20,43 @@ export default defineAuthenticatedEventHandler(async (event) => {
         task: ['create']
     });
 
+    const insertionBody: Omit<InsertTaskSchema, 'creatorId' | 'ghIssueNodeId' | 'ghIssueNumber' | 'projectId'> = {
+        title: body.title,
+        description: body.description ?? null,
+        startTime: body.dateRange.start,
+        endTime: body.dateRange.end,
+        order: body.order ?? null,
+        parentId: body.parentId ?? null,
+        progress: 0,
+    };
+
 
     // Create the issue on GitHub
     const createdIssue = await githubService.createIssue(
         project.repoOwner,
         project.repoName,
         project.id,
-        body,
+        {
+            title: body.title,
+            description: body.description ?? null,
+            startTime: body.dateRange.start,
+            endTime: body.dateRange.end,
+            order: body.order ?? null,
+            parentId: body.parentId ?? null,
+        },
         event.context.user.name,
     );
 
-    const insertionBody: InsertTaskSchema = {
-        ...body,
+    const dbInsertionBody: InsertTaskSchema = {
+        ...insertionBody,
+        creatorId: event.context.user.id,
         ghIssueNodeId: createdIssue.node_id,
         ghIssueNumber: createdIssue.number,
-        projectId,
-        creatorId: event.context.user.id,
+        projectId: project.id,
     };
 
     // Insert the task into DB
-    const { error } = await taskService.insertTask(insertionBody);
+    const { error } = await taskService.insertTask(dbInsertionBody);
     if (error) {
         throw createError({
             statusCode: 500,
