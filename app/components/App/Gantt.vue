@@ -108,39 +108,134 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
         const item = props.items.find((task)=>task.id+"-group"==group.id);
         const itemStart = item?.start;
         const itemEnd = item?.end;
+        
         if(itemStart&&itemEnd) {
             // Gets the starting position in pixels from the current timeline viewport range and the timelines width in pixels
             const linePosX = ((itemStart-timelineStart.value)/end)*timelineWidth?.value;
-            
             const child = props.items.find((task)=>task.data.parentId+"-group"==group.id);
-            console.log(!child);
             let svgData;
-            if(group.expanded&&child) {
-                // Gets the starting position of the tasks child, in same manner as above
-                const childPosX = (((child.start-timelineStart.value)/end))*timelineWidth?.value;
-                svgData = {
-                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${childPosX} ${(60*count+1)+120}`,
-                    colour: "blue",
+            const emptySvg = {
+                svgPath: ``,
+                colour: "",
+            }
+            if(group.expanded) {
+                // If child exists
+                if(child!=undefined) { // If child, draw path to child
+                    const childPosX = (((child.start-timelineStart.value)/end))*timelineWidth?.value;
+                    svgData = {
+                        svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${childPosX} ${(60*count+1)+120}`,
+                        colour: "blue",
                     }
+                } else { // Check if item sibling
+                    const sibling = getItemSibling(item);
+                    if(sibling!=null) { // Check if sibling
+                        const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
+                        svgData = {
+                            svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
+                            colour: "green",
+                        }
+                    } else { // If not sibling
+                        let parent = props.items.find((task)=>task.data.id==item.data.parentId); // Get items parent
+                        if(parent!=null) {
+                            const siblingParent = getItemSibling(parent); // Get items parents sibling
+                            //console.log("SIBLINGPARENTTITLE: "+siblingParent?.data.title);
+                            if(siblingParent!=null) { // If items parents sibling isnt null
+                                
+                                const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
+                                svgData = {
+                                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
+                                    colour: "pink",
+                                }
+                            } else {
+                                parent=props.items.find((task)=>task.data.id==parent?.data.parentId);
+                                if(!parent) {return emptySvg};
+                                const siblingParent = getItemSibling(parent);
+                                if(!siblingParent) {return emptySvg};   
+                                const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
+                                svgData = {
+                                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
+                                    colour: "pink",
+                                }
+                            }
+                        } else {
+                            return emptySvg;
+                        }
+                        
+                    }
+                }
             } else {
-                const linePosXEnd = ((itemEnd-timelineStart.value)/end)*timelineWidth?.value;
-                svgData = {
-                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70}`,
-                    colour: "blue",
+                const sibling = getItemSibling(item);
+                if(sibling!=null) { // Check if sibling
+                    const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
+                    svgData = {
+                        svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
+                        colour: "green",
+                    }
+                } else {
+                    let parent = props.items.find((task)=>task.data.id==item.data.parentId); // Get items parent
+                    if(parent!=null) {
+                        const siblingParent = getItemSibling(parent); // Get items parents sibling
+                        //console.log("SIBLINGPARENTTITLE: "+siblingParent?.data.title);
+                        if(siblingParent!=null) { // If items parents sibling isnt null
+                            const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
+                            svgData = {
+                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
+                                colour: "green",
+                            }
+                        } else {
+                            parent=props.items.find((task)=>task.data.id==parent?.data.parentId);
+                            if(!parent) {return emptySvg};
+                            const siblingParent = getItemSibling(parent);
+                            if(!siblingParent) {return emptySvg};   
+                            const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
+                            svgData = {
+                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
+                                colour: "green", 
+                            }
+                        }
+                    } else {
+                        const sibling = getItemSibling(item);
+                        if(sibling) {
+                            const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
+                            svgData = {
+                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
+                                colour: "yellow",
+                            }
+                        } else return emptySvg;
+                        
+                    }
                 }
             }
             count++;
             return svgData;
+        } else {
+            const svgData = {
+                svgPath: `M100 ${(60*count)+70} L100 ${(60*count)+70}`,
+                colour: "blue",
+            }
+            count++;
+            return svgData;
         }
-        const svgData = {
-            svgPath: `M100 ${(60*count)+70} L100 ${(60*count)+70}`,
-            colour: "blue",
-        }
-        count++;
-        return svgData;
+        
     });
-    
 });
+
+function getItemSibling(item: TimelineItemWithData) {
+    let i = props.items.indexOf(item);
+    console.log("I: "+i+"\nLength: "+props.items.length+"\nITEM TITLE: "+item.data.title);
+    console.log(props.items);
+    let siblingFound = false;
+    while(i<=props.items.length&&!siblingFound) {
+        if(props.items[i]?.data.parentId===item.data.parentId&&props.items[i]?.id!==item.id) {
+            siblingFound=true;
+            return props.items[i];
+        }
+        i++;
+    }
+    if(!siblingFound) {
+        return null;
+    }
+}
 
 function getBounds(value: {start: number, end: number}) {
     timelineStart.value = value.start;
@@ -164,7 +259,7 @@ function getBounds(value: {start: number, end: number}) {
             </defs>
             <path v-for="line in lines"
             :d="`${line.svgPath}`"
-            style="fill:none;stroke:green;stroke-width:3;position:relative;"
+            :style="`fill:none;stroke:${line.colour};stroke-width:3;position:relative;`"
             class="z-50"
             marker-end="url(#arrow)" />
         </svg>
