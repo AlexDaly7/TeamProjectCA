@@ -183,15 +183,7 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
                                 colour: "green",
                             }
                         } else {
-                            parent=props.items.find((task)=>task.data.id==parent?.data.parentId);
-                            if(!parent) {return emptySvg};
-                            const siblingParent = getItemSibling(parent);
-                            if(!siblingParent) {return emptySvg};   
-                            const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
-                            svgData = {
-                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
-                                colour: "green", 
-                            }
+                            return emptySvg;
                         }
                     } else {
                         const sibling = getItemSibling(item);
