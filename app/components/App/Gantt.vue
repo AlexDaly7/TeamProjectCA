@@ -118,17 +118,16 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
                 svgPath: ``,
                 colour: "",
             }
-            if(group.expanded) {
-                // If child exists
+            if(group.expanded) { // If expanded
                 if(child!=undefined) { // If child, draw path to child
                     const childPosX = (((child.start-timelineStart.value)/end))*timelineWidth?.value;
                     svgData = {
                         svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${childPosX} ${(60*count+1)+120}`,
                         colour: "blue",
                     }
-                } else { // Check if item sibling
+                } else { // If no child, check for items sibling
                     const sibling = getItemSibling(item);
-                    if(sibling!=null) { // Check if sibling
+                    if(sibling!=null) { // If sibling draw line to sibling
                         const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
                         svgData = {
                             svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
@@ -136,17 +135,15 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
                         }
                     } else { // If not sibling
                         let parent = props.items.find((task)=>task.data.id==item.data.parentId); // Get items parent
-                        if(parent!=null) {
+                        if(parent!=null) { // If parent
                             const siblingParent = getItemSibling(parent); // Get items parents sibling
-                            //console.log("SIBLINGPARENTTITLE: "+siblingParent?.data.title);
-                            if(siblingParent!=null) { // If items parents sibling isnt null
-                                
+                            if(siblingParent!=null) { // If items parents sibling, draw line to it
                                 const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
                                 svgData = {
                                     svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
                                     colour: "pink",
                                 }
-                            } else {
+                            } else { // Else if no items parents sibling, item is a sub sub task. Draw line to parents parents sibling
                                 parent=props.items.find((task)=>task.data.id==parent?.data.parentId);
                                 if(!parent) {return emptySvg};
                                 const siblingParent = getItemSibling(parent);
@@ -157,55 +154,46 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
                                     colour: "pink",
                                 }
                             }
-                        } else {
+                        } else { // If no parent, return nothing
                             return emptySvg;
                         }
                         
                     }
                 }
-            } else {
+            } else { // If task is expanded
                 const sibling = getItemSibling(item);
-                if(sibling!=null) { // Check if sibling
+                if(sibling!=null) { // If sibling, draw line to sibling
                     const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
                     svgData = {
                         svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
                         colour: "green",
                     }
-                } else {
-                    let parent = props.items.find((task)=>task.data.id==item.data.parentId); // Get items parent
-                    if(parent!=null) {
-                        const siblingParent = getItemSibling(parent); // Get items parents sibling
-                        //console.log("SIBLINGPARENTTITLE: "+siblingParent?.data.title);
-                        if(siblingParent!=null) { // If items parents sibling isnt null
+                } else { // If no sibling, get items parent 
+                    let parent = props.items.find((task)=>task.data.id==item.data.parentId);
+                    if(parent!=null) { // If parent, get parents sibling
+                        const siblingParent = getItemSibling(parent);
+                        if(siblingParent!=null) { // If items parents sibling, draw line to it
                             const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
                             svgData = {
                                 svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
                                 colour: "green",
                             }
-                        } else {
+                        } else { // Return nothing
                             return emptySvg;
                         }
-                    } else {
-                        const sibling = getItemSibling(item);
-                        if(sibling) {
-                            const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
-                            svgData = {
-                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
-                                colour: "yellow",
-                            }
-                        } else return emptySvg;
-                        
+                    } else { // If no parent, draw nothing.
+                        return emptySvg;
                     }
                 }
             }
             count++;
             return svgData;
-        } else {
+        } else { // In case of error, draw dummy line to nothing
             const svgData = {
                 svgPath: `M100 ${(60*count)+70} L100 ${(60*count)+70}`,
                 colour: "blue",
             }
-            count++;
+            count++; // Increase count and return data
             return svgData;
         }
         
