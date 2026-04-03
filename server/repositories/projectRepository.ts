@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import db from "~~/lib/db";
-import { projects } from "~~/lib/db/schema";
-import type { InsertProjectSchema, UpdateProjectSchema } from "~~/lib/db/schema";
+import { projects } from "~~/server/lib/db/schema";
+import type { InsertProjectSchema, UpdateProjectSchema } from "~~/server/lib/db/schema";
+import db from "../lib/db";
 
 // Create
 export async function createProject(data: InsertProjectSchema) {

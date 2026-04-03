@@ -1,4 +1,4 @@
-import { UpdateProject } from "~~/lib/db/schema";
+import { UpdateProject } from "~~/server/lib/db/schema";
 import { projectService } from "~~/server/services";
 import { ensureOrganizationPermission } from "~~/server/utils/userPermission";
 

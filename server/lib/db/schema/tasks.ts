@@ -13,6 +13,7 @@ import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { taskAssignees } from "./taskAssignees";
 import { user } from "./auth";
+import { preprocessDate } from "~~/shared/utils/preprocessDate";
 
 export const tasks = pgTable("tasks", {
     id: serial("id").primaryKey(),
@@ -66,14 +67,7 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
     assignees: many(taskAssignees),
 }));
 
-const preprocessDate = z.preprocess((value) => {
-    // Since we submit the values as a date string, but we need
-    // to format them into a Date instance back on the server, just
-    // throw it into a new Date
-    if (typeof value === "string" && value.trim() !== "") return new Date(value);
 
-    return value;
-}, z.date());
 
 
 // Create
@@ -89,17 +83,6 @@ export const InsertTask = createInsertSchema(tasks, {
 });
 
 export type InsertTaskSchema = z.infer<typeof InsertTask>;
-
-
-export const ClientInsertTask = InsertTask.omit({
-    ghIssueNodeId: true,
-    ghIssueNumber: true,
-    projectId: true,
-    creatorId: true,
-});
-
-export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
-
 
 // READ
 export type TasksSchema = typeof tasks.$inferSelect;

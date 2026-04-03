@@ -38,8 +38,6 @@ export const InsertProject = createInsertSchema(projects).omit({
 
 export type InsertProjectSchema = z.infer<typeof InsertProject>;
 
-// Used in client requests, since checking a GitHub repo's details with just the numeric ID is a pain in the ass
-
 
 export const UpdateProject = createUpdateSchema(projects).omit({
     id: true,
