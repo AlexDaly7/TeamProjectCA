@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { TimelineItemWithData } from '~/utils/types/timeline';
-import { ModifyTask, type ModifyTaskSchema } from '~~/lib/db/schema';
-import z from 'zod';
+import { type ClientModifyTaskSchema, ClientModifyTask } from '~~/shared/validation'
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 const props = defineProps<{
@@ -30,18 +29,8 @@ watch(isOpen, () => {
     });
 })
 
-const FormSchema = ModifyTask.omit({
-    endTime: true,
-    startTime: true,
-}).extend({
-    dateRange: z.object({
-        start: z.date(),
-        end: z.date(),
-    })
-});
-
 const { handleSubmit, errors, meta, setErrors, setValues } = useForm({
-    validationSchema: toTypedSchema(FormSchema),
+    validationSchema: toTypedSchema(ClientModifyTask),
 });
 
 const { isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors });
@@ -50,14 +39,13 @@ const onSubmit = submitHandler(
     async (values) => {
         if (!props.selectedTask) return { error: true, message: 'No selected task.' };
 
-        const payload: ModifyTaskSchema = {
+        const payload: ClientModifyTaskSchema = {
             title: values.title,
             description: values.description,
             order: values.order,
             progress: values.progress,
             parentId: values.parentId,
-            startTime: values.dateRange?.start,
-            endTime: values.dateRange?.end,
+            dateRange: values.dateRange,
         };
 
         await modifyTask(props.selectedTask.data.id, payload);

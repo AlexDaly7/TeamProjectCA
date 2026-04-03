@@ -9,9 +9,9 @@ export function generateGithubIssue(
     task: {
         title: string,
         description?: string | null,
+        progress?: number | null,
         startTime: Date,
         endTime: Date,
-        progress?: number | null,
     },
     morchlar: {
         taskCreatorName: string,

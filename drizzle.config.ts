@@ -3,7 +3,7 @@ import env from "./server/lib/env";
 
 export default defineConfig({
     out: './server/lib/db/migrations',
-    schema: './lib/db/schema',
+    schema: './server/lib/db/schema',
     casing: 'snake_case',
     dialect: 'postgresql',
     dbCredentials: {

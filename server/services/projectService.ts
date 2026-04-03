@@ -1,4 +1,4 @@
-import type { InsertProjectSchema, UpdateProjectSchema } from "~~/lib/db/schema";
+import type { InsertProjectSchema, UpdateProjectSchema } from "~~/server/lib/db/schema";
 import { projectRepository } from "../repositories";
 
 // Create

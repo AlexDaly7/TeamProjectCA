@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { InsertOrganization } from '~~/lib/db/schema';
+import { ClientInsertOrganization } from "~~/shared/validation";
 
 const { $authClient } = useNuxtApp();
 const router = useRouter();
 const { refreshOrganizations } = useOrganizations();
 
 const { handleSubmit, errors, meta, setErrors, resetForm } = useForm({
-    validationSchema: toTypedSchema(InsertOrganization),
+    validationSchema: toTypedSchema(ClientInsertOrganization),
 });
 
 const { isOpen, isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors });
