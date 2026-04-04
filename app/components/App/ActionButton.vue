@@ -110,25 +110,24 @@ function handleClick() {
                         <div class="flex justify-end gap-4">
                             <AlertDialogCancel :as-child="true">
                                 <slot name="cancel-button">
-                                    <ButtonSecondary
+                                    <AppButton
+                                        variant="secondary"
                                         class="min-w-24"
-                                        :disabled="isLoading"
+                                        :loading="isLoading"
                                         @click="dialogOpen = false">
                                         Cancel
-                                    </ButtonSecondary>
+                                    </AppButton>
                                 </slot>
                             </AlertDialogCancel>
                             
                             <AlertDialogAction :as-child="true">
                                 <slot name="action-button">
-                                    <ButtonPrimary
+                                    <AppButton
                                         class="min-w-24"
-                                        :disabled="isLoading"
+                                        :loading="isLoading"
                                         @click="performAction">
-                                        <LoadingSwap :is-loading="isLoading">
-                                            Confirm
-                                        </LoadingSwap>
-                                    </ButtonPrimary>
+                                        Confirm
+                                    </AppButton>
                                 </slot>
                             </AlertDialogAction>
                         </div>

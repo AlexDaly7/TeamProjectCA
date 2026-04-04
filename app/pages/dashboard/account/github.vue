@@ -30,13 +30,11 @@ const {
                     <div class="inline-flex items-center gap-2">
                         <Icon name="hugeicons:link-01" />
                         <span class="text-lg font-bold">GitHub Integration</span>
-                        <ButtonPrimary
+                        <AppButton
                             class="ml-auto"
-                            :to="data.manageUrl"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Manage
-                        </ButtonPrimary>
+                            :href="data.manageUrl">
+                            Manage ↗
+                        </AppButton>
                     </div>
 
                     <ul class="flex flex-col gap-2 text-sm ml-2 *:gap-2 *:inline-flex *:items-center">
