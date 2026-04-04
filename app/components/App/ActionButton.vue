@@ -30,9 +30,11 @@ const variantMap: Record<
 
 const isLoading = ref(false);
 const dialogOpen = ref(false);
+const submitError = ref<string | null>(null);
 
 async function performAction() {
     isLoading.value = true;
+    submitError.value = null;
     try {
         let data: ActionButtonResult;
         if (typeof props.action === 'function') {
@@ -42,15 +44,13 @@ async function performAction() {
         }
 
         if (data.error) {
-            // todo: replace with toast or in-ui error box
-            alert(`Error: ${data.message ?? 'Unknown error'}`);
+            submitError.value = data.message ?? 'Unknown error. Please try again.';
         } else {
-            // todo: toast for success maybe?
             emit('onSuccess');
+            dialogOpen.value = false;
         }
     } finally {
         isLoading.value = false;
-        dialogOpen.value = false;
     }
 }
 
@@ -99,11 +99,17 @@ function handleClick() {
                     <AlertDialogContent class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
                         bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
                         focus:outline-none">
-                        <AlertDialogTitle class="text-xl font-semibold">
+                        <AlertDialogTitle class="text-xl font-semibold mb-2">
                             {{ title }}
                         </AlertDialogTitle>
 
-                        <AlertDialogDescription class="text-txt-secondary mt-4 mb-5 leading-normal">
+                        <div 
+                            v-if="submitError"
+                            class="w-full bg-danger-bg/60 ring-1 ring-danger-bg/80 ring-inset rounded-sm p-2">
+                            <span class="text-danger-txt text-sm font-medium">{{ submitError }}</span>
+                        </div>
+
+                        <AlertDialogDescription class="text-txt-secondary mt-2 mb-5 leading-normal">
                             {{ description }}
                         </AlertDialogDescription>
 
