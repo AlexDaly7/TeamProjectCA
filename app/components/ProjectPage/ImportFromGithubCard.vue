@@ -86,9 +86,9 @@ function selectedRepoChanged(value: string) {
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
                     <div class="flex justify-end mt-4">
-                        <ButtonPrimary type="submit">
+                        <AppButton type="submit">
                             Import
-                        </ButtonPrimary>
+                        </AppButton>
                     </div>
                 </form>
             </template>

@@ -46,16 +46,14 @@ defineProps<{
         </div>
         
         <div class="flex justify-end mt-2">
-            <ButtonPrimary 
+            <AppButton
                 type="submit" 
-                :disabled="isLoading">
-                <LoadingSwap :is-loading="isLoading">
-                    <div class="inline-flex items-center gap-2">
-                        <Icon :name="submitBtn.icon" />
-                        {{ submitBtn.label }}
-                    </div>
-                </LoadingSwap>
-            </ButtonPrimary>
+                :loading="isLoading">
+                <div class="inline-flex items-center gap-2">
+                    <Icon :name="submitBtn.icon" />
+                    {{ submitBtn.label }}
+                </div>
+            </AppButton>
         </div>
     </form>
 </template>

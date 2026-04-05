@@ -20,8 +20,8 @@ async function acceptInvite() {
 <template>
     <div class="h-full grow flex flex-col gap-4 items-center justify-center">
         <span>Click the button to accept invitation.</span>
-        <ButtonPrimary @click="acceptInvite">
+        <AppButton @click="acceptInvite">
             Accept Invitation
-        </ButtonPrimary>
+        </AppButton>
     </div>
 </template>

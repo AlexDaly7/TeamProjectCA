@@ -100,10 +100,10 @@ function selectTask(item: TimelineItemWithData) {
                 <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
                 <ProjectAddDialog>
                     <template #trigger>
-                        <ButtonPrimary class="inline-flex items-center gap-1">
+                        <AppButton class="inline-flex items-center gap-1">
                             <Icon name="hugeicons:add-01" />
                             New Task
-                        </ButtonPrimary>
+                        </AppButton>
                     </template>
                 </ProjectAddDialog>
             </div>
@@ -124,9 +124,10 @@ function selectTask(item: TimelineItemWithData) {
             <span>Looks like there's no added tasks.</span>
             <ProjectAddDialog>
                 <template #trigger>
-                    <ButtonPrimary>
+                    <AppButton class="inline-flex items-center gap-1">
+                        <Icon name="hugeicons:add-01" />
                         New Task
-                    </ButtonPrimary>
+                    </AppButton>
                 </template>
             </ProjectAddDialog>
         </AppGanttFallback>
