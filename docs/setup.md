@@ -1,4 +1,4 @@
-# Setting up local Mórchlár development instance
+# Setting up a local Mórchlár development instance
 
 This is a guide for setting up a local instance of Mórchlár for development. Note that even though this is local, you will need to own a domain in order to setup Resend to send organization invites via email.
 
