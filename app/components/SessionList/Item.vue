@@ -54,12 +54,13 @@ defineEmits<{
                     Expires: {{ session.expiresAt.toLocaleString() }}
                 </span>
             </div>
-            <ButtonDanger 
+            <AppButton 
                 v-if="!isCurrentSession" 
+                variant="danger"
                 class="ml-auto inline-flex items-center justify-center"
                 @click="$emit('revokeSession')">
                 <Icon name="hugeicons:delete-02" size="20" />
-            </ButtonDanger>
+            </AppButton>
         </div> 
     </div>
 </template>

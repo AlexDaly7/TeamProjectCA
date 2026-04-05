@@ -50,16 +50,27 @@ function revokeOtherSessions() {
 
                 <div class="flex flex-row justify-between my-2 items-center">
                     <span class="text-xl font-semibold">Other Active Sessions</span>
-                    <ButtonDanger @click="revokeOtherSessions">
-                        Revoke Other Sessons
-                    </ButtonDanger>
+                    <AppButton 
+                        variant="danger"
+                        @click="revokeOtherSessions">
+                        Revoke Other Sessions
+                    </AppButton>
                 </div>
 
-                <SessionListItem
-                    v-for="session in otherSessions"
-                    :key="session.id"
-                    :session
-                    @revoke-session="revokeSession(session.token)" />
+                <div class="flex flex-col gap-2">
+                    <template v-if="otherSessions.length === 0">
+                        <span class="text-center text-txt-secondary text-sm">
+                            No other active sessions.
+                        </span>
+                    </template>
+                    <template v-else>
+                        <SessionListItem
+                            v-for="session in otherSessions"
+                            :key="session.id"
+                            :session
+                            @revoke-session="revokeSession(session.token)" />
+                    </template>
+                </div>
             </div>
         </div>
     </AccountPageWrapper>

@@ -39,21 +39,27 @@ const externalProps = computed(() =>
 );
 
 const BASE_CLASSES = `ring-md cursor-pointer select-none
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-txt-secondary
+    focus-visible:outline-2 focus-visible:outline-offset-2
     disabled:opacity-60 disabled:cursor-default
     transition-colors duration-75`;
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     primary: `bg-txt-primary text-main-900
         not-disabled:hover:bg-main-200
-        not-disabled:active:bg-main-400`,
+        not-disabled:active:bg-main-400
+        focus-visible:outline-txt-secondary`,
+
     secondary: `bg-main-700 text-txt-primary
         not-disabled:hover:bg-main-600
-        not-disabled:active:bg-main-800`,
+        not-disabled:active:bg-main-800
+        focus-visible:outline-txt-secondary`,
+
     tertiary: '',
+    
     danger: `bg-danger-bg text-danger-txt ring-md
         not-disabled:hover:bg-danger-bg-hover
-        not-disabled:active:bg-main-400`,
+        not-disabled:active:bg-main-400
+        focus-visible:outline-danger-txt`,
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
