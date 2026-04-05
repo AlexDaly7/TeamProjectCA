@@ -1,8 +1,9 @@
 const APP_NAME = 'Mórchlár';
 
 export function useAppHead(options: {
-    pageTitle: string | Ref<string>
-    prefix?: string | Ref<string>
+    pageTitle: string | Ref<string>,
+    prefix?: string | Ref<string>,
+    raw?: boolean,
 }) {
     const pageTitle = useState<string>('page-title', () => '');
 
@@ -13,7 +14,9 @@ export function useAppHead(options: {
     });
 
     const fullTitle = computed(() => 
-        [unref(options.prefix), unref(options.pageTitle), APP_NAME]
+        options.raw
+        ? unref(options.pageTitle)
+        : [unref(options.prefix), unref(options.pageTitle), APP_NAME]
             .filter(Boolean)
             .join(' - '),
     );

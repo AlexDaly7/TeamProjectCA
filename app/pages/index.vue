@@ -3,6 +3,17 @@ import { useAuth } from '~/composables/useAuth';
 
 const auth = useAuth();
 
+useAppHead({ pageTitle: 'Mórchlár: Collaborative team project tracking with GitHub integration', raw: true })
+
+useSeoMeta({
+    description: 'Collaborative team project tracking with GitHub integration.',
+    ogDescription: 'Collaborative team project tracking with GitHub integration.',
+    ogSiteName: 'Mórchlár',
+    ogTitle: 'Mórchlár: Collaborative team project tracking with GitHub integration',
+    ogImage: 'http://www.morchlar.com/media/landing/logo.png',
+    twitterCard: 'summary_large_image',
+});
+
 const signInPressed = ref(false);
 const isSigningIn = computed(() => auth.isLoading.value || signInPressed.value);
 
