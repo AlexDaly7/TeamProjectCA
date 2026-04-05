@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from 'vue-router';
-
-type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'tertiary-sidebar' | 'danger';
-type ButtonSize = 'sm' | 'sm-even' | 'md' | 'md-even' | 'lg';
-type ButtonType = 'button' | 'submit' | 'reset';
+import type { ButtonSize, ButtonType, ButtonVariant } from '~/utils/types/buttonTypes';
 
 interface ButtonProps {
     variant?: ButtonVariant;

@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import type { ActionButtonResult } from '~/utils/types/actionButton';
+import type { ButtonSize, ButtonVariant } from '~/utils/types/buttonTypes';
 
 const props = withDefaults(defineProps<{
     action: (() => Promise<ActionButtonResult>) | Promise<ActionButtonResult>,
     title?: string,
     description?: string,
     requireAreYouSure?: boolean,
-    variant?: 'primary' | 'secondary' | 'tertiary' | 'danger',
+    variant?: ButtonVariant,
+    size?: ButtonSize,
 }>(), {
     title: 'Are you sure?',
     description: 'This action is irreversible.',
     requireAreYouSure: false,
     variant: 'secondary',
+    size: 'md',
 });
 
 const emit = defineEmits<{
@@ -59,6 +62,7 @@ function handleClick() {
     <template v-if="!requireAreYouSure">
         <AppButton
             :variant
+            :size
             :loading="isLoading"
             v-bind="$attrs"
             @click="handleClick">

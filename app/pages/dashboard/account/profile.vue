@@ -3,6 +3,11 @@ definePageMeta({
     sidebarType: 'user',
 });
 
+useAppHead({
+    pageTitle: 'Profile',
+    prefix: 'Settings',
+});
+
 const auth = useAuth();
 </script>
 

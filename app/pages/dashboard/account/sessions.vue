@@ -1,7 +1,11 @@
 <script setup lang="ts">
-
 definePageMeta({
     sidebarType: 'user',
+});
+
+useAppHead({
+    pageTitle: 'Sessions',
+    prefix: 'Settings',
 });
 
 const { $authClient, $authSession } = useNuxtApp();

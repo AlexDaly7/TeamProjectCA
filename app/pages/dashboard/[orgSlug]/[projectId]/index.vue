@@ -5,6 +5,11 @@ definePageMeta({
     sidebarType: "project",
 });
 
+useAppHead({
+    pageTitle: 'Tasks',
+    prefix: 'Project',
+});
+
 const { subscribeToProject } = usePusher();
 const { currentProjectId } = useCurrentProject();
 

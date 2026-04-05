@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { orgSlug } = useCurrentOrg();
+const pageTitle = usePageTitle();
+const { data: githubStatus } = useGitHubAppStatus();
 
 const route = useRoute();
 const sidebarType = computed(() => route.meta.sidebarType);
@@ -50,9 +52,22 @@ const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.val
 
         <div class="grow flex flex-col min-h-14">
             <nav 
-                class="flex flex-row gap-2 p-2 min-h-14
+                class="inline-flex gap-2 items-center p-2 min-h-14 relative
                 bg-main-800 border-b border-main-50/10">
                 <NavbarProjectsDropdown v-if="inOrgsPage" />
+                <div v-else></div>
+
+                <NuxtLink
+                    v-if="githubStatus && githubStatus.status !== 'app_connected'"
+                    class="ml-auto bg-warning-bg ring-warning-bg-hover hover:bg-warning-bg-hover text-warning-txt h-full inline-flex gap-2 items-center px-4 rounded-lg transition-colors duration-75"
+                    :to="{ name: 'dashboard-account-github' }">
+                    <Icon name="hugeicons:alert-01" />
+                    GitHub app not installed
+                </NuxtLink>
+                
+                <span class="absolute left-1/2 -translate-x-1/2 text-sm font-bold">
+                    {{ pageTitle }}
+                </span>
             </nav>
             <main class="grow flex flex-col p-2 overflow-y-auto">
                 <NuxtPage />

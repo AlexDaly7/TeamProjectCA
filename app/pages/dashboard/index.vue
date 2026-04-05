@@ -4,6 +4,11 @@ definePageMeta({
     middleware: [ 'dashboard' ],
 });
 
+useAppHead({
+    pageTitle: 'Org Selection',
+    prefix: 'Home',
+});
+
 </script>
 
 <template>

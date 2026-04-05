@@ -2,6 +2,12 @@
 definePageMeta({
     sidebarType: 'project',
 });
+
+useAppHead({
+    pageTitle: 'Settings',
+    prefix: 'Project',
+});
+
 </script>
 
 <template>

@@ -3,6 +3,11 @@ definePageMeta({
     sidebarType: 'user',
 });
 
+useAppHead({
+    pageTitle: 'Danger',
+    prefix: 'Settings',
+});
+
 const { $authClient } = useNuxtApp();
 
 async function deleteAccount() {

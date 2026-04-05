@@ -5,6 +5,7 @@ definePageMeta({
 
 const {
     orgSlug,
+    org,
     orgData,
     pending: orgDataPending,
     error: orgDataError,
@@ -12,6 +13,11 @@ const {
     renameProject: renameProjectHelper,
     deleteProject: deleteProjectHelper
 } = useCurrentOrg();
+
+useAppHead({
+    pageTitle: 'Projects',
+    prefix: computed(() => org.value?.name ?? 'Loading...'),
+});
 
 const MS_PER_DAY = 86400000;
 function projectLastUpdatedText(project: CurrentOrgProject): string {
