@@ -15,28 +15,29 @@ const {
 
 <template>
     <AppPopover>
-        <template #trigger> 
-            <div class="w-full p-2 rounded-lg inline-flex gap-2 items-center cursor-pointer select-none
-                ring-inset ring-0
-                hover:bg-main-700 transition-all duration-75
-                data-[state=open]:bg-main-700 data-[state=open]:ring-main-50/10 data-[state=open]:ring-1">
-                <div v-if="!currentOrgSimple" class="text-txt-secondary">
+        <template #trigger>
+            <AppButton
+                variant="tertiary-sidebar"
+                size="md-even"
+                class="w-full">
+                <div v-if="!currentOrgSimple">
                     Loading...
                 </div>
-                <div v-else class="w-full font-semibold inline-flex justify-between items-center">
-                    <div class="inline-flex gap-2">
-                        <img
-                            class="size-6 rounded-full"
-                            :src="`https://avatar.vercel.sh/${currentOrgSimple.slug}.svg`"
-                            referrerpolicy="no-referrer"
-                            :alt="`Icon for ${currentOrgSimple.name}`">
-                        <span class="text-ellipsis overflow-hidden line-clamp-1">
-                            {{ currentOrgSimple.name }}
-                        </span>
-                    </div>
-                    <Icon name="hugeicons:arrow-up-down" />
+                <div v-else class="w-full flex flex-row gap-2 items-center font-semibold">
+                    <img
+                        class="size-6 rounded-full"
+                        :src="`https://avatar.vercel.sh/${currentOrgSimple.slug}.svg`"
+                        referrerpolicy="no-referrer"
+                        :alt="`Icon for ${currentOrgSimple.name}`">
+                    <span class="text-ellipsis overflow-hidden line-clamp-1 text-txt-primary">
+                        {{ currentOrgSimple.name }}
+                    </span>
+                    <Icon 
+                        name="hugeicons:arrow-up-down"
+                        class="ml-auto"
+                        size="16" />
                 </div>
-            </div>
+            </AppButton>
         </template>
 
         <template #content="{ close }">
@@ -46,50 +47,51 @@ const {
                         Loading...
                     </template>
                     <template v-else>
-                        <ButtonTertiary 
+                        <AppButton 
                             v-for="organization in organizations.all"
-                            bg-level="700"
-                            class="inline-flex justify-between items-center px-2! text-sm rounded-lg!"
-                            exact-active-class=""
+                            variant="tertiary"
+                            size="md-even"
+                            class="rounded-lg!"
+                            exact-active-class="text-txt-primary!"
                             :key="organization.id"
                             :to="{ name: 'dashboard-orgSlug', params: { orgSlug: organization.slug } }"
                             @click="close">
-                            <div class="inline-flex gap-2">
+                            <div class="flex flex-row gap-2 items-center text-sm font-medium">
                                 <img
                                     class="size-6 rounded-full"
                                     :src="`https://avatar.vercel.sh/${organization.slug}.svg`"
                                     referrerpolicy="no-referrer"
                                     :alt="`Icon for ${organization.name}`">
                                 <span>{{ organization.name }}</span>
+                                <Icon 
+                                    v-if="organization.slug === currentOrg?.slug"
+                                    name="hugeicons:tick-02"
+                                    class="ml-auto" />
                             </div>
-                            <Icon 
-                                v-if="organization.slug === currentOrg?.slug"
-                                name="hugeicons:tick-02" 
-                                class="text-txt-secondary" />
-                        </ButtonTertiary>
+                        </AppButton>
                     </template>
                 </div>
 
-                <div class="w-full h-px bg-main-50/10 mb-2"></div>
+                <div class="w-full h-px bg-main-50/10"></div>
 
                 <div class="p-2">
-                    <ButtonCreateOrg @on-submit="close" >
-                        <ButtonTertiary
-                            bg-level="700"
-                            class="w-full inline-flex items-center px-2! gap-2">
+                    <ButtonCreateOrg 
+                        @on-submit="close" >
+                        <AppButton
+                            variant="tertiary"
+                            class="w-full inline-flex items-center px-2! gap-2 rounded-lg!">
                             <Icon 
                                 name="hugeicons:add-01"
-                                size="20"
-                                class="text-txt-secondary" />
+                                size="20"/>
                             <div class="flex flex-col items-start">
-                                <span>
+                                <span class="text-txt-primary">
                                     Create new organization
                                 </span>
-                                <span class="text-xs text-txt-secondary">
+                                <span class="text-xs">
                                     Collaborate with a team
                                 </span>
                             </div>
-                        </ButtonTertiary>
+                        </AppButton>
                     </ButtonCreateOrg>
                 </div>
             </div>

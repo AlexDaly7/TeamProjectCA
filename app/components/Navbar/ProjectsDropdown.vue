@@ -15,14 +15,16 @@ const {
 <template>
     <AppPopover v-if="orgSlug">
         <template #trigger>
-            <ButtonTertiary
-                class="inline-flex gap-2 items-center text-sm font-medium"
+            <AppButton
+                variant="tertiary-sidebar"
+                size="sm"
+                class="inline-flex gap-2 items-center"
                 :class="{
-                    'text-txt-secondary': !currentProject,
+                    'text-txt-primary!': currentProject,
                 }">
                 <span>{{ currentProject ? currentProject.title : 'All Projects' }}</span>
                 <Icon name="hugeicons:arrow-up-down" />
-            </ButtonTertiary>
+            </AppButton>
         </template>
 
         <template #content="{ close }">
@@ -32,11 +34,12 @@ const {
                         Loading...
                     </template>
                     <template v-else>
-                        <ButtonTertiary 
+                        <AppButton 
                             v-for="project in orgData.projects"
-                            bg-level="700"
-                            class="inline-flex justify-between items-center px-2! text-sm rounded-lg!"
-                            exact-active-class=""
+                            variant="tertiary"
+                            size="sm-even"
+                            class="flex justify-between items-center rounded-lg!"
+                            exact-active-class="text-txt-primary!"
                             :key="project.id"
                             :to="{ name: 'dashboard-orgSlug-projectId', params: { orgSlug, projectId: project.id } }"
                             @click="close">
@@ -50,46 +53,49 @@ const {
                             </div>
                             <Icon 
                                 v-if="project.id === Number(currentProjectId)"
-                                name="hugeicons:tick-02" 
-                                class="text-txt-secondary" />
-                        </ButtonTertiary>
+                                name="hugeicons:tick-02"
+                                size="16" />
+                        </AppButton>
                     </template>
                 </div>
 
-                <!-- <div class="w-full h-px bg-main-50/10 mb-2"></div>
+                <template v-if="currentProjectId">
+                    <div class="w-full h-px bg-main-50/10"></div>
 
-                <div class="p-2">
-                    todo: link to project creation page
-                    <ButtonCreateOrg @on-submit="close" >
-                        <ButtonTertiary
-                            bg-level="700"
-                            class="w-full inline-flex items-center px-2! gap-2">
+                    <div class="p-2">
+                        <!-- todo: link to project creation page -->
+                        <AppButton
+                            variant="tertiary"
+                            size="md"
+                            class="w-full inline-flex items-center gap-2 rounded-lg!"
+                            :to="{ name: 'dashboard-orgSlug', params: { orgSlug } }"
+                            @click="close">
                             <Icon 
-                                name="hugeicons:add-01"
-                                size="20"
-                                class="text-txt-secondary" />
+                                name="hugeicons:grid-view"
+                                size="20"/>
                             <div class="flex flex-col items-start">
                                 <span>
-                                    Create new organization
+                                    All Projects
                                 </span>
                                 <span class="text-xs text-txt-secondary">
-                                    Collaborate with a team
+                                    View all projects in this org.
                                 </span>
                             </div>
-                        </ButtonTertiary>
-                    </ButtonCreateOrg>
-                </div> -->
+                        </AppButton>
+                    </div>
+                </template>
             </div>
         </template>
     </AppPopover>
 
     <template v-if="currentProjectId">
         <div class="w-px h-full bg-main-50/10"></div>
-        <ButtonTertiary
-            class="flex items-center justify-center p-2!"
-            
+        <AppButton
+            variant="tertiary-sidebar"
+            size="md-even"
+            class="flex items-center justify-center"
             :to="{ name: 'dashboard-orgSlug', params: { orgSlug } }">
             <Icon name="hugeicons:cancel-01" />
-        </ButtonTertiary>
+        </AppButton>
     </template>
 </template>

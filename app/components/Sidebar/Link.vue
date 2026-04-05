@@ -9,10 +9,12 @@ defineProps<{
 </script>
 
 <template>
-    <ButtonTertiary
+    <AppButton
+        variant="tertiary-sidebar"
         class="flex flex-row gap-2 items-center"
+        exact-active-class="text-txt-primary! bg-main-700! ring-md"
         :to>
         <Icon :name="icon" />
         {{ label }}
-    </ButtonTertiary>
+    </AppButton>
 </template>

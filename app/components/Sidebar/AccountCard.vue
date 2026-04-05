@@ -44,39 +44,39 @@ async function signOut() {
         <template #content>
             <div class="min-w-68">
                 <div class="p-2">
-                    <ButtonTertiary
-                        bg-level="700"
-                        class="w-full inline-flex justify-between items-center px-2!"
-                        exact-active-class=""
+                    <AppButton
+                        variant="tertiary"
+                        size="md-even"
+                        class="w-full inline-flex justify-between items-center rounded-lg!"
                         :to="{ name: 'dashboard-account-profile' }"
                         @click="popoverOpen = false">
                         <div class="flex flex-col items-start">
-                            <span>
+                            <span class="text-txt-primary">
                                 {{ auth.user.value?.name }}
                             </span>
-                            <span class="text-xs text-txt-secondary">
+                            <span class="text-xs">
                                 {{ auth.user.value?.email }}
                             </span>
                         </div>
                         <Icon 
                             name="hugeicons:account-setting-01"
-                            size="20"
-                            class="text-txt-secondary" />
-                    </ButtonTertiary>
+                            size="20"/>
+                    </AppButton>
                 </div>
 
                 <div class="w-full h-px bg-main-50/10 mb-2"></div>
 
                 <div class="flex flex-col gap-2 px-2 pb-2">
-                    <ButtonTertiary 
-                        bg-level="700"
-                        class="inline-flex justify-between items-center px-2! text-sm"
+                    <AppButton
+                        variant="tertiary"
+                        size="sm-even"
+                        class="inline-flex justify-between items-center rounded-lg!"
                         @click="signOut">
-                        <span>Sign Out</span>
+                        <span class="text-txt-primary">Sign Out</span>
                         <Icon 
                             name="hugeicons:logout-square-01" 
                             class="text-txt-secondary" />
-                    </ButtonTertiary>
+                    </AppButton>
                 </div>
             </div>
         </template>
