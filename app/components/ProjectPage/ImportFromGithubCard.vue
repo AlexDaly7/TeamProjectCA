@@ -57,9 +57,9 @@ function selectedRepoChanged(value: string) {
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
             
             <template #trigger>
-                <ButtonSecondary>
+                <AppButton variant="secondary">
                     Import
-                </ButtonSecondary>
+                </AppButton>
             </template>
 
             <template #body>

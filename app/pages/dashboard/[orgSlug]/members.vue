@@ -45,7 +45,11 @@ async function addUserToGroup() {
                 <option value="admin">Admin</option>
                 <!-- <option value="owner">Owner</option> -->
             </select>
-            <ButtonSecondary type="submit">Add member to organizaation.</ButtonSecondary>
+            <AppButton 
+                variant="secondary" 
+                type="submit">
+                Add member to organizaation
+            </AppButton>
         </form>
         <div v-if="orgMembersError || !orgMembers">
             Error loading organization members: {{ orgMembersError?.message ?? 'Unknown error' }}

@@ -51,7 +51,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
         not-disabled:hover:bg-main-600
         not-disabled:active:bg-main-800`,
     tertiary: '',
-    danger: '',
+    danger: `bg-danger-bg text-danger-txt ring-md
+        not-disabled:hover:bg-danger-bg-hover
+        not-disabled:active:bg-main-400`,
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -71,8 +73,18 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
         :class="[BASE_CLASSES, VARIANT_CLASSES[variant], SIZE_CLASSES[size]]"
         v-bind="externalProps"
         @click="!disabled && !loading && emit('click', $event)">
-        <LoadingSwap :is-loading="loading">
-            <slot />
-        </LoadingSwap>
+        <div 
+            v-if="loading" 
+            class=" grid grid-cols-1 items-center justify-cente"
+            :class="{
+                'min-h-5.5': size === 'sm',
+                'min-h-6': size === 'md',
+                'min-h-6.5': size === 'lg',
+            }">
+            <LoadingIcon 
+                class="mx-auto"
+                :size="20" />
+        </div>
+        <slot v-else></slot>
     </component>
 </template>

@@ -127,41 +127,41 @@ async function deleteTask(): Promise<ActionButtonResult> {
                             </label>
 
                             <div class="flex justify-end mt-2">
-                                <ButtonPrimary 
-                                    type="submit" 
-                                    :disabled="isLoading">
-                                    <LoadingSwap :is-loading="isLoading">
-                                        <div class="inline-flex items-center gap-2">
-                                            <Icon name="hugeicons:floppy-disk" />
-                                            Save
-                                        </div>
-                                    </LoadingSwap>
-                                </ButtonPrimary>
+                                <AppButton
+                                    type="submit"
+                                    :loading="isLoading">
+                                    <div class="inline-flex items-center gap-2">
+                                        <Icon name="hugeicons:floppy-disk" />
+                                        Save
+                                    </div>
+                                </AppButton>
                             </div>
                         </form>
 
                         <div class="h-0.5 w-full bg-main-50/10 my-4"></div>
-                        <ButtonSecondary 
+                        <AppButton
                             v-if="!currentProject"
-                            disabled>
+                            variant="secondary"
+                            :loading="true">
                             Loading...
-                        </ButtonSecondary>
-                        <ButtonSecondary
+                        </AppButton>
+                        <AppButton
                             v-else
+                            variant="secondary"
                             class="inline-flex gap-1 items-center justify-center"
-                            :to="`https://github.com/${currentProject.repoOwner}/${currentProject.repoName}/issues/${selectedTask.data.ghIssueNumber}`">
+                            :href="`https://github.com/${currentProject.repoOwner}/${currentProject.repoName}/issues/${selectedTask.data.ghIssueNumber}`">
                             <Icon name="hugeicons:github-01" />
-                            View on GitHub
-                        </ButtonSecondary>
+                            View on GitHub ↗
+                        </AppButton>
 
                         <div class="flex flex-col gap-2 mt-auto">
                             <ProjectAddDialog 
                                 popup-title="Add a new sub-task"
                                 :parent-id="selectedTask.data.id">
                                 <template #trigger>
-                                    <ButtonSecondary>
+                                    <AppButton variant="secondary">
                                         New Sub-Task
-                                    </ButtonSecondary>
+                                    </AppButton>
                                 </template>
                                 <template #submit>
                                     Create sub-task

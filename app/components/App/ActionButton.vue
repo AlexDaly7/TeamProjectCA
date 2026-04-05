@@ -18,16 +18,6 @@ const emit = defineEmits<{
     onSuccess: [],
 }>();
 
-const variantMap: Record<
-    'primary' | 'secondary' | 'tertiary' | 'danger', 
-    ReturnType<typeof resolveComponent>
-> = {
-    primary: resolveComponent('ButtonPrimary'),
-    secondary: resolveComponent('ButtonSecondary'),
-    tertiary: resolveComponent('ButtonTertiary'),
-    danger: resolveComponent('ButtonDanger'),
-};
-
 const isLoading = ref(false);
 const dialogOpen = ref(false);
 const submitError = ref<string | null>(null);
@@ -56,7 +46,8 @@ async function performAction() {
 
 function handleClick() {
     if (props.requireAreYouSure) {
-        dialogOpen.value = true
+        submitError.value = null;
+        dialogOpen.value = true;
     } else {
         performAction();
     }
@@ -66,15 +57,13 @@ function handleClick() {
 
 <template>
     <template v-if="!requireAreYouSure">
-        <component 
+        <AppButton
+            :variant
+            :loading="isLoading"
             v-bind="$attrs"
-            :disabled="isLoading"
-            :is="variantMap[variant]"
             @click="handleClick">
-            <LoadingSwap :is-loading="isLoading">
-                <slot name="trigger">Button</slot>
-            </LoadingSwap>
-        </component>
+            <slot name="trigger">Button</slot>
+        </AppButton>
     </template>
 
     <template v-else>
@@ -82,12 +71,12 @@ function handleClick() {
             :open="dialogOpen || isLoading"
             @update:open="val => { if (isLoading) dialogOpen = val }">
             <AlertDialogTrigger :as-child="true">
-                <component 
+                <AppButton
+                    :variant
                     v-bind="$attrs"
-                    :is="variantMap[variant]"
                     @click="handleClick">
                     <slot name="trigger">Button</slot>
-                </component>
+                </AppButton>
             </AlertDialogTrigger>
 
             <AlertDialogPortal>
