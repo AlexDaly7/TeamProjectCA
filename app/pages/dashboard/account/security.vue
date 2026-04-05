@@ -2,6 +2,11 @@
 definePageMeta({
     sidebarType: 'user',
 });
+
+useAppHead({
+    pageTitle: 'Security',
+    prefix: 'Settings',
+});
 </script>
 
 <template>

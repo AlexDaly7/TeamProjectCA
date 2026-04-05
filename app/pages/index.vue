@@ -3,6 +3,17 @@ import { useAuth } from '~/composables/useAuth';
 
 const auth = useAuth();
 
+useAppHead({ pageTitle: 'Mórchlár: Collaborative team project tracking with GitHub integration', raw: true })
+
+useSeoMeta({
+    description: 'Collaborative team project tracking with GitHub integration.',
+    ogDescription: 'Collaborative team project tracking with GitHub integration.',
+    ogSiteName: 'Mórchlár',
+    ogTitle: 'Mórchlár: Collaborative team project tracking with GitHub integration',
+    ogImage: 'http://www.morchlar.com/media/landing/logo.png',
+    twitterCard: 'summary_large_image',
+});
+
 const signInPressed = ref(false);
 const isSigningIn = computed(() => auth.isLoading.value || signInPressed.value);
 
@@ -21,7 +32,7 @@ function signIn() {
             alt="The Logo for Mórchlár"
             data-testid="logo">
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
-        <ButtonPrimary 
+        <AppButton 
             class="inline-flex gap-2 items-center"
             :disabled="isSigningIn"
             @click="signIn">
@@ -31,7 +42,7 @@ function signIn() {
                 name="hugeicons:github-01"
                 size="20"/>
             Sign in with GitHub
-        </ButtonPrimary>
+        </AppButton>
     </div>
     <div class="h-full grow flex flex-col items-center justify-center">
         <p class="text-[75px]">Features!</p>

@@ -7,6 +7,11 @@ const router = useRouter();
 const activeOrg = useCurrentOrg();
 const { refreshOrganizations } = useOrganizations();
 
+useAppHead({
+    pageTitle: 'Settings',
+    prefix: computed(() => activeOrg.org.value?.name ?? 'Loading...'),
+});
+
 async function deleteOrg() {
     return activeOrg.deleteCurrentOrg();
 }

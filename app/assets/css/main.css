@@ -17,9 +17,17 @@
 
     --color-brand: var(--color-blue-600);
 
-    --color-danger-txt: var(--color-red-100);
-    --color-danger-bg: var(--color-red-900);
-    --color-danger-bg-hover: var(--color-red-800);
+    --color-danger-txt: var(--color-red-400);
+    --color-danger-bg: var(--color-red-950);
+    --color-danger-bg-hover: var(--color-red-900);
+
+    --color-warning-txt: var(--color-amber-400);
+    --color-warning-bg: var(--color-amber-950);
+    --color-warning-bg-hover: var(--color-amber-900);
+
+    --color-success-txt: var(--color-emerald-400);
+    --color-success-bg: var(--color-emerald-950);
+    --color-success-bg-hover: var(--color-emerald-900);
 }
 
 :root {

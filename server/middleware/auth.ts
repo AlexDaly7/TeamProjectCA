@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
         }
     } else {
         // Redirect unauthed users away from protected pages
-        if (event.path.startsWith('/dashboard')) {
+        if (event.path.startsWith('/dashboard') || event.path.startsWith('/accept-invitation')) {
             return sendRedirect(event, '/', 302);
         }
     }

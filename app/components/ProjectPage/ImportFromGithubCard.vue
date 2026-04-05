@@ -57,9 +57,9 @@ function selectedRepoChanged(value: string) {
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues.">
             
             <template #trigger>
-                <ButtonSecondary>
+                <AppButton variant="secondary">
                     Import
-                </ButtonSecondary>
+                </AppButton>
             </template>
 
             <template #body>
@@ -86,9 +86,9 @@ function selectedRepoChanged(value: string) {
                         v-model:repo="selectedRepo"
                         @update:repo="selectedRepoChanged" />
                     <div class="flex justify-end mt-4">
-                        <ButtonPrimary type="submit">
+                        <AppButton type="submit">
                             Import
-                        </ButtonPrimary>
+                        </AppButton>
                     </div>
                 </form>
             </template>

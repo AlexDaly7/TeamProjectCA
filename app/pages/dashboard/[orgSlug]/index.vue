@@ -5,6 +5,7 @@ definePageMeta({
 
 const {
     orgSlug,
+    org,
     orgData,
     pending: orgDataPending,
     error: orgDataError,
@@ -12,6 +13,11 @@ const {
     renameProject: renameProjectHelper,
     deleteProject: deleteProjectHelper
 } = useCurrentOrg();
+
+useAppHead({
+    pageTitle: 'Projects',
+    prefix: computed(() => org.value?.name ?? 'Loading...'),
+});
 
 const MS_PER_DAY = 86400000;
 function projectLastUpdatedText(project: CurrentOrgProject): string {
@@ -107,12 +113,13 @@ async function deleteProject(project: CurrentOrgProject) {
                     {{ project.totalTasks }} total tasks
                 </span>
 
-                <ButtonSecondary
+                <AppButton
+                    variant="secondary"
                     class="inline-flex justify-between items-center"
                     :to="{ name: 'dashboard-orgSlug-projectId', params: { orgSlug, projectId: project.id }  }">
                     Open
                     <Icon name="hugeicons:arrow-right-01" />
-                </ButtonSecondary>
+                </AppButton>
             </div>
         </div>
 

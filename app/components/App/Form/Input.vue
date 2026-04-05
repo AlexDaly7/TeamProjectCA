@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
     type?: InputTypeHTMLAttribute;
     placeholder?: string;
     required?: boolean;
+    disabled?: boolean;
 }>(), {
     type: 'text',
 });
@@ -25,9 +26,11 @@ const modelValue = defineModel<string | null>('modelValue', {
     <input 
         v-model="modelValue" 
         class="h-8 px-4 mb-2 bg-main-700 ring-md rounded-md leading-none outline-none"
+        :class="{ 'opacity-60': disabled }"
         :name
         :id="name"
         :type
         :placeholder
-        :required />
+        :required
+        :disabled />
 </template>

@@ -21,22 +21,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     // Check if user is a member using better-auth's hasPermission
-    const { success, error } = await auth.api.hasPermission({
-        headers: event.headers,
-        body: {
-            permissions: {
-                project: ['update']
-            },
-            organizationId: org.id,
-        },
+    await ensureOrganizationPermission(event, org.id, {
+        project: ['read'],
     });
-
-    if (error || !success) {
-        throw createError({
-            statusCode: 404,
-            statusMessage: 'Organization not found',
-        });
-    }
 
     const orgProjects = await organizationService.listProjectsWithDetails(org.id);
 

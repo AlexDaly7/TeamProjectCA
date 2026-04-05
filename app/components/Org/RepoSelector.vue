@@ -20,10 +20,10 @@ const placeholderText = computed(() => {
         return 'Loading repos...';
     } else if (error.value) {
         return `Error: ${error.value.message}`;
-    } else if (!data.value) {
-        return 'No repos found';
+    } else if (data.value?.status !== 'app_connected') {
+        return 'App not installed. Check settings for more info.';
     } else {
-        return 'Select a repo...'
+        return 'Select a repo...';
     }
 });
 

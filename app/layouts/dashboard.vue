@@ -1,22 +1,28 @@
 <script setup lang="ts">
-// https://github.com/nuxt/nuxt/issues/10545#issuecomment-1175012962
-import { NuxtLink } from '#components';
-
-const {
-    orgData,
-    pending: orgDataPending,
-} = useCurrentOrg();
-
-const {
-    currentProjectId,
-    currentProject,
-} = useCurrentProject();
-
-const { orgSlug } = useCurrentOrg()
+const { orgSlug } = useCurrentOrg();
+const pageTitle = usePageTitle();
+const { data: githubStatus } = useGitHubAppStatus();
 
 const route = useRoute();
-
 const sidebarType = computed(() => route.meta.sidebarType);
+
+const { $authClient } = useNuxtApp();
+const activeOrg = $authClient.useActiveOrganization();
+
+// If on the client
+if (import.meta.client) {
+    watch([ orgSlug, () => activeOrg.value.data?.slug ?? null ],
+        async ([currentOrgSlug, activeOrgSlug]) => {
+            // Watch for changes in the org slug from the route and the active org slug from the auth client.
+            if (!currentOrgSlug || currentOrgSlug === activeOrgSlug) return;
+            await $authClient.organization.setActive({ organizationSlug: currentOrgSlug });
+        },
+    { 
+        immediate: true
+    });
+}
+
+const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.value === 'project');
 
 </script>
 
@@ -24,7 +30,13 @@ const sidebarType = computed(() => route.meta.sidebarType);
     <div class="w-full min-h-dvh max-h-dvh overflow-hidden flex flex-row">
         <aside class="min-w-3xs max-w-3xs bg-main-800 border-r border-main-50/10 flex flex-col">
             <div class="flex items-center justify-center px-2 min-h-14 border-b border-main-50/10">
-                <NavbarOrgsDropdown />
+                <NavbarOrgsDropdown v-if="inOrgsPage" />
+                <SidebarLink
+                    v-else
+                    :to="{ name: 'dashboard' }"
+                    label="Back"
+                    icon="hugeicons:arrow-left-01"
+                    class="w-full px-2!" />
             </div>
             
             <div class="flex flex-col gap-2 p-2">
@@ -40,51 +52,22 @@ const sidebarType = computed(() => route.meta.sidebarType);
 
         <div class="grow flex flex-col min-h-14">
             <nav 
-                class="flex flex-row gap-2 p-2 min-h-14
+                class="inline-flex gap-2 items-center p-2 min-h-14 relative
                 bg-main-800 border-b border-main-50/10">
-                <AppPopover v-if="orgSlug">
-                    <template #trigger>
-                        <ButtonTertiary
-                            class="inline-flex gap-2 items-center text-sm font-medium"
-                            :class="{
-                                'text-txt-secondary': !currentProject,
-                            }">
-                            <span>{{ currentProject ? currentProject.title : 'All Projects' }}</span>
-                            <Icon name="hugeicons:arrow-up-down" />
-                        </ButtonTertiary>
-                    </template>
+                <NavbarProjectsDropdown v-if="inOrgsPage" />
+                <div v-else></div>
 
-                    <template #content="{ close }">
-                        <div class="p-1 min-w-48 flex flex-col gap-1">
-                            <span v-if="orgDataPending || !orgData?.projects">
-                                Loading...
-                            </span>
-                            <template v-else>
-                                <NuxtLink
-                                    v-for="project in orgData?.projects"
-                                    class="w-full outline-none inline-flex gap-1.5 items-center p-2 hover:bg-main-600 rounded-lg select-none cursor-pointer focus:ring-1 focus:ring-main-50"
-                                    :text="project.title"
-                                    :to="{ 
-                                        name: 'dashboard-orgSlug-projectId',
-                                        params: { orgSlug, projectId: project.id }
-                                    }"
-                                    @click="close">
-                                    {{ project.title }}
-                                </NuxtLink>
-                            </template>
-                        </div>
-                    </template>
-                </AppPopover>
-
-                <template v-if="currentProjectId">
-                    <div class="w-px h-full bg-main-50/10"></div>
-                    <ButtonTertiary
-                        class="flex items-center justify-center p-2!"
-                        
-                        :to="{ name: 'dashboard-orgSlug', params: { orgSlug } }">
-                        <Icon name="hugeicons:cancel-01" />
-                    </ButtonTertiary>
-                </template>
+                <NuxtLink
+                    v-if="githubStatus && githubStatus.status !== 'app_connected'"
+                    class="ml-auto bg-warning-bg ring-warning-bg-hover hover:bg-warning-bg-hover text-warning-txt h-full inline-flex gap-2 items-center px-4 rounded-lg transition-colors duration-75"
+                    :to="{ name: 'dashboard-account-github' }">
+                    <Icon name="hugeicons:alert-01" />
+                    GitHub app not installed
+                </NuxtLink>
+                
+                <span class="absolute left-1/2 -translate-x-1/2 text-sm font-bold">
+                    {{ pageTitle }}
+                </span>
             </nav>
             <main class="grow flex flex-col p-2 overflow-y-auto">
                 <NuxtPage />

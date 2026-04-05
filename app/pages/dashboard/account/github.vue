@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { useGitHubAppStatus } from '~/composables/useGithubAppStatus';
-
 definePageMeta({
     sidebarType: 'user',
+});
+
+useAppHead({
+    pageTitle: 'GitHub',
+    prefix: 'Settings',
 });
 
 const {
@@ -30,45 +33,47 @@ const {
                     <div class="inline-flex items-center gap-2">
                         <Icon name="hugeicons:link-01" />
                         <span class="text-lg font-bold">GitHub Integration</span>
-                        <ButtonPrimary
+                        <AppButton
                             class="ml-auto"
-                            :to="data.manageUrl"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Manage
-                        </ButtonPrimary>
+                            :href="data.manageUrl">
+                            Manage ↗
+                        </AppButton>
                     </div>
 
-                    <ul class="flex flex-col gap-2 text-sm ml-2 *:gap-2 *:inline-flex *:items-center">
+                    <ul class="flex flex-col gap-2 ml-2 *:gap-2 *:inline-flex *:items-center">
                         <template v-if="data.status === 'not_connected'">
                             <li>
                                 <Icon name="hugeicons:cancel-01" />
-                                <span>Not signed in with GitHub</span>
+                                <span>OAuth not connected</span>
                             </li>
                         </template>
 
                         <template v-else-if="data.status === 'oauth_connected'">
                             <li>
                                 <Icon name="hugeicons:tick-01" />
-                                <span>Signed in with GitHub</span>
+                                <span>OAuth Connected</span>
                             </li>
                             <li>
                                 <Icon name="hugeicons:cancel-01" />
-                                <span>App not authorized for account</span>
+                                <span>App not installed on account</span>
                             </li>
                         </template>
 
                         <template v-else-if="data.status === 'app_connected'">
                             <li>
-                                <Icon name="hugeicons:cancel-01" />
-                                <span>Not signed in with GitHub</span>
+                                <Icon name="hugeicons:tick-01" />
+                                <span>OAuth Connected</span>
                             </li>
                             <li>
                                 <Icon name="hugeicons:tick-01" />
-                                <span>App authorized for account</span>
+                                <span>App installed</span>
                             </li>
                             <li>
-                                Repository selection type: {{ data.selectedRepositories }}
+                                Repository selection type: {{ 
+                                    data.selectedRepositories === 'all' 
+                                    ? 'All repositories'
+                                    : 'Only selection'
+                                }}
                             </li>
                             <li class="flex flex-col items-start!">
                                 Available repositories ({{ availableRepositories.length }}):

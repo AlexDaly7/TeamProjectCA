@@ -4,13 +4,9 @@ Collaborative team project tracking with GitHub integration.
 
 ## Setup
 
-Make sure to install dependencies:
+For both dev and production environments, follow the [setup guide](docs/setup.md).
 
-```bash
-bun install
-```
-
-## Development Server
+### Development Server
 
 Start the development server on `http://localhost:3000`:
 
@@ -18,7 +14,7 @@ Start the development server on `http://localhost:3000`:
 bun run dev
 ```
 
-## Production
+### Production
 
 Build the application for production:
 

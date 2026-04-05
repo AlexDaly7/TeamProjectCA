@@ -9,7 +9,7 @@ const projectId = computed(() => route.params.projectId);
     <div class="flex flex-col gap-2">
         <SidebarLink
             :to="{ name: 'dashboard-orgSlug-projectId', params: { orgSlug, projectId } }"
-            label="Timeline"
+            label="Tasks"
             icon="hugeicons:bar-chart-horizontal" />
         <SidebarLink
             :to="{ name: 'dashboard-orgSlug-projectId-settings', params: { orgSlug, projectId } }"
