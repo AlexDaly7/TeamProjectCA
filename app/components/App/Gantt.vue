@@ -86,76 +86,52 @@ const groups = computed<TimelineTaskGroup[]>(() => {
     return props.groupsInfo.filter(isGroupVisible);
 });
 
-let groupsHeight = computed<Number>(()=> {
-    let height = 30.4;
-    groups.value.forEach((group)=> {
-        if(group.parentId) {
-            height += 60.95;
-        } else {
-            height += 63.95;
-        }
-    });
-    return height;
-});
-
 let timelineStart = ref<number>(bounds.value.lower);
 let timelineEnd = ref<number>(bounds.value.upper);
 
-const lines = computed<{svgPath: String, colour: String}[]>(()=> {
-    let count = 0;
+const lines = computed(()=> {
+    let spacing = 0;
     const end = timelineEnd.value - timelineStart.value;
-    return groups.value.map((group)=> {
+    const linesArr = groups.value.map((group)=> {
         const item = props.items.find((task)=>task.id+"-group"==group.id);
         const itemStart = item?.start;
         const itemEnd = item?.end;
-        
+        let svgData = {
+            svgPath: ``,
+            colour: "cyan",
+        }
+
         if(itemStart&&itemEnd) {
             // Gets the starting position in pixels from the current timeline viewport range and the timelines width in pixels
             const linePosX = ((itemStart-timelineStart.value)/end)*timelineWidth?.value;
             const child = props.items.find((task)=>task.data.parentId+"-group"==group.id);
-            let svgData;
-            const emptySvg = {
-                svgPath: ``,
-                colour: "",
-            }
+
             if(group.expanded) { // If expanded
                 if(child!=undefined) { // If child, draw path to child
                     const childPosX = (((child.start-timelineStart.value)/end))*timelineWidth?.value;
-                    svgData = {
-                        svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${childPosX} ${(60*count+1)+120}`,
-                        colour: "blue",
-                    }
+                    svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${childPosX} ${(spacing)+120}`;
                 } else { // If no child, check for items sibling
                     const sibling = getItemSibling(item);
                     if(sibling!=null) { // If sibling draw line to sibling
                         const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
-                        svgData = {
-                            svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
-                            colour: "green",
-                        }
+                        svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${siblingPosX} ${(spacing)+120}`;
                     } else { // If not sibling
                         let parent = props.items.find((task)=>task.data.id==item.data.parentId); // Get items parent
                         if(parent!=null) { // If parent
                             const siblingParent = getItemSibling(parent); // Get items parents sibling
                             if(siblingParent!=null) { // If items parents sibling, draw line to it
                                 const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
-                                svgData = {
-                                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
-                                    colour: "pink",
-                                }
+                                svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${siblingParentPosX} ${(spacing)+120}`;
                             } else { // Else if no items parents sibling, item is a sub sub task. Draw line to parents parents sibling
                                 parent=props.items.find((task)=>task.data.id==parent?.data.parentId);
-                                if(!parent) {return emptySvg};
+                                if(!parent) {return svgData;};
                                 const siblingParent = getItemSibling(parent);
-                                if(!siblingParent) {return emptySvg};   
+                                if(!siblingParent) {return svgData;};   
                                 const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
-                                svgData = {
-                                    svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
-                                    colour: "pink",
-                                }
+                                svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${siblingParentPosX} ${(spacing)+120}`;
                             }
                         } else { // If no parent, return nothing
-                            return emptySvg;
+                            return svgData;
                         }
                         
                     }
@@ -164,40 +140,33 @@ const lines = computed<{svgPath: String, colour: String}[]>(()=> {
                 const sibling = getItemSibling(item);
                 if(sibling!=null) { // If sibling, draw line to sibling
                     const siblingPosX = (((sibling.start-timelineStart.value)/end))*timelineWidth?.value;
-                    svgData = {
-                        svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingPosX} ${(60*count+1)+120}`,
-                        colour: "green",
-                    }
+                    svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${siblingPosX} ${(spacing)+120}`;
                 } else { // If no sibling, get items parent 
                     let parent = props.items.find((task)=>task.data.id==item.data.parentId);
                     if(parent!=null) { // If parent, get parents sibling
                         const siblingParent = getItemSibling(parent);
                         if(siblingParent!=null) { // If items parents sibling, draw line to it
                             const siblingParentPosX = (((siblingParent.start-timelineStart.value)/end))*timelineWidth?.value;
-                            svgData = {
-                                svgPath: `M${linePosX} ${(60*count)+70} L${linePosX-30} ${(60*count)+70} L${linePosX-30} ${(60*count+1)+120} L${siblingParentPosX} ${(60*count+1)+120}`,
-                                colour: "green",
-                            }
+                            svgData.svgPath = `M${linePosX} ${spacing+70} L${linePosX-10} ${spacing+70} L${linePosX-10} ${(spacing)+120} L${siblingParentPosX} ${(spacing)+120}`;
                         } else { // Return nothing
-                            return emptySvg;
+                            return svgData;
                         }
                     } else { // If no parent, draw nothing.
-                        return emptySvg;
+                        return svgData;
                     }
                 }
             }
-            count++;
-            return svgData;
-        } else { // In case of error, draw dummy line to nothing
-            const svgData = {
-                svgPath: `M100 ${(60*count)+70} L100 ${(60*count)+70}`,
-                colour: "blue",
+            // Increases spacing by height of group
+            if(props.items.find((task)=>task.data.parentId==item.data.id)==null) {
+                spacing += 63.35;
+            } else {
+                spacing += 60.95;
             }
-            count++; // Increase count and return data
-            return svgData;
         }
-        
+        return svgData;
     });
+
+    return { linesArr, spacing };
 });
 
 function getItemSibling(item: TimelineItemWithData) {
@@ -226,61 +195,62 @@ function getBounds(value: {start: number, end: number}) {
 
 <template>
     <ClientOnly>
-        <svg xmlns="http://www.w3.org/2000/svg" class="absolute" :style="`height:${(groupsHeight)}px;width:${timelineWidth}px;`">
-            <defs>
-                <marker id="arrow" 
-                markerWidth="4" 
-                markerHeight="4"
-                viewBox="0 0 10 10"
-                refX="5" refY="5" orient="auto">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="red"/>
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute" :style="`height:${(lines.spacing+63.35)}px;width:${timelineWidth}px;`">
+                <defs>
+                    <marker id="arrow" 
+                    markerWidth="4" 
+                    markerHeight="4"
+                    viewBox="0 0 10 10"
+                    refX="5" refY="5" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="red"/>
 
-                </marker>
-            </defs>
-            <path v-for="line in lines"
-            :d="`${line.svgPath}`"
-            :style="`fill:none;stroke:${line.colour};stroke-width:3;position:relative;`"
-            class="z-50"
-            marker-end="url(#arrow)" />
-        </svg>
-        <Timeline
-            id="timelineElement"
-            :items
-            :groups
-            :initial-viewport-start="bounds.lower" 
-            :initial-viewport-end="bounds.upper"
-            @change-viewport="getBounds">
-            <template #group-label="{ group }">
-                <div
-                    class="flex items-center"
-                    :style="{ 'margin-left': `${(group.path.length - 1) * 16}px` }">
-                    <button
-                        v-if="hasChildren(group.id)"
-                        class="flex flex-row gap-1 items-center justify-center z-50"
-                        @click="toggleExpanded(group.id)">
-                        <Icon
-                            name="hugeicons:arrow-right-01"
-                            class="transition-discrete duration-75 z-50"
-                            size="16"
-                            :class="{ 'rotate-90': group.expanded }" />
-                        {{ group.label }}
-                    </button>
-                    <span 
-                        v-else
-                        class="ml-5">
-                        {{ group.label }}
-                    </span>
-                </div>
-            </template>
-            
-            <template #item="{ item }">
-                <div
-                    class="size-full bg-brand ring-md rounded-sm"
-                    @click="$emit('selectedTask', item)">
-                </div>
-            </template>
-        </Timeline>
-
+                    </marker>
+                </defs>
+                <path v-for="line in lines.linesArr"
+                :d="`${line.svgPath}`"
+                :style="`fill:none;stroke:${line.colour};stroke-width:3;`"
+                class="z-50"
+                marker-end="url(#arrow)" />
+            </svg>
+            <Timeline
+                id="timelineElement"
+                :items
+                :groups
+                :initial-viewport-start="bounds.lower" 
+                :initial-viewport-end="bounds.upper"
+                @change-viewport="getBounds">
+                <template #group-label="{ group }">
+                    <div
+                        class="flex items-center"
+                        :style="{ 'margin-left': `${(group.path.length - 1) * 16}px` }">
+                        <button
+                            v-if="hasChildren(group.id)"
+                            class="flex flex-row gap-1 items-center justify-center z-50"
+                            @click="toggleExpanded(group.id)">
+                            <Icon
+                                name="hugeicons:arrow-right-01"
+                                class="transition-discrete duration-75 z-50"
+                                size="16"
+                                :class="{ 'rotate-90': group.expanded }" />
+                            {{ group.label }}
+                        </button>
+                        <span 
+                            v-else
+                            class="ml-5">
+                            {{ group.label }}
+                        </span>
+                    </div>
+                </template>
+                
+                <template #item="{ item }">
+                    <div
+                        class="size-full bg-brand ring-md rounded-sm"
+                        @click="$emit('selectedTask', item)">
+                    </div>
+                </template>
+            </Timeline>
+        </div>
         <template #fallback>
             <AppGanttFallback />
         </template>
