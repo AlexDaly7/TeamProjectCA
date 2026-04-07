@@ -121,8 +121,8 @@ function selectTask(item: TimelineItemWithData) {
             v-if="projectInfoPending || projectInfoError"
             class="text-txt-secondary text-sm animate-pulse">
             {{ projectInfoPending
-                ? 'Loading chart...' 
-                : 'There was an error loading the timeline. Please try again' }}
+                ? 'Loading chart...'
+                : 'There was an error loading the timeline. Please try again'}}
         </AppGanttFallback>
 
         <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
@@ -141,7 +141,7 @@ function selectTask(item: TimelineItemWithData) {
             v-else
             :items
             :groupsInfo
-            @selected-task="selectTask" />
+            @selected-task="selectTask"/>
     </div>
 
 
