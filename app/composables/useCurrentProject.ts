@@ -37,7 +37,7 @@ export const useCurrentProject = () => {
       title,
       dateRange: {
         start: dateRange.start.toDate("utc"),
-        end: new Date(dateRange.end.toDate("utc").getTime() + 86399999),
+        end: new Date(dateRange.end.toDate("utc").getTime() + 86399999), //add just under 24 hrs at the end in order to enable one day tasks
       },
       description,
       parentId,
