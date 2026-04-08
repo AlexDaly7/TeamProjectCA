@@ -5,7 +5,7 @@ withDefaults(defineProps<{
     type?: string,
     disabled?: boolean
     error?: string,
-    placeholder?: string,
+    placeholder?: unknown,
 }>(), {
     asType: 'input',
     type: 'text',
@@ -24,7 +24,7 @@ withDefaults(defineProps<{
         v-bind="$attrs"
         class="bg-main-700 w-full h-8 ring-md focus:ring-2! focus:ring-main-50/25 px-4 rounded-md leading-none outline-none"
         :class="{
-            'ring-danger-bg!': error,
+            'ring-danger-txt!': error,
             'opacity-50': disabled,
         }">
     </Field>

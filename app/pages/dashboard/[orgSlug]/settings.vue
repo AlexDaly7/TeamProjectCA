@@ -44,7 +44,7 @@ watch(activeOrg.org, (value) => {
                 This is your organization's visible name within Mórchlár.
             </template>
             <template #form>
-                <AppInput 
+                <FormBuilderInput
                     name="name"
                     placeholder="New org name..."
                     v-model="newOrgName" />
