@@ -55,8 +55,9 @@ const onSubmit = submitHandler(
 
 <template>
     <div class="flex flex-col w-full max-w-prose mx-auto mt-6">
-        <h1 class="text-3xl font-bold">Create a new organization</h1>
-        <p class="text-sm text-txt-secondary mt-2 mb-4">Create a new organization to collaborate with a team.</p>
+        <PageHeader
+            title="Create a new organization"
+            description="Create a new organization to collaborate with a team." />
 
         <FormBuilder
             :onSubmit

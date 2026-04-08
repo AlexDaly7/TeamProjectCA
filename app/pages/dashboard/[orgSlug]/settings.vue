@@ -32,6 +32,8 @@ watch(activeOrg.org, (value) => {
 </script>
 
 <template>
+    <PageHeader title="Settings" description="Organization settings." />
+    
     <div class="flex flex-col gap-8 md:p-4">
         <SettingsCard
             :action-disabled="activeOrg.org.value === undefined || newOrgName === activeOrg.org.value.name"

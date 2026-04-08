@@ -59,9 +59,9 @@ async function deleteProject(project: CurrentOrgProject) {
 </script>
 
 <template>
-    <h1 class="text-3xl font-bold">Projects</h1>
-
-    <div class="w-full h-0.5 my-4 bg-main-800"></div>
+    <PageHeader
+        title="Projects"
+        description="Manage your organization's projects." />
 
     <div 
         v-if="orgDataPending"

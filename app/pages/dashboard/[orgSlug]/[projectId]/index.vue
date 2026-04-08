@@ -92,7 +92,7 @@ function selectTask(item: TimelineItemWithData) {
 <template>
     <div class="mb-4">
         <div v-if="projectInfoPending">
-            <span>Selected project:</span>
+            <span class="text-txt-secondary">Selected project:</span>
             <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
             <h2 class="mt-4">Tasks:</h2>
         </div>
@@ -100,7 +100,7 @@ function selectTask(item: TimelineItemWithData) {
             There was an error fetching project info. {{ projectInfoError }}
         </div>
         <div v-else class="flex flex-col">
-            <span>Selected project:</span>
+            <span class="text-txt-secondary">Selected project:</span>
             <div class="inline-flex justify-between">
                 <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
                 <ProjectAddDialog>
