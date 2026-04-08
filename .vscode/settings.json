@@ -7,11 +7,6 @@
     "explorer.autoRevealExclude": {
         "**/.vite": true
     },
-    "nuxtr.defaultPackageManager": "Bun",
-    "nuxtr.vueFiles.template.defaultLanguage": "html",
-    "nuxtr.vueFiles.firstTag": "script",
-    "nuxtr.vueFiles.script.type": "setup",
-    "nuxtr.vueFiles.script.defaultLanguage": "ts",
-    "nuxtr.vueFiles.style.addStyleTag": false,
-    "nuxtr.piniaFiles.defaultTemplate": "setup",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
 }
