@@ -65,7 +65,9 @@ function signIn() {
         <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]">GitHub Integration!</h1>
             <p class="text-[25px]">Import your repos directly into the website!</p>
-            <img class="border-main-500 border-[5px] rounded-xl" src="" alt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis convallis odio nec!">
+            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
+                <source src="/media/landing/Project.webm" type="video/webm">
+            </video>
         </div>
         <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]">Add Tasks and Subtasks!</h1>
