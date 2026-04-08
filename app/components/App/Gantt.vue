@@ -108,50 +108,27 @@ const lines = computed(() => {
             if (group.expanded) { // If expanded
                 if (child != undefined) { // If child, draw path to child (Antonio's note to self a child cannot be longer than its parent and thus start before its parent)
                     const childPosX = (((child.start - timelineStart.value) / end)) * timelineWidth?.value;
-                    //take the line 10px behind the furthest back item
-                    if (childPosX < linePosX) {
-                        svgData.svgPath = `M${linePosX} ${spacing + 70} L${childPosX - 10} ${spacing + 70} L${childPosX - 10} ${(spacing) + 120} L${childPosX} ${(spacing) + 120}`;
-                    }
-                    else {
-                        svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${childPosX} ${(spacing) + 120}`;
-                    }
+                    svgData.svgPath = drawLines(childPosX, linePosX, spacing);
                 } else { // If no child, check for items sibling
                     const sibling = getItemSibling(item);
                     if (sibling != null) { // If sibling draw line to sibling
                         const siblingPosX = (((sibling.start - timelineStart.value) / end)) * timelineWidth?.value;
-                        //take the line 10px behind the furthest back item
-                        if (siblingPosX < linePosX) {
-                            svgData.svgPath = `M${linePosX} ${spacing + 70} L${siblingPosX - 10} ${spacing + 70} L${siblingPosX - 10} ${(spacing) + 120} L${siblingPosX} ${(spacing) + 120}`;
-                        }
-                        else {
-                            svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${siblingPosX} ${(spacing) + 120}`;
-                        }
+                        svgData.svgPath = drawLines(siblingPosX, linePosX, spacing);
                     } else { // If not sibling
                         let parent = props.items.find((task) => task.data.id == item.data.parentId); // Get items parent
                         if (parent != null) { // If parent
                             const siblingParent = getItemSibling(parent); // Get items parents sibling
                             if (siblingParent != null) { // If items parents sibling, draw line to it
                                 const siblingParentPosX = (((siblingParent.start - timelineStart.value) / end)) * timelineWidth?.value;
-                                //take the line 10px behind the furthest back item
-                                if (siblingParentPosX < linePosX) {
-                                    svgData.svgPath = `M${linePosX} ${spacing + 70} L${siblingParentPosX - 10} ${spacing + 70} L${siblingParentPosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                                }
-                                else {
-                                    svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                                }
+                                svgData.svgPath = drawLines(siblingParentPosX, linePosX, spacing);
                             } else { // Else if no items parents sibling, item is a sub sub task. Draw line to parents parents sibling
                                 parent = props.items.find((task) => task.data.id == parent?.data.parentId);
                                 if (!parent) { return svgData; };
                                 const siblingParent = getItemSibling(parent);
                                 if (!siblingParent) { return svgData; };
                                 const siblingParentPosX = (((siblingParent.start - timelineStart.value) / end)) * timelineWidth?.value;
-                                //take the line 10px behind the furthest back item
-                                if (siblingParentPosX < linePosX) {
-                                    svgData.svgPath = `M${linePosX} ${spacing + 70} L${siblingParentPosX - 10} ${spacing + 70} L${siblingParentPosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                                }
-                                else {
-                                    svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                                }
+
+                                svgData.svgPath = drawLines(siblingParentPosX, linePosX, spacing);
                             }
                         } else { // If no parent, return nothing
                             return svgData;
@@ -163,26 +140,14 @@ const lines = computed(() => {
                 const sibling = getItemSibling(item);
                 if (sibling != null) { // If sibling, draw line to sibling
                     const siblingPosX = (((sibling.start - timelineStart.value) / end)) * timelineWidth?.value;
-                    //take the line 10px behind the furthest back item
-                    if (siblingPosX < linePosX) {
-                        svgData.svgPath = `M${linePosX} ${spacing + 70} L${siblingPosX - 10} ${spacing + 70} L${siblingPosX - 10} ${(spacing) + 120} L${siblingPosX} ${(spacing) + 120}`;
-                    }
-                    else {
-                        svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${siblingPosX} ${(spacing) + 120}`;
-                    }
+                    svgData.svgPath = drawLines(siblingPosX, linePosX, spacing);
                 } else { // If no sibling, get items parent 
                     let parent = props.items.find((task) => task.data.id == item.data.parentId);
                     if (parent != null) { // If parent, get parents sibling
                         const siblingParent = getItemSibling(parent);
                         if (siblingParent != null) { // If items parents sibling, draw line to it
                             const siblingParentPosX = (((siblingParent.start - timelineStart.value) / end)) * timelineWidth?.value;
-                            //take the line 10px behind the furthest back item
-                            if (siblingParentPosX < linePosX) {
-                                svgData.svgPath = `M${linePosX} ${spacing + 70} L${siblingParentPosX - 10} ${spacing + 70} L${siblingParentPosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                            }
-                            else {
-                                svgData.svgPath = `M${linePosX} ${spacing + 70} L${linePosX - 10} ${spacing + 70} L${linePosX - 10} ${(spacing) + 120} L${siblingParentPosX} ${(spacing) + 120}`;
-                            }
+                            svgData.svgPath = drawLines(siblingParentPosX, linePosX, spacing);
                         } else { // Return nothing
                             return svgData;
                         }
@@ -203,6 +168,21 @@ const lines = computed(() => {
 
     return { linesArr, spacing };
 });
+
+//draw the line now extending 10px behind the furthest back item
+function drawLines(secondItemPosX: number, itemPosX: number, spacing: number) {
+    let svgData = {
+        svgPath: ``,
+        colour: "cyan",
+    }
+    if (secondItemPosX < itemPosX) {
+        svgData.svgPath = `M${itemPosX} ${spacing + 70} L${secondItemPosX - 10} ${spacing + 70} L${secondItemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
+    }
+    else {
+        svgData.svgPath = `M${itemPosX} ${spacing + 70} L${itemPosX - 10} ${spacing + 70} L${itemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
+    }
+    return svgData.svgPath;
+}
 
 function getItemSibling(item: TimelineItemWithData) {
     let i = props.items.indexOf(item);
