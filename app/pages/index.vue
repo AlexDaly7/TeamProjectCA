@@ -55,11 +55,11 @@ function signIn() {
                 <source src="/media/landing/Organisations.webm" type="video/webm">
             </video>
         </div>
-        <div class="h-full grow flex flex-col items-left justify-left bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
+        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]"> Add Members! </h1>
             <p class="text-[25px]"> Collaborate with your teammates within the organisation!</p>
             <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Adding Members.webm" type="video/webm">
+                <source src="/media/landing/Adding-Members.webm" type="video/webm">
             </video>
         </div>
     </div>
@@ -75,7 +75,7 @@ function signIn() {
             <h1 class="text-[50px]">Add Tasks and Subtasks!</h1>
             <p class="text-[25px]">Add tasks and subtasks to our Gannt chart and see how they link!</p>
             <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Tasks and Subtasks.webm" type="video/webm">
+                <source src="/media/landing/Tasks-and-Subtasks.webm" type="video/webm">
             </video>
         </div>
     </div>
