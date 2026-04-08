@@ -51,9 +51,9 @@ function signIn() {
         <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]"> Organisations! </h1>
             <p class="text-[25px]"> Create your organisation and give it a custom link!</p>
-            <!--<video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/organisation.webm" type="video/webm">
-            </video>-->
+            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
+                <source src="/media/landing/Organisations.webm" type="video/webm">
+            </video>
         </div>
         <div class="h-full grow flex flex-col items-left justify-left bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]"> Add Members! </h1>
