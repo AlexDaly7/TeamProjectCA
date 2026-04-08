@@ -58,7 +58,9 @@ function signIn() {
         <div class="h-full grow flex flex-col items-left justify-left bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
             <h1 class="text-[50px]"> Add Members! </h1>
             <p class="text-[25px]"> Collaborate with your teammates within the organisation!</p>
-            <img class="border-main-500 border-[5px] rounded-xl" src="/media/landing/task-example.png" alt="Graphic demonstrating Mórchlár's gantt chart task feature">
+            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
+                <source src="/media/landing/Adding Members.webm" type="video/webm">
+            </video>
         </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 mt-2 mb-2 mx-4 text-center">
