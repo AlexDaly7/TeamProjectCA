@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { ClientInsertOrganization } from "~~/shared/validation";
 
+useAppHead({
+    pageTitle: 'Create an Organization',
+});
+
 const { $authClient } = useNuxtApp();
 const router = useRouter();
 const { refreshOrganizations } = useOrganizations();
 
-const { handleSubmit, errors, meta, setErrors, resetForm } = useForm({
+const { handleSubmit, errors, meta, setErrors } = useForm({
     validationSchema: toTypedSchema(ClientInsertOrganization),
 });
 
-const { isOpen, isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors });
-
+const { isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors }, { confirmBeforeExiting: false });
 
 async function checkSlug(slug: string): Promise<{ validated: boolean, message: string }> {
     const { data, error } = await $authClient.organization.checkSlug({ slug: `org-${slug}` });
@@ -45,57 +48,41 @@ const onSubmit = submitHandler(
     }, 
     async ({ slug }) => {
         router.push({ name: 'dashboard-orgSlug', params: { orgSlug: slug } });
-        emit('onSubmit');
     }
 );
 
-const emit = defineEmits<{
-    onSubmit: [],
-}>();
-
-watch(isOpen, (newValue) => {
-    if (newValue) {
-        resetForm();
-    }
-});
 </script>
 
 <template>
-    <AppDialog
-        title="Create a new organization"
-        description="Create a new organization to collaborate with a team."
-        v-model:is-open="isOpen">
-        <template #trigger>
-            <slot></slot>
-        </template>
+    <div class="flex flex-col w-full max-w-prose mx-auto mt-6">
+        <h1 class="text-3xl font-bold">Create a new organization</h1>
+        <p class="text-sm text-txt-secondary mt-2 mb-4">Create a new organization to collaborate with a team.</p>
 
-        <template #body>
-            <FormBuilder
-                :onSubmit
-                :isLoading
-                :isValid="meta.valid"
-                :errors
-                :submitError
-                :submitBtn="{
-                    icon: 'hugeicons:add-01',
-                    label: 'Create',
-                }"
-                :fields="[
-                    {
-                        name: 'name',
-                        label: 'Name',
-                        as: 'input',
-                        type: 'text',
-                        placeholder: 'My Awesome Org',
-                    },
-                    {
-                        name: 'slug',
-                        label: 'Slug',
-                        as: 'input',
-                        type: 'text',
-                        placeholder: 'my-awesome-org'
-                    },
-                ]" />
-        </template>
-    </AppDialog>
+        <FormBuilder
+            :onSubmit
+            :isLoading
+            :isValid="meta.valid"
+            :errors
+            :submitError
+            :submitBtn="{
+                icon: 'hugeicons:add-01',
+                label: 'Create',
+            }"
+            :fields="[
+                {
+                    name: 'name',
+                    label: 'Name',
+                    as: 'input',
+                    type: 'text',
+                    placeholder: 'My Awesome Org',
+                },
+                {
+                    name: 'slug',
+                    label: 'Slug',
+                    as: 'input',
+                    type: 'text',
+                    placeholder: 'my-awesome-org'
+                },
+            ]" />
+    </div>
 </template>

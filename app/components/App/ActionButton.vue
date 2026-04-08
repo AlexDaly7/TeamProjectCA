@@ -96,11 +96,7 @@ function handleClick() {
                             {{ title }}
                         </AlertDialogTitle>
 
-                        <div 
-                            v-if="submitError"
-                            class="w-full bg-danger-bg/60 ring-1 ring-danger-bg/80 ring-inset rounded-sm p-2">
-                            <span class="text-danger-txt text-sm font-medium">{{ submitError }}</span>
-                        </div>
+                        <ErrorHeader :error="submitError" />
 
                         <AlertDialogDescription class="text-txt-secondary mt-2 mb-5 leading-normal">
                             {{ description }}

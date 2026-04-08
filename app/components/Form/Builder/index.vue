@@ -29,11 +29,8 @@ defineProps<{
 </script>
 
 <template>
-    <span
-        v-if="submitError"
-        class="text-danger-txt font-bold mb-2">
-        {{ submitError }}
-    </span>
+    <ErrorHeader :error="submitError" />
+
     <form 
         class="flex flex-col gap-2" 
         @submit.prevent="onSubmit">
