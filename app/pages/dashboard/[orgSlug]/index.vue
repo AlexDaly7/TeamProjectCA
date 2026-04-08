@@ -4,7 +4,6 @@ definePageMeta({
 });
 
 const {
-    orgSlug,
     org,
     orgData,
     pending: orgDataPending,
@@ -116,15 +115,30 @@ async function deleteProject(project: CurrentOrgProject) {
                 <AppButton
                     variant="secondary"
                     class="inline-flex justify-between items-center"
-                    :to="{ name: 'dashboard-orgSlug-projectId', params: { orgSlug, projectId: project.id }  }">
+                    :to="{
+                        name: 'dashboard-orgSlug-projectId',
+                        params: { orgSlug: orgData.organization.slug, projectId: project.id }
+                    }">
                     Open
                     <Icon name="hugeicons:arrow-right-01" />
                 </AppButton>
             </div>
         </div>
 
-        <ProjectPageImportFromGithubCard
-            :organization-id="orgData.organization.id"
-            @refresh-projects="refreshProjects"/>
+        <div class="flex flex-col items-center justify-center min-h-40 p-4 gap-1 bg-main-800 rounded-lg border border-dashed border-main-50/10">
+            <Icon name="hugeicons:github-01" size="24" />
+            <span class="text-lg font-bold">Import from GitHub</span>
+            <span class="text-sm text-txt-secondary">Connect a repo to get started</span>
+            
+            <AppButton 
+                variant="secondary"
+                class="mt-1"
+                :to="{ 
+                    name: 'dashboard-orgSlug-import-project',
+                    params: { orgSlug: orgData.organization.slug }
+                }">
+                Import
+            </AppButton>
+        </div>
     </div>
 </template>

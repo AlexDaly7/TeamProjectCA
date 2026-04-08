@@ -54,7 +54,7 @@ const value = defineModel('repo', {
 
             <SelectPortal>
                 <SelectContent
-                    class="min-w-40 overflow-hidden bg-main-600 ring-md rounded-lg shadow-sm z-100"
+                    class="min-w-40 overflow-hidden bg-main-700 ring-md rounded-lg shadow-sm z-100"
                     :side-offset="5">
                     <SelectScrollUpButton class="flex items-center justify-center h-6">
                         <Icon name="hugeicons:arrow-up-01" />
@@ -62,7 +62,7 @@ const value = defineModel('repo', {
 
                     <SelectViewport class="p-1">
                         <SelectLabel class="px-6 text-sm leading-6 text-txt-secondary">
-                            Repos
+                            Available Repos
                         </SelectLabel>
                         <SelectGroup>
                             <SelectItem
