@@ -73,7 +73,6 @@ const onSubmit = submitHandler(
                 {
                     name: 'name',
                     label: 'Name',
-                    as: 'input',
                     type: 'text',
                     placeholder: 'My Awesome Org',
                 },

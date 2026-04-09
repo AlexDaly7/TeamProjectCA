@@ -1,18 +1,11 @@
 <script setup lang="ts">
-type BaseField = {
+type FieldType = {
+    fieldType: 'text' | 'text-multiline' | 'text-email'
     label: string,
     name: string,
-    placeholder?: unknown;
-}
-
-type FieldOptions = 
-    { 
-        as: 'input', 
-        type: 'text' | 'number' | 'date',
-    } | { 
-        as: 'textarea',
-        type: undefined,
-    };
+    disabled?: boolean;
+    placeholder?: unknown,
+};
 
 defineProps<{
     onSubmit: () => void,
@@ -24,7 +17,7 @@ defineProps<{
         icon: string,
         label: string,
     },
-    fields: (BaseField & FieldOptions)[],
+    fields: (FieldType)[],
 }>();
 </script>
 
@@ -34,26 +27,22 @@ defineProps<{
     <form 
         class="flex flex-col gap-2" 
         @submit.prevent="onSubmit">
-        <div
-            v-for="field in fields" 
-            class="flex flex-col gap-2"
+        
+        <template
+            v-for="field in fields"
             :key="field.name">
-            <Label 
-                class="font-medium"
-                :for="field.name">
-                {{ field.label }}
-            </Label>
             <FormBuilderInput
-                :as="field.as"
+                v-if="
+                    field.fieldType === 'text' ||
+                    field.fieldType === 'text-email'"
+                asType="input"
                 :name="field.name"
-                :type="field.type"
+                :label="field.label"
+                :type="field.fieldType === 'text' ? 'text' : 'email'"
                 :disabled="isLoading"
                 :placeholder="field.placeholder"
                 :error="errors[field.name]" />
-            <ErrorMessage 
-                class="text-sm text-danger-txt"
-                :name="field.name" />
-        </div>
+        </template>
         
         <div class="flex justify-end mt-2">
             <AppButton

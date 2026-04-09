@@ -5,9 +5,7 @@ export const ClientInsertProject = z.object({
 
     organizationId: z.string(),
 
-    // repoId: z.int(),
-    repoName: z.string(),
-    repoOwner: z.string(),
+    repo: z.string(),
 });
 
 export type ClientInsertProjectSchema = z.infer<typeof ClientInsertProject>;

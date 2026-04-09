@@ -2,6 +2,7 @@
 withDefaults(defineProps<{
     asType?: 'input' | 'textarea',
     name: string,
+    label: string,
     type?: string,
     disabled?: boolean
     error?: string,
@@ -14,18 +15,21 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-    <Field
-        :as="asType"
-        :name
-        :type
-        :disabled
-        :error
-        :placeholder
-        v-bind="$attrs"
-        class="bg-main-700 w-full h-8 ring-md focus:ring-2! focus:ring-main-50/25 px-4 rounded-md leading-none outline-none"
-        :class="{
-            'ring-danger-txt!': error,
-            'opacity-50': disabled,
-        }">
-    </Field>
+    <div class="flex flex-col gap-2">
+        <Label 
+            class="font-medium"
+            :for="name">
+            {{ label }}
+        </Label>
+        <FormBuilderInputRaw
+            :as="asType"
+            :name="name"
+            :type="type"
+            :disabled="disabled"
+            :placeholder="placeholder"
+            :error="error" />
+        <ErrorMessage 
+            class="text-sm text-danger-txt"
+            :name="name" />
+    </div>
 </template>

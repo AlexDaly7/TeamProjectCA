@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ClientInsertProjectSchema } from "~~/shared/validation";
+import { ClientInsertProject, type ClientInsertProjectSchema } from "~~/shared/validation";
 
 const { $csrfFetch } = useNuxtApp();
 const { org, refresh: refreshProjects } = useCurrentOrg();
@@ -10,14 +10,10 @@ async function createProject() {
     if (title.value.length === 0) return;
     if (selectedRepo.value.length === 0) return;
 
-    const [ repoOwner, repoName ] = selectedRepo.value.split('/');
-    if (!repoOwner || !repoName) return;
-
     const body: ClientInsertProjectSchema = {
         organizationId: org.value.id,
         title: title.value,
-        repoOwner,
-        repoName,
+        repo: selectedRepo.value,
     };
 
     const { data, error } = await tryCatch($csrfFetch<{ id: number }>('/api/projects', {
@@ -51,6 +47,24 @@ function selectedRepoChanged(value: string) {
         title.value = name;
     }
 }
+
+const { handleSubmit, errors, meta, setErrors } = useForm({
+    validationSchema: toTypedSchema(ClientInsertProject),
+});
+
+const { isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors }, { confirmBeforeExiting: false });
+
+const onSubmit = submitHandler(
+    async (values) => {
+        console.log(values);
+
+        return { error: false, data: '' };
+    }, 
+    async (v) => {
+        console.log('aftersuccess');
+    }
+);
+
 </script>
 
 <template>
@@ -59,7 +73,12 @@ function selectedRepoChanged(value: string) {
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues." />
 
-        <form @submit.prevent="createProject">
+        <form @submit.prevent="onSubmit">
+            <FormBuilderInput
+                name="title"
+                label="Project Title"
+                placeholder="My project..." />
+
             <div class="flex flex-col gap-1">
                 <Label
                     class="text-sm text-txt-secondary"
@@ -78,10 +97,8 @@ function selectedRepoChanged(value: string) {
             </div>
 
             <OrgRepoSelector 
-                label="Repository"
-                field-id="repo"
-                v-model:repo="selectedRepo"
-                @update:repo="selectedRepoChanged" />
+                name="repo"
+                label="Repository" />
 
             <div class="flex justify-end mt-4">
                 <AppButton type="submit">

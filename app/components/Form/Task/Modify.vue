@@ -62,7 +62,7 @@ watch(
         @submit.prevent="onSubmit">
         <label for="title">
             <span class="font-medium">Title</span>
-            <FormBuilderInput 
+            <FormBuilderInputRaw 
                 name="title"
                 placeholder="Task Name"
                 :error="errors['title']"
@@ -74,7 +74,7 @@ watch(
 
         <label for="description">
             <span class="font-medium">Description</span>
-            <FormBuilderInput 
+            <FormBuilderInputRaw 
                 name="description"
                 class="min-h-32 py-2"
                 placeholder="Enter a description for your task here..."
