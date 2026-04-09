@@ -11,6 +11,8 @@ function onSubmit(): ActionButtonResult {
 
 const isLoading = ref(false);
 
+
+
 const validationSchema = z.object({
     name: z.string('Name is required.')
         .min(3, 'Too short!'),
@@ -63,7 +65,8 @@ async function validateTag(tag: string): Promise<boolean> {
                     label: 'Tag',
                     placeholder: 'john-doe',
                     required: true,
-                    watcher: (values) => values.name.trim().toLowerCase().replaceAll(' ', '-')
+                    watcher: (values) => values.name.trim().toLowerCase().replaceAll(' ', '-'),
+                    watcherDebounceMs: 150,
                 },
                 {
                     fieldType: 'text-multiline',

@@ -8,7 +8,8 @@ type FieldType = {
     placeholder: unknown,
     required: boolean,
     disabled?: boolean,
-    watcher?: (values: z.infer<TValidationSchema>) => unknown
+    watcher?: (values: z.infer<TValidationSchema>) => unknown,
+    watcherDebounceMs?: number
 } & ({
     fieldType: 'text' | 'text-multiline' | 'text-email',
     placeholder: string;
@@ -47,16 +48,27 @@ async function submitHelper() {
     isLoading.value = false;
 }
 
-watch(values, (newValues) => {
-    const newVals = newValues as unknown as TValidationSchema;
+const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+watch(values, (newValues) => {
     for (const field of props.fields) {
-        if (field.watcher) {
-            const returnedValue = field.watcher(newVals as unknown as z.infer<TValidationSchema>);
+        if (!field.watcher) continue;
+
+        if (field.watcherDebounceMs) {
+            clearTimeout(debounceTimers.get(field.name));
+
+            debounceTimers.set(field.name, setTimeout(() => {
+                const returnedValue = field.watcher!(newValues as unknown as z.infer<TValidationSchema>);
+                setFieldValue(field.name, returnedValue);
+            }, field.watcherDebounceMs));
+        } else {
+            const returnedValue = field.watcher(newValues as unknown as z.infer<TValidationSchema>);
             setFieldValue(field.name, returnedValue);
         }
     }
-});
+}, { deep: true });
+
+onUnmounted(() => debounceTimers.forEach(clearTimeout));
 </script>
 
 <template>
