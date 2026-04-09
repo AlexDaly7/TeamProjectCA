@@ -26,6 +26,8 @@ const validationSchema = z.object({
         .refine(validateTag, 'Tag already taken!'),
 
     description: z.string('Description').optional(),
+
+    email: z.email('Invalid email.')
 });
 
 async function validateTag(tag: string): Promise<boolean> {
@@ -71,8 +73,15 @@ async function validateTag(tag: string): Promise<boolean> {
                 {
                     fieldType: 'text-multiline',
                     name: 'description',
-                    label: 'description',
+                    label: 'Description',
                     placeholder: 'This should be multiline...',
+                    required: true,
+                },
+                {
+                    fieldType: 'text-email',
+                    name: 'email',
+                    label: 'Email',
+                    placeholder: 'you@example.com',
                     required: true,
                 }
             ]" />

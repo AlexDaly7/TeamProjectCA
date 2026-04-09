@@ -78,27 +78,26 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
         class="flex flex-col gap-2" 
         @submit.prevent="submitHelper">
         
-        <template
+        <div 
             v-for="{ fieldType, name, label, disabled, placeholder, required } in fields"
+            class="flex flex-col gap-2"
             :key="name">
-            <div class="flex flex-col gap-2">
-                <Label 
-                    class="font-medium"
-                    :for="name">
-                    {{ label }}
-                </Label>
-                <FormBuilderInputRaw
-                    :as-type="fieldType === 'text-multiline' ? 'textarea' : 'input'"
-                    :name="name"
-                    :disabled="disabled"
-                    :required="required"
-                    :placeholder="placeholder"
-                    :error="errors[name]" />
-                <ErrorMessage 
-                    class="text-sm text-danger-txt"
-                    :name="name" />
-            </div>
-        </template>
+            <Label 
+                class="font-medium"
+                :for="name">
+                {{ label }}
+            </Label>
+            <FormBuilderInputRaw
+                :as-type="fieldType === 'text-multiline' ? 'textarea' : 'input'"
+                :name="name"
+                :disabled="disabled"
+                :required="required"
+                :placeholder="placeholder"
+                :error="errors[name]" />
+            <ErrorMessage 
+                class="text-sm text-danger-txt"
+                :name="name" />
+        </div>
         
         <div class="flex justify-end mt-2">
             <AppButton
