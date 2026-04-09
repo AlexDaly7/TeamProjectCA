@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { ClientInsertProject, type ClientInsertProjectSchema } from "~~/shared/validation";
+import z from "zod";
+import type { ActionButtonResult } from "~/utils/types/actionButton";
+import { type ClientInsertProjectSchema } from "~~/shared/validation";
 
 const { $csrfFetch } = useNuxtApp();
 const { org, refresh: refreshProjects } = useCurrentOrg();
 const router = useRouter();
 
-async function createProject() {
-    if (!org.value) return;
-    if (title.value.length === 0) return;
-    if (selectedRepo.value.length === 0) return;
+async function onSubmit(values: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
+    if (!org.value) return { error: true, message: 'Error: No organization selected.' };
 
     const body: ClientInsertProjectSchema = {
         organizationId: org.value.id,
-        title: title.value,
-        repo: selectedRepo.value,
+        title: values.title,
+        repo: values.repo,
     };
 
     const { data, error } = await tryCatch($csrfFetch<{ id: number }>('/api/projects', {
@@ -22,8 +22,7 @@ async function createProject() {
     }));
 
     if (error) {
-        alert(`Error importing project: ${error.message}`);
-        return;
+        return { error: true, message: error.message };
     }
 
     await refreshProjects();
@@ -34,36 +33,43 @@ async function createProject() {
             projectId: data.id 
         }
     });
+
+    return { error: false };
 }
 
-const title = ref('');
-const titleChanged = ref(false);
-
-const selectedRepo = ref('');
-function selectedRepoChanged(value: string) {
-    if (titleChanged.value) return;
-    const name = value.split('/')[1];
-    if (name) {
-        title.value = name;
-    }
-}
-
-const { handleSubmit, errors, meta, setErrors } = useForm({
-    validationSchema: toTypedSchema(ClientInsertProject),
+const validationSchema = z.object({
+    title: z.string('Title is required.').min(3, 'Too short!'),
+    repo: z.string('Repo is required'),
 });
 
-const { isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors }, { confirmBeforeExiting: false });
+const {
+    data,
+    pending,
+    error,
+    availableRepositories: repos,
+} = useGitHubAppStatus();
 
-const onSubmit = submitHandler(
-    async (values) => {
-        console.log(values);
 
-        return { error: false, data: '' };
-    }, 
-    async (v) => {
-        console.log('aftersuccess');
+const selectItems = computed(() => {
+    const list = repos.value.map((repo) => ({
+        value: `${repo.owner}/${repo.repo}`,
+        label: `${repo.owner}/${repo.repo}`,
+        iconUrl: repo.image,
+    }));
+
+    const pendingText = pending.value ? 'Loading repos...' : undefined;
+    const errorText = (() => {
+        if (data.value?.status !== 'app_connected') return 'App not installed. Check settings for more info.';
+
+        return error.value?.message;
+    })();
+
+    return {
+        list,
+        pendingText,
+        errorText,
     }
-);
+})
 
 </script>
 
@@ -73,38 +79,29 @@ const onSubmit = submitHandler(
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues." />
 
-        <form @submit.prevent="onSubmit">
-            <FormBuilderInput
-                name="title"
-                label="Project Title"
-                placeholder="My project..." />
-
-            <div class="flex flex-col gap-1">
-                <Label
-                    class="text-sm text-txt-secondary"
-                    for="title">
-                    Project Title
-                </Label>
-                <input 
-                    name="title" 
-                    id="title"
-                    type="text"
-                    placeholder="My project..."
-                    required
-                    v-model="title"
-                    @input="titleChanged = true"
-                    class="mb-2 h-8 bg-main-700 rounded-md ring-md px-4 leading-none outline-none" />
-            </div>
-
-            <OrgRepoSelector 
-                name="repo"
-                label="Repository" />
-
-            <div class="flex justify-end mt-4">
-                <AppButton type="submit">
-                    Import
-                </AppButton>
-            </div>
-        </form>
+        <FormBuilderNew
+            @submit="onSubmit"
+            :validationSchema
+            :submitBtn="{
+                label: 'Import',
+            }"
+            :fields="[
+                {
+                    fieldType: 'text',
+                    label: 'Project Title',
+                    name: 'title',
+                    placeholder: 'My project...',
+                    required: true,
+                    watcher: ({ repo }) => repo.split('/')[1] ?? '',
+                },
+                {
+                    fieldType: 'select',
+                    label: 'Repository',
+                    name: 'repo',
+                    placeholder: 'Select a repo...',
+                    required: true,
+                    selectItems,
+                }
+            ]" />
     </div>
 </template>

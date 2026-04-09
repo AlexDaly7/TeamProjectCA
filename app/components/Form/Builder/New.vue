@@ -24,7 +24,6 @@ type FieldType = {
     placeholder: string,
     selectItems: {
         list: { label: string, value: string, iconUrl?: string }[],
-        isPending?: boolean,
         pendingText?: string,
         errorText?: string,
     },
@@ -34,11 +33,10 @@ type FieldType = {
 const props = defineProps<{
     onSubmit: ((values: z.infer<TValidationSchema>) => ActionButtonResult) 
         | ((values: z.infer<TValidationSchema>) => Promise<ActionButtonResult>),
-    isLoading: boolean,
     validationSchema: TValidationSchema,
     submitBtn: {
-        icon: string,
         label: string,
+        icon?: string,
     },
     fields: FieldType[],
 }>();
@@ -155,12 +153,12 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                 :loading="isSubmitting"
                 :disabled="!meta.valid">
                 <div class="inline-flex items-center gap-2">
-                    <Icon :name="submitBtn.icon" />
+                    <Icon 
+                        v-if="submitBtn.icon" 
+                        :name="submitBtn.icon" />
                     <span>{{ submitBtn.label }}</span>
                 </div>
             </AppButton>
         </div>
     </form>
-
-    {{ values }}
 </template>

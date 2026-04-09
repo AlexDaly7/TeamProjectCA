@@ -11,7 +11,6 @@ async function onSubmit(values: z.infer<typeof validationSchema>): Promise<Actio
     return { error: true, message: 'Test' };
 }
 
-const isLoading = ref(false);
 
 const validationSchema = z.object({
     name: z.string('Name is required.')
@@ -51,7 +50,6 @@ async function validateTag(tag: string): Promise<boolean> {
     <div class="w-full max-w-prose mx-auto">
         <FormBuilderNew
             @submit="onSubmit"
-            :isLoading
             :validationSchema
             :submitBtn="{
                 icon: 'hugeicons:add-01',
