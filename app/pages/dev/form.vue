@@ -5,14 +5,13 @@ import { zodDateRange } from '~~/shared/validation';
 
 const { $authClient } = useNuxtApp();
 
-function onSubmit(values: z.infer<typeof validationSchema>): ActionButtonResult {
+async function onSubmit(values: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
+    await new Promise(resolve => setTimeout(resolve, 300));
     alert(JSON.stringify(values));
     return { error: true, message: 'Test' };
 }
 
 const isLoading = ref(false);
-
-
 
 const validationSchema = z.object({
     name: z.string('Name is required.')

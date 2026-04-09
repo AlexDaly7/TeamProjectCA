@@ -34,7 +34,7 @@ const props = defineProps<{
 
 const submitError = ref<string | null>(null);
 
-const { errors, meta, values, setFieldValue } = useForm({
+const { errors, meta, values, setFieldValue, isFieldTouched } = useForm({
     validationSchema: toTypedSchema(props.validationSchema),
 });
 
@@ -58,7 +58,11 @@ const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 watch(values, (newValues) => {
     for (const field of props.fields) {
+        // If no watcher skip
         if (!field.watcher) continue;
+
+        // If user already modified it themselves, skip doing the watcher's update.
+        if (isFieldTouched(field.name)) continue;
 
         if (field.watcherDebounceMs) {
             clearTimeout(debounceTimers.get(field.name));
