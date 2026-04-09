@@ -36,6 +36,7 @@ const props = defineProps<{
     onSubmit: 
         ((values: SchemaInferredType) => ActionButtonResult) |
         ((values: SchemaInferredType) => Promise<ActionButtonResult>),
+    initialValues?: Partial<SchemaInferredType>,
     validationSchema: TValidationSchema,
     submitBtn: {
         label: string,
@@ -49,6 +50,7 @@ const submitError = ref<string | null>(null);
 
 const { errors, meta, values, setFieldValue, isFieldTouched } = useForm({
     validationSchema: toTypedSchema(props.validationSchema),
+    initialValues: props.initialValues,
 });
 
 const isSubmitting = ref(false);

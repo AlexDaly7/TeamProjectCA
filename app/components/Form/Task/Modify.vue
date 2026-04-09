@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ClientModifyTask, type ClientModifyTaskSchema } from '~~/shared/validation';
+import { zodDateRange } from '~~/shared/validation';
 import type { TimelineItemWithData } from '~/utils/types/timeline';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
+import z from 'zod';
 
 const props = defineProps<{
     selectedTask: TimelineItemWithData | null
@@ -8,104 +10,82 @@ const props = defineProps<{
 
 const { modifyTask } = useCurrentProject();
 
-
-const { handleSubmit, errors, meta, setErrors, setValues } = useForm({
-    validationSchema: toTypedSchema(ClientModifyTask),
+// TODO: make this full
+const validationSchema = z.object({
+    title: z.string('A title is required'),
+    description: z.string().optional(),
+    dateRange: zodDateRange,
 });
 
-const { isLoading, submitHandler } = useEditDialogForm({ meta, handleSubmit, setErrors });
+type FormValues = z.infer<typeof validationSchema>;
 
-const onSubmit = submitHandler(
-    async (values) => {
-        if (!props.selectedTask) return { error: true, message: 'No selected task.' };
-
-        const payload: ClientModifyTaskSchema = {
-            title: values.title,
-            description: values.description,
-            order: values.order,
-            progress: values.progress,
-            parentId: values.parentId,
-            dateRange: values.dateRange,
-        };
-
-        await modifyTask(props.selectedTask.data.id, payload);
-        return { error: false, data: 'printed' };
-    }, 
-    async (data) => {
-        console.log('on success', data);
-    }
-);
-
-// When selected task changes, update form values
-watch(
-    () => props.selectedTask, 
-    (newTask) => {
-    if (!newTask?.data) return;
-
-    const { title, description, startTime, endTime } = newTask.data;
-
-    setValues({
+const initialValues = computed(() => {
+    if (!props.selectedTask?.data) return undefined;
+    
+    const { title, description, startTime, endTime } = props.selectedTask.data;
+    
+    return {
         title,
         description: description ?? '',
         dateRange: {
             start: new Date(startTime),
             end: new Date(endTime),
         },
-    });
-}, { immediate: true });
+    } satisfies Partial<FormValues>;
+});
 
+async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
+    if (!props.selectedTask) {
+        return { error: true, message: 'No selected task.' };
+    }
+
+    try {
+        await modifyTask(props.selectedTask.data.id, {
+            title: values.title,
+            description: values.description,
+            dateRange: values.dateRange,
+        });
+        
+        return { error: false };
+    } catch (error) {
+        return { 
+            error: true, 
+            message: error instanceof Error ? error.message : 'Failed to modify task.' 
+        };
+    }
+}
 </script>
 
 <template>
-    <form 
-        class="flex flex-col pt-2" 
-        @submit.prevent="onSubmit">
-        <label for="title">
-            <span class="font-medium">Title</span>
-            <FormBuilderInputRaw 
-                name="title"
-                placeholder="Task Name"
-                :error="errors['title']"
-                :disabled="isLoading" />
-            <ErrorMessage 
-                name="title"
-                class="text-sm text-danger-txt" />
-        </label>
-
-        <label for="description">
-            <span class="font-medium">Description</span>
-            <FormBuilderInputRaw 
-                name="description"
-                class="min-h-32 py-2"
-                placeholder="Enter a description for your task here..."
-                as="textarea"
-                :error="errors['description']"
-                :disabled="isLoading" />
-            <ErrorMessage 
-                name="description" 
-                class="text-sm text-danger-txt" />
-        </label>
-
-        <label for="dateRange">
-            <span class="font-medium">Date Range</span>
-            <DatePickerField 
-                name="dateRange"
-                :error="errors['description']"
-                :disabled="isLoading" />
-            <ErrorMessage 
-                name="dateRange" 
-                class="text-sm text-danger-txt" />
-        </label>
-
-        <div class="flex justify-end mt-2">
-            <AppButton
-                type="submit"
-                :loading="isLoading">
-                <div class="inline-flex items-center gap-2">
-                    <Icon name="hugeicons:floppy-disk" />
-                    Save
-                </div>
-            </AppButton>
-        </div>
-    </form>
+    <FormBuilderNew
+        :key="selectedTask?.data.id"
+        :onSubmit
+        :initialValues
+        :validationSchema
+        :submitBtn="{
+            label: 'Save',
+            icon: 'hugeicons:floppy-disk',
+        }"
+        :fields="[
+            {
+                fieldType: 'text',
+                name: 'title',
+                label: 'Title',
+                placeholder: 'Task Name',
+                required: true,
+            },
+            {
+                fieldType: 'text-multiline',
+                name: 'description',
+                label: 'Description',
+                placeholder: 'Enter a description for your task here...',
+                required: false,
+            },
+            {
+                fieldType: 'date-range',
+                name: 'dateRange',
+                label: 'Date Range',
+                required: true,
+            },
+        ]" />
 </template>
