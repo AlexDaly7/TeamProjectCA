@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ClientInsertOrganization } from "~~/shared/validation";
+import z from "zod";
+import type { ActionButtonResult } from "~/utils/types/actionButton";
+import slugify from 'slugify';
 
 useAppHead({
     pageTitle: 'Create an Organization',
@@ -9,48 +11,49 @@ const { $authClient } = useNuxtApp();
 const router = useRouter();
 const { refreshOrganizations } = useOrganizations();
 
-const { handleSubmit, errors, meta, setErrors } = useForm({
-    validationSchema: toTypedSchema(ClientInsertOrganization),
-});
+async function validateSlug(tag: string): Promise<boolean> {
+    const { data, error } = await tryCatch($authClient.organization.checkSlug({
+        slug: `org-${tag}`,
+    }));
 
-const { isLoading, submitHandler, submitError } = useEditDialogForm({ meta, handleSubmit, setErrors }, { confirmBeforeExiting: false });
-
-async function checkSlug(slug: string): Promise<{ validated: boolean, message: string }> {
-    const { data, error } = await $authClient.organization.checkSlug({ slug: `org-${slug}` });
-
-    if (error) {
-        return { validated: false, message: error.message ?? 'Unknown error checking slug.' };
+    if (error || data.error || !data.data.status) {
+        return false;
     }
 
-    if (data.status === true) return { validated: true, message: '' };
-
-    return { validated: false, message: 'Invalid slug!' };
+    return true;
 }
 
-const onSubmit = submitHandler(
-    async ({ name, slug }) => {
-        if (!name || !slug) return { error: true, message: 'Invalid name or slug.' };
-
-        const check = await checkSlug(slug);
-        if (!check.validated) {
-            return { error: true, message: check.message };
-        }
-
-        const { data: created, error } = await tryCatch($authClient.organization.create({ name, slug }));
-        if (error) {
-            return { error: true, message: 'Unknown error. Please try again.' }
-        } else if (created.error) {
-            return { error: true, message: created.error.message ?? 'Unknown error creating org.' }
-        } else {
-            await refreshOrganizations();
-            return { error: false, data: created.data };
-        }
-    }, 
-    async ({ slug }) => {
-        router.push({ name: 'dashboard-orgSlug', params: { orgSlug: slug } });
+async function onSubmitNew({ name, slug }: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
+    const availableSlug = await validateSlug(slug);
+    if (!availableSlug) {
+        return { error: true, message: 'Slug already taken!' };
     }
-);
 
+    const { data: created, error } = await tryCatch($authClient.organization.create({ name, slug }));
+    
+    if (error) {
+        return { error: true, message: 'Unknown error. Please try again.' }
+    } else if (created.error) {
+        return { error: true, message: created.error.message ?? 'Unknown error creating org.' }
+    }
+
+    await refreshOrganizations();
+    router.push({ name: 'dashboard-orgSlug', params: { orgSlug: created.data.slug } });
+
+    return { error: false };
+}
+
+const validationSchema = z.object({
+    name: z.string('A name is required.')
+        .min(3, 'Too short!')
+        .max(32, 'Too long!'),
+
+    slug: z.string('A slug is required.')
+        .min(3, { error: 'Too short!', abort: true })
+        .max(32, { error: 'Too long!', abort: true })
+        .refine((val) => val === slugify(val), { error: 'Invalid slug!', abort: true })
+        .refine(validateSlug, 'Slug already taken!'),
+});
 </script>
 
 <template>
@@ -59,30 +62,30 @@ const onSubmit = submitHandler(
             title="Create a new organization"
             description="Create a new organization to collaborate with a team." />
 
-        <FormBuilder
-            :onSubmit
-            :isLoading
-            :isValid="meta.valid"
-            :errors
-            :submitError
+        <FormBuilderNew
+            @submit="onSubmitNew"
+            :validationSchema
             :submitBtn="{
                 icon: 'hugeicons:add-01',
                 label: 'Create',
             }"
             :fields="[
                 {
-                    name: 'name',
+                    fieldType: 'text',
                     label: 'Name',
-                    type: 'text',
+                    name: 'name',
                     placeholder: 'My Awesome Org',
+                    required: true,
                 },
                 {
-                    name: 'slug',
+                    fieldType: 'text',
                     label: 'Slug',
-                    as: 'input',
-                    type: 'text',
-                    placeholder: 'my-awesome-org'
-                },
+                    name: 'slug',
+                    placeholder: 'my-awesome-org',
+                    required: true,
+                    watcher: ({ name }) => slugify(name),
+                    watcherDebounceMs: 300,
+                }
             ]" />
     </div>
 </template>
