@@ -3,6 +3,8 @@ import type { DateRange } from 'reka-ui';
 import type { z } from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
+type SchemaInferredType = z.infer<TValidationSchema>;
+
 type FieldType = {
     label: string,
     name: string,
@@ -12,27 +14,28 @@ type FieldType = {
 } & ({
     fieldType: 'text' | 'text-multiline' | 'text-email',
     placeholder: string;
+    watcher?: (values: SchemaInferredType) => string
     selectItems?: undefined,
-    watcher?: (values: z.infer<TValidationSchema>) => string
 } | {
     fieldType: 'date-range',
     placeholder?: DateRange,
+    watcher?: (values: SchemaInferredType) => DateRange
     selectItems?: undefined,
-    watcher?: (values: z.infer<TValidationSchema>) => DateRange
 } | {
     fieldType: 'select',
     placeholder: string,
+    watcher?: (values: SchemaInferredType) => string,
     selectItems: {
         list: { label: string, value: string, iconUrl?: string }[],
         pendingText?: string,
         errorText?: string,
     },
-    watcher?: (values: z.infer<TValidationSchema>) => string,
 });
 
 const props = defineProps<{
-    onSubmit: ((values: z.infer<TValidationSchema>) => ActionButtonResult) 
-        | ((values: z.infer<TValidationSchema>) => Promise<ActionButtonResult>),
+    onSubmit: 
+        ((values: SchemaInferredType) => ActionButtonResult) |
+        ((values: SchemaInferredType) => Promise<ActionButtonResult>),
     validationSchema: TValidationSchema,
     submitBtn: {
         label: string,
