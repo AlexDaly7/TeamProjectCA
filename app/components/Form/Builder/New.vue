@@ -12,11 +12,23 @@ type FieldType = {
 } & ({
     fieldType: 'text' | 'text-multiline' | 'text-email',
     placeholder: string;
+    selectItems?: undefined,
     watcher?: (values: z.infer<TValidationSchema>) => string
 } | {
     fieldType: 'date-range',
     placeholder?: DateRange,
+    selectItems?: undefined,
     watcher?: (values: z.infer<TValidationSchema>) => DateRange
+} | {
+    fieldType: 'select',
+    placeholder: string,
+    selectItems: {
+        list: { label: string, value: string, iconUrl?: string }[],
+        isPending?: boolean,
+        pendingText?: string,
+        errorText?: string,
+    },
+    watcher?: (values: z.infer<TValidationSchema>) => string,
 });
 
 const props = defineProps<{
@@ -89,7 +101,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
         @submit.prevent="submitHelper">
         
         <div 
-            v-for="{ fieldType, name, label, disabled, placeholder, required } in fields"
+            v-for="{ fieldType, name, label, disabled, placeholder, required, selectItems } in fields"
             class="flex flex-col gap-2"
             :key="name">
             <Label 
@@ -97,6 +109,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                 :for="name">
                 {{ label }}
             </Label>
+
             <template 
                 v-if="fieldType === 'text'
                     || fieldType === 'text-email'
@@ -117,7 +130,20 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :required="required"
                     :placeholder="placeholder"
                     :error="errors[name]" />
-            </template>       
+            </template>
+            <template 
+                v-else-if="fieldType === 'select'">
+                <FormBuilderSelect
+                    :name="name"
+                    :disabled="disabled ?? false"
+                    :required="required"
+                    :placeholder="placeholder"
+                    :items="selectItems.list"
+                    :items-pending-text="selectItems.pendingText"
+                    :items-pending-error-text="selectItems.errorText"
+                    :error="errors[name]" />
+            </template>
+
             <ErrorMessage 
                 class="text-sm text-danger-txt"
                 :name="name" />

@@ -30,6 +30,8 @@ const validationSchema = z.object({
     email: z.email('Invalid email.'),
 
     dateRange: zodDateRange,
+
+    favAnimal: z.string(),
 });
 
 async function validateTag(tag: string): Promise<boolean> {
@@ -91,6 +93,20 @@ async function validateTag(tag: string): Promise<boolean> {
                     name: 'dateRange',
                     label: 'Selection Range',
                     required: true,
+                },
+                {
+                    fieldType: 'select',
+                    name: 'favAnimal',
+                    label: 'Favorite Animal',
+                    placeholder: 'Select an animal',
+                    required: true,
+                    selectItems: {
+                        list: [
+                            { label: 'Dogs', value: 'dogs', iconUrl: 'https://picsum.photos/256' },
+                            { label: 'Cats', value: 'cats', iconUrl: 'https://picsum.photos/256' },
+                            { label: 'Rabbits', value: 'rabbits', iconUrl: 'https://picsum.photos/256' },
+                        ]
+                    }
                 }
             ]" />
     </div>
