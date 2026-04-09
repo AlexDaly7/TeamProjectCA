@@ -1,23 +1,27 @@
 <script setup lang="ts" generic="TValidationSchema extends z.ZodType">
+import type { DateRange } from 'reka-ui';
 import type { z } from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 type FieldType = {
     label: string,
     name: string,
-    placeholder: unknown,
     required: boolean,
     disabled?: boolean,
-    watcher?: (values: z.infer<TValidationSchema>) => unknown,
     watcherDebounceMs?: number
 } & ({
     fieldType: 'text' | 'text-multiline' | 'text-email',
     placeholder: string;
     watcher?: (values: z.infer<TValidationSchema>) => string
+} | {
+    fieldType: 'date-range',
+    placeholder?: DateRange,
+    watcher?: (values: z.infer<TValidationSchema>) => DateRange
 });
 
 const props = defineProps<{
-    onSubmit: (() => ActionButtonResult) | (() => Promise<ActionButtonResult>),
+    onSubmit: ((values: z.infer<TValidationSchema>) => ActionButtonResult) 
+        | ((values: z.infer<TValidationSchema>) => Promise<ActionButtonResult>),
     isLoading: boolean,
     validationSchema: TValidationSchema,
     submitBtn: {
@@ -34,19 +38,21 @@ const { errors, meta, values, setFieldValue } = useForm({
     validationSchema: toTypedSchema(props.validationSchema),
 });
 
-const isLoading = ref(false);
+const isSubmitting = ref(false);
 
+// Ran on submit
 async function submitHelper() {
-    isLoading.value = true;
+    isSubmitting.value = true;
     submitError.value = null;
 
-    const result = await props.onSubmit();
+    const result = await props.onSubmit(values as unknown as z.infer<TValidationSchema>);
     if (result.error) {
         submitError.value = result.message ?? 'Unknown error.';
     }
     
-    isLoading.value = false;
+    isSubmitting.value = false;
 }
+
 
 const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
@@ -87,13 +93,27 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                 :for="name">
                 {{ label }}
             </Label>
-            <FormBuilderInputRaw
-                :as-type="fieldType === 'text-multiline' ? 'textarea' : 'input'"
-                :name="name"
-                :disabled="disabled"
-                :required="required"
-                :placeholder="placeholder"
-                :error="errors[name]" />
+            <template 
+                v-if="fieldType === 'text'
+                    || fieldType === 'text-email'
+                    || fieldType === 'text-multiline'">
+                <FormBuilderInputRaw
+                    :as-type="fieldType === 'text-multiline' ? 'textarea' : 'input'"
+                    :name="name"
+                    :disabled="disabled ?? false"
+                    :required="required"
+                    :placeholder="placeholder"
+                    :error="errors[name]" />
+            </template>
+            <template 
+                v-else-if="fieldType === 'date-range'">
+                <FormBuilderDateRangeInput
+                    :name="name"
+                    :disabled="disabled ?? false"
+                    :required="required"
+                    :placeholder="placeholder"
+                    :error="errors[name]" />
+            </template>       
             <ErrorMessage 
                 class="text-sm text-danger-txt"
                 :name="name" />
@@ -102,7 +122,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
         <div class="flex justify-end mt-2">
             <AppButton
                 type="submit" 
-                :loading="isLoading"
+                :loading="isSubmitting"
                 :disabled="!meta.valid">
                 <div class="inline-flex items-center gap-2">
                     <Icon :name="submitBtn.icon" />
@@ -111,4 +131,6 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
             </AppButton>
         </div>
     </form>
+
+    {{ values }}
 </template>

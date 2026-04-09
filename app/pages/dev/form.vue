@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import z from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
+import { zodDateRange } from '~~/shared/validation';
 
 const { $authClient } = useNuxtApp();
 
-function onSubmit(): ActionButtonResult {
-    // alert('submitted!');
+function onSubmit(values: z.infer<typeof validationSchema>): ActionButtonResult {
+    alert(JSON.stringify(values));
     return { error: true, message: 'Test' };
 }
 
@@ -27,7 +28,9 @@ const validationSchema = z.object({
 
     description: z.string('Description').optional(),
 
-    email: z.email('Invalid email.')
+    email: z.email('Invalid email.'),
+
+    dateRange: zodDateRange,
 });
 
 async function validateTag(tag: string): Promise<boolean> {
@@ -50,7 +53,7 @@ async function validateTag(tag: string): Promise<boolean> {
             :isLoading
             :validationSchema
             :submitBtn="{
-                icon: 'lucide:add-01',
+                icon: 'hugeicons:add-01',
                 label: 'Submit',
             }"
             :fields="[
@@ -75,13 +78,19 @@ async function validateTag(tag: string): Promise<boolean> {
                     name: 'description',
                     label: 'Description',
                     placeholder: 'This should be multiline...',
-                    required: true,
+                    required: false,
                 },
                 {
                     fieldType: 'text-email',
                     name: 'email',
                     label: 'Email',
                     placeholder: 'you@example.com',
+                    required: true,
+                },
+                {
+                    fieldType: 'date-range',
+                    name: 'dateRange',
+                    label: 'Selection Range',
                     required: true,
                 }
             ]" />
