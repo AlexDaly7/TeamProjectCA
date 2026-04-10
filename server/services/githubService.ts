@@ -112,6 +112,12 @@ export async function updateIssue(
         progress: values.progress ?? prevValues.progress,
     };
 
+    // Mark as closed/open
+    const concreteProgress = values.progress ?? prevValues.progress ?? 0;
+
+    const state = concreteProgress === 1 ? 'closed' : 'open';
+    const stateReason = concreteProgress === 1 ? 'completed' : 'reopened';
+
     const updatePayload: Endpoints['PATCH /repos/{owner}/{repo}/issues/{issue_number}']['parameters'] = {
         ...generateGithubIssue(
             {
@@ -124,10 +130,12 @@ export async function updateIssue(
                 projectId,
             }
         ),
-        issue_number: prevValues.ghIssueNumber
+        issue_number: prevValues.ghIssueNumber,
+        state,
+        state_reason: stateReason,
     }
 
-    const updatedIssue = await installationOctokit.rest.issues.update(updatePayload)
+    const updatedIssue = await installationOctokit.rest.issues.update(updatePayload);
 
     if (!updatedIssue) {
         console.error('Failed to update GitHub issue', repoOwner, repoName, values);

@@ -10,4 +10,5 @@ export const VSModifyTask = z.object({
         .max(2000, 'Too long!')
         .optional(),
     dateRange: zodDateRange,
+    progress: z.number()
 });

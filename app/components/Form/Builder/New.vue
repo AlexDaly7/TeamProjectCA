@@ -30,6 +30,14 @@ type FieldType = {
         pendingText?: string,
         errorText?: string,
     },
+} | {
+    fieldType: 'slider',
+    placeholder?: undefined,
+    watcher?: (values: SchemaInferredType) => number,
+    selectItems?: undefined,
+    min: number,
+    max: number,
+    step: number,
 });
 
 const props = defineProps<{
@@ -104,7 +112,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
         @submit.prevent="submitHelper">
         
         <div 
-            v-for="{ fieldType, name, label, disabled, placeholder, required, selectItems } in fields"
+            v-for="{ fieldType, name, label, disabled, placeholder, required, selectItems, ...attrs } in fields"
             class="flex flex-col gap-2"
             :key="name">
             <Label 
@@ -144,6 +152,17 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :items="selectItems.list"
                     :items-pending-text="selectItems.pendingText"
                     :items-pending-error-text="selectItems.errorText"
+                    :error="errors[name]" />
+            </template>
+            <template 
+                v-else-if="fieldType === 'slider'">
+                <FormBuilderComponentSlider
+                    :name="name"
+                    :disabled="disabled ?? false"
+                    :required="required"
+                    :min="attrs.min!"
+                    :max="attrs.max!"
+                    :step="attrs.step!"
                     :error="errors[name]" />
             </template>
 

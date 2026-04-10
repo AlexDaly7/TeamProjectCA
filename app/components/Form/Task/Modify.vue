@@ -16,7 +16,7 @@ type FormValues = z.infer<typeof validationSchema>;
 const initialValues = computed(() => {
     if (!props.selectedTask?.data) return undefined;
     
-    const { title, description, startTime, endTime } = props.selectedTask.data;
+    const { title, description, startTime, endTime, progress } = props.selectedTask.data;
     
     return {
         title,
@@ -25,6 +25,7 @@ const initialValues = computed(() => {
             start: new Date(startTime),
             end: new Date(endTime),
         },
+        progress: progress ?? 0, 
     } satisfies Partial<FormValues>;
 });
 
@@ -38,6 +39,7 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
             title: values.title,
             description: values.description,
             dateRange: values.dateRange,
+            progress: values.progress,
         });
         
         return { error: false };
@@ -81,5 +83,14 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
                 label: 'Date Range',
                 required: true,
             },
+            {
+                fieldType: 'slider',
+                name: 'progress',
+                label: 'Progress',
+                required: true,
+                min: 0,
+                max: 1,
+                step: 0.01,
+            }
         ]" />
 </template>
