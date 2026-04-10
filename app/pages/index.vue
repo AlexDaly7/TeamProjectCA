@@ -39,6 +39,18 @@ function signIn() {
                 class="rounded-full p-2 px-4 hover:bg-main-700 transition-colors duration-75">
                 Features
             </RouterLink>
+            <a 
+                href="https://www.youtube.com/watch?v=M3LhtfNq2-c"
+                target="_blank"
+                class="rounded-full p-2 px-4 hover:bg-main-700 transition-colors duration-75">
+                Demo ↗
+            </a>
+            <a 
+                href="https://github.com/Morchlar/Morchlar"
+                target="_blank"
+                class="rounded-full p-2 px-4 hover:bg-main-700 transition-colors duration-75">
+                GitHub ↗
+            </a>
         </div>
         <div class="w-2xl h-36 overflow-hidden mt-48">
             <h1 id="hero" class="sr-only absolute top-0">Mórchlár</h1>
