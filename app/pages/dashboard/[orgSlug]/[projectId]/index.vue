@@ -27,12 +27,15 @@ const items = computed<TimelineItemWithData[]>(() => {
     if (!projectInfo.value) return [];
 
     return projectInfo.value.tasks.map((task) => {
+        const endTime = new Date(task.endTime);
+        endTime.setHours(23, 59, 59, 999);
+
         return {
             id: task.id.toString(),
             group: `${task.id}-group`,
             type: "range",
             start: new Date(task.startTime).getTime(),
-            end: new Date(task.endTime).getTime(),
+            end: endTime.getTime(),
             data: task,
         };
     });
@@ -92,7 +95,7 @@ function selectTask(item: TimelineItemWithData) {
 <template>
     <div class="mb-4">
         <div v-if="projectInfoPending">
-            <span>Selected project:</span>
+            <span class="text-txt-secondary">Selected project:</span>
             <h1 class="text-3xl font-bold animate-pulse">Loading...</h1>
             <h2 class="mt-4">Tasks:</h2>
         </div>
@@ -100,7 +103,7 @@ function selectTask(item: TimelineItemWithData) {
             There was an error fetching project info. {{ projectInfoError }}
         </div>
         <div v-else class="flex flex-col">
-            <span>Selected project:</span>
+            <span class="text-txt-secondary">Selected project:</span>
             <div class="inline-flex justify-between">
                 <h1 class="text-3xl font-bold">{{ projectInfo.title }}</h1>
                 <ProjectAddDialog>
@@ -117,15 +120,15 @@ function selectTask(item: TimelineItemWithData) {
     </div>
 
     <div class="ring-md touch-none">
-        <AppGanttFallback
+        <ProjectGanttFallback
             v-if="projectInfoPending || projectInfoError"
             class="text-txt-secondary text-sm animate-pulse">
             {{ projectInfoPending
                 ? 'Loading chart...'
                 : 'There was an error loading the timeline. Please try again'}}
-        </AppGanttFallback>
+        </ProjectGanttFallback>
 
-        <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
+        <ProjectGanttFallback v-else-if="projectInfo?.tasks.length === 0">
             <span>Looks like there's no added tasks.</span>
             <ProjectAddDialog>
                 <template #trigger>
@@ -135,9 +138,9 @@ function selectTask(item: TimelineItemWithData) {
                     </AppButton>
                 </template>
             </ProjectAddDialog>
-        </AppGanttFallback>
+        </ProjectGanttFallback>
 
-        <AppGantt 
+        <ProjectGantt 
             v-else
             :items
             :groupsInfo

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { DateRange } from 'reka-ui';
+import type z from 'zod';
+import { VSModifyTask } from '~/utils/schemas/modifyTask';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 const props = defineProps<{
     popupTitle?: string,
@@ -11,39 +13,25 @@ const {
     addTask: addTaskHelper
 } = useCurrentProject();
 
-const taskName = ref('');
-const taskDesc = ref('');
-const dateValue = ref<DateRange | undefined>();
-
 const isOpen = ref(false);
-const isLoading = ref(false);
 
-async function addTask() {
-    // TODO: better validation
-    if (
-        !taskName.value ||
-        !taskDesc.value ||
-        !dateValue.value
-    ) return;
+const validationSchema = VSModifyTask;
+type FormValues = z.infer<typeof validationSchema>;
 
-    if (!dateValue.value.start || !dateValue.value.end) return;
-
-    isLoading.value = true;
+async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
     const result = await addTaskHelper(
-        taskName.value,
-        taskDesc.value,
-        dateValue.value,
+        values.title,
+        values.description,
+        values.dateRange,
         props.parentId
     );
 
     if (result.error) {
-        alert(result.message);
-        isLoading.value = false;
-        return;
+        return { error: true, message: result.message ?? 'Unknown error.' }
     }
 
     isOpen.value = false;
-    isLoading.value = false;
+    return { error: false };
 }
 </script>
 
@@ -56,28 +44,34 @@ async function addTask() {
             <slot name="trigger" />
         </template>
         <template #body>
-            <form 
-                class="flex flex-col gap-2" 
-                @submit.prevent="addTask()">
-                <AppFormInput v-model="taskName" label="Title" name="title" placeholder="My Task" />
-                <AppFormInput v-model="taskDesc" label="Description" name="description" placeholder="We need to..." />
-                <Label class="flex flex-col gap-2">
-                    <span 
-                        class="text-sm text-txt-secondary">
-                        Timespan
-                    </span>
-                    <DatePicker v-model="dateValue" />
-                </Label>
-                <div class="flex justify-end mt-4">
-                    <AppButton 
-                        type="submit" 
-                        :loading="isLoading">
-                        <slot name="submit">
-                            Create Task
-                        </slot>
-                    </AppButton>
-                </div>
-            </form>
+            <FormBuilderNew
+                @submit="onSubmit"
+                :validationSchema
+                :submit-btn="{
+                    label: 'Create Task'
+                }"
+                :fields="[
+                    {
+                        fieldType: 'text',
+                        label: 'Title',
+                        name: 'title',
+                        placeholder: 'My Task',
+                        required: true,
+                    },
+                    {
+                        fieldType: 'text-multiline',
+                        label: 'Description',
+                        name: 'description',
+                        placeholder: 'We need to...',
+                        required: false,
+                    },
+                    {
+                        fieldType: 'date-range',
+                        label: 'Timespan',
+                        name: 'dateRange',
+                        required: true,
+                    }
+                ]" />
         </template>
     </AppDialog>
 </template>

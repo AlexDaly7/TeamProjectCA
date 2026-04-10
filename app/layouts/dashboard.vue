@@ -40,9 +40,9 @@ const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.val
             </div>
             
             <div class="flex flex-col gap-2 p-2">
-                <UserSidebar v-if="sidebarType === 'user'" />
-                <OrgSidebar v-else-if="sidebarType === 'org'" />
-                <ProjectSidebar v-else-if="sidebarType === 'project'" />
+                <SidebarTypeUser v-if="sidebarType === 'user'" />
+                <SidebarTypeOrg v-else-if="sidebarType === 'org'" />
+                <SidebarTypeProject v-else-if="sidebarType === 'project'" />
             </div>
 
             <div class="p-2 mt-auto border-t border-main-50/10">

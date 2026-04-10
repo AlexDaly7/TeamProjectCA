@@ -5,11 +5,13 @@ withDefaults(defineProps<{
     type?: string,
     disabled?: boolean
     error?: string,
-    placeholder?: string,
+    placeholder?: any,
+    required?: boolean
 }>(), {
     asType: 'input',
     type: 'text',
     disabled: false,
+    placeholder: '(placeholder)',
 });
 </script>
 
@@ -21,11 +23,13 @@ withDefaults(defineProps<{
         :disabled
         :error
         :placeholder
-        v-bind="$attrs"
-        class="bg-main-700 w-full h-8 ring-md focus:ring-2! focus:ring-main-50/25 px-4 rounded-md leading-none outline-none"
+        :required
+        class="bg-main-700 w-full ring-md focus:ring-2! focus:ring-main-50/25 rounded-md leading-none outline-none"
         :class="{
-            'ring-danger-bg!': error,
+            'ring-danger-txt!': error,
             'opacity-50': disabled,
+            'h-8 px-4': asType === 'input',
+            'p-4 min-h-32': asType === 'textarea',
         }">
     </Field>
 </template>

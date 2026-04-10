@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const route = useRoute();
-
-const orgSlug = computed(() => route.params.orgSlug);
+const { orgSlug } = useCurrentOrg();
 </script>
 
 <template>

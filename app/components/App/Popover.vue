@@ -20,7 +20,8 @@ const isOpen = defineModel('isOpen', { default: false });
 
         <PopoverPortal>
             <PopoverContent 
-                class="bg-main-700 rounded-xl ring-md shadow-sm shadow-black"
+                class="bg-main-700 rounded-xl ring-md shadow-sm shadow-black
+                origin-(--reka-popover-content-transform-origin) animate-scale-in"
                 :side-offset="5"
                 :collision-padding="5">
                 <slot name="content" :close>

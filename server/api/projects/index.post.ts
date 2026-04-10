@@ -10,6 +10,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;
     const bodyData = await validateBody(event, ClientInsertProject);
 
+    const [ repoOwner, repoName ] = bodyData.repo.split('/');
+    if (!repoOwner || !repoName) return;
+
     await ensureOrganizationPermission(event, bodyData.organizationId, {
         project: ['create']
     });
@@ -18,7 +21,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         // Validate GitHub repo id
         const token = await getUserGitHubAuthToken(userId);
 
-        const repoStatus = await verifyGitHubRepoAccess(token, bodyData.repoOwner, bodyData.repoName);
+        const repoStatus = await verifyGitHubRepoAccess(token, repoOwner, repoName);
         if (!repoStatus.valid) {
             throw createError({
                 statusCode: 400,
@@ -28,7 +31,10 @@ export default defineAuthenticatedEventHandler(async (event) => {
         }
 
         const projectData: InsertProjectSchema = {
-            ...bodyData,
+            title: bodyData.title,
+            organizationId: bodyData.organizationId,
+            repoName,
+            repoOwner,
             repoId: repoStatus.id,
         };
 

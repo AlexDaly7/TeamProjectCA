@@ -1,16 +1,51 @@
 <script setup lang="ts">
-import { type DateRange } from 'reka-ui';
+import type { DateRange, DateValue } from 'reka-ui';
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 
 const props = withDefaults(defineProps<{
+    name: string,
+    required: boolean,
     disabled?: boolean,
+    placeholder?: DateRange
 }>(), {
     disabled: false,
 });
 
-const modelValue = defineModel<DateRange>('modelValue', {
-    default: null,
-});
+function toCalendarDate(date?: Date): DateValue | undefined {
+    if (!date) return undefined;
 
+    return new CalendarDate(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+    );
+}
+
+const {
+    value,
+    setValue,
+    handleBlur,
+} = useField<{
+    start?: Date,
+    end?: Date,
+}>(props.name);
+
+const rekaValue = computed<DateRange | undefined>({
+    get() {
+        return {
+            start: toCalendarDate(value.value.start),
+            end: toCalendarDate(value.value.end),
+        };
+    },
+    set(nextValue) {
+        const localTz = getLocalTimeZone();
+
+        setValue({
+            start: nextValue?.start?.toDate(localTz),
+            end: nextValue?.end?.toDate(localTz)
+        }, true);
+    },
+});
 </script>
 
 <template>
@@ -18,7 +53,12 @@ const modelValue = defineModel<DateRange>('modelValue', {
         :week-starts-on="1"
         :number-of-months="2"
         :weekday-format="'short'"
-        v-model="modelValue">
+
+        :name
+        :required
+
+        v-model="rekaValue"
+        @update:open="(o) => { if (!o) handleBlur() }">
         <DateRangePickerField 
             v-slot="{ segments }"
             class="h-8 pl-4 flex select-none items-center rounded-md text-center p-1 
@@ -71,7 +111,8 @@ const modelValue = defineModel<DateRange>('modelValue', {
                 </DateRangePickerInput>
             </template>
 
-            <DateRangePickerTrigger class="ml-auto inline-flex focus:ring-2 ring-black focus:outline-none rounded-md p-1">
+            <DateRangePickerTrigger 
+                class="ml-auto inline-flex focus:ring-2 ring-black focus:outline-none rounded-md p-1">
                 <Icon 
                     name="hugeicons:calendar-02" 
                     size="20" />

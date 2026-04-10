@@ -75,24 +75,23 @@ const {
                 <div class="w-full h-px bg-main-50/10"></div>
 
                 <div class="p-2">
-                    <ButtonCreateOrg 
-                        @on-submit="close" >
-                        <AppButton
-                            variant="tertiary"
-                            class="w-full inline-flex items-center px-2! gap-2 rounded-lg!">
-                            <Icon 
-                                name="hugeicons:add-01"
-                                size="20"/>
-                            <div class="flex flex-col items-start">
-                                <span class="text-txt-primary">
-                                    Create new organization
-                                </span>
-                                <span class="text-xs">
-                                    Collaborate with a team
-                                </span>
-                            </div>
-                        </AppButton>
-                    </ButtonCreateOrg>
+                    <AppButton
+                        variant="tertiary"
+                        size="md-even"
+                        class="w-full inline-flex items-center gap-2 rounded-lg!"
+                        :to="{ name: 'dashboard-create-org' }">
+                        <Icon 
+                            name="hugeicons:add-01"
+                            size="20"/>
+                        <div class="flex flex-col items-start">
+                            <span class="text-txt-primary">
+                                Create new organization
+                            </span>
+                            <span class="text-xs">
+                                Collaborate with a team
+                            </span>
+                        </div>
+                    </AppButton>
                 </div>
             </div>
         </template>

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type z from 'zod';
+import { VSImportProject } from '~/utils/schemas/importProject';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
+
 definePageMeta({
     sidebarType: 'org',
 });
@@ -12,47 +16,53 @@ useAppHead({
     prefix: computed(() => activeOrg.org.value?.name ?? 'Loading...'),
 });
 
+const validationSchema = VSImportProject.pick({ title: true });
+type SchemaValues = z.infer<typeof validationSchema>;
+
 async function deleteOrg() {
     return activeOrg.deleteCurrentOrg();
 }
 
-async function renameOrg() {
-    return activeOrg.renameCurrentOrg(newOrgName.value);
+async function renameOrg({ title }: SchemaValues): Promise<ActionButtonResult> {
+    const result = await activeOrg.renameCurrentOrg(title);
+
+    if (result.error) return result;
+
+    await activeOrg.refresh(); 
+    await refreshOrganizations();
+
+    return result;
 }
 
-function onRename() {
-    activeOrg.refresh(); 
-    refreshOrganizations();
-}
-
-const newOrgName = ref<string>('');
-watch(activeOrg.org, (value) => {
-    newOrgName.value = value?.name ?? '';
+const initialValues = computed(() => {
+    return { title: activeOrg.org.value?.name ?? '' };
 });
 </script>
 
 <template>
-    <div class="flex flex-col gap-8 md:p-4">
-        <SettingsCard
-            :action-disabled="activeOrg.org.value === undefined || newOrgName === activeOrg.org.value.name"
-            :action="renameOrg"
-            @on-success="onRename">
-            <template #title>
-                Organization Name
-            </template>
-            <template #description>
-                This is your organization's visible name within Mórchlár.
-            </template>
-            <template #form>
-                <AppInput 
-                    name="name"
-                    placeholder="New org name..."
-                    v-model="newOrgName" />
-            </template>
-            <template #action>
-                Save
-            </template>
-        </SettingsCard>
+    <HeadersPage
+        title="Settings"
+        description="Organization settings." />
+    
+    <div 
+        class="flex flex-col gap-8 md:p-4"
+        :key="activeOrg.org.value?.id">
+        <FormBuilderNew
+            @submit="renameOrg"
+            :validationSchema
+            :initialValues
+            :submit-btn="{
+                label: 'Save'
+            }"
+            :fields="[
+                {
+                    fieldType: 'text',
+                    label: 'Name',
+                    name: 'title',
+                    placeholder: 'New org name...',
+                    required: true,
+                }
+            ]" />
 
         <SettingsCard
             variant="danger"
