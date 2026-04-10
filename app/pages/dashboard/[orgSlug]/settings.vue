@@ -64,4 +64,20 @@ const initialValues = computed(() => {
                 }
             ]" />
     </div>
+    <SettingsCard
+            variant="danger"
+            :require-confirmation="true"
+            :action-disabled="activeOrg.org.value === undefined"
+            :action="deleteOrg"
+            @on-success="router.push({ name: 'dashboard' })">
+            <template #title>
+                Delete Organization
+            </template>
+            <template #description>
+                Permanently remove this organization from Mórchlár. This action is not reversible.
+            </template>
+            <template #action>
+                Delete Organization
+            </template>
+        </SettingsCard>
 </template>
