@@ -40,7 +40,7 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
 
 const selectItems = computed(() => {
     const list = (members.value?.members ?? []).map((member) => ({
-        value: member.id,
+        value: member.user.id,
         label: member.user.name,
         iconUrl: member.user.image,
     }));
