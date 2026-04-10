@@ -127,7 +127,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
             <Label 
                 class="font-medium"
                 :for="name">
-                {{ label }}
+                {{ label }}<span v-if="required" class="text-brand">*</span>
             </Label>
 
             <template 

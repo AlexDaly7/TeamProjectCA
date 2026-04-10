@@ -16,7 +16,7 @@ type FormValues = z.infer<typeof validationSchema>;
 const initialValues = computed(() => {
     if (!props.selectedTask?.data) return undefined;
     
-    const { title, description, startTime, endTime, progress } = props.selectedTask.data;
+    const { title, description, startTime, endTime, progress, assignees } = props.selectedTask.data;
     
     return {
         title,
@@ -26,6 +26,7 @@ const initialValues = computed(() => {
             end: new Date(endTime),
         },
         progress: progress ?? 0, 
+        assigneeIds: assignees.map((assignee) => assignee.user.id),
     } satisfies Partial<FormValues>;
 });
 

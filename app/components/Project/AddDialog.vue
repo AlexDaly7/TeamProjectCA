@@ -95,7 +95,7 @@ const selectItems = computed(() => {
                         fieldType: 'slider',
                         label: 'Initial Progress',
                         name: 'progress',
-                        required: true,
+                        required: false,
                         max: 1,
                         min: 0,
                         step: 0.01,

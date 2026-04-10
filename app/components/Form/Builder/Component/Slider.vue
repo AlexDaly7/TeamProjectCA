@@ -14,6 +14,12 @@ const props = withDefaults(defineProps<{
 const name = toRef(props, 'name');
 
 const { value, setValue } = useField<number>(name);
+
+onMounted(() => {
+    if (value.value === undefined) {
+        setValue(props.min);
+    }
+});
 </script>
 
 <template>
@@ -25,7 +31,7 @@ const { value, setValue } = useField<number>(name);
         :min 
         :max
         :step
-        :default-value="[ value ]"
+        :default-value="[ value ?? min ]"
         @update:model-value="(value) => setValue(value ? value[0] ?? 0 : 0)">
         <SliderTrack class="bg-main-700 relative grow rounded-full h-2">
             <SliderRange class="absolute bg-brand rounded-full h-full" />
