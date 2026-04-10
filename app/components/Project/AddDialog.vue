@@ -23,6 +23,7 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
         values.title,
         values.description,
         values.dateRange,
+        values.progress,
         props.parentId
     );
 
@@ -70,6 +71,15 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
                         label: 'Timespan',
                         name: 'dateRange',
                         required: true,
+                    },
+                    {
+                        fieldType: 'slider',
+                        label: 'Initial Progress',
+                        name: 'progress',
+                        required: true,
+                        max: 1,
+                        min: 0,
+                        step: 0.01,
                     }
                 ]" />
         </template>

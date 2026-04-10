@@ -16,8 +16,10 @@ const props = withDefaults(defineProps<{
     items: ListItem[],
     itemsPendingText?: string,
     itemsPendingErrorText?: string,
+    multiple?: boolean,
 }>(), {
     disabled: false,
+    multiple: false,
 });
 
 const placeholderText = computed(() => {
@@ -44,6 +46,7 @@ const {
         :name
         :required
         :disabled
+        :multiple
 
         :model-value="inputValue"
         @update:model-value="handleChange"

@@ -27,7 +27,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         endTime: body.dateRange.end,
         order: body.order ?? null,
         parentId: body.parentId ?? null,
-        progress: 0,
+        progress: body.progress,
     };
 
 

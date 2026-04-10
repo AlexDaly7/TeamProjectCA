@@ -18,6 +18,7 @@ export const useCurrentProject = () => {
         title: string,
         description: string | undefined,
         dateRange: z.infer<typeof zodDateRange>,
+        progress: number,
         parentId?: number,
     ): Promise<ActionButtonResult> {
         const { $csrfFetch } = useNuxtApp();
@@ -30,6 +31,7 @@ export const useCurrentProject = () => {
             dateRange,
             description,
             parentId,
+            progress,
         };
 
         try {
