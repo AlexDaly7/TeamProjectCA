@@ -40,7 +40,9 @@ const initialValues = computed(() => {
 </script>
 
 <template>
-    <PageHeader title="Settings" description="Organization settings." />
+    <HeadersPage
+        title="Settings"
+        description="Organization settings." />
     
     <div 
         class="flex flex-col gap-8 md:p-4"

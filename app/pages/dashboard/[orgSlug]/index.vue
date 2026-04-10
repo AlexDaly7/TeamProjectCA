@@ -58,7 +58,7 @@ async function deleteProject(project: CurrentOrgProject) {
 </script>
 
 <template>
-    <PageHeader
+    <HeadersPage
         title="Projects"
         description="Manage your organization's projects." />
 

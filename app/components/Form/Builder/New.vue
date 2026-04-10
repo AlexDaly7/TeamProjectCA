@@ -97,7 +97,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
 </script>
 
 <template>
-    <ErrorHeader :error="submitError" />
+    <HeadersError :error="submitError" />
 
     <form 
         class="flex flex-col gap-2" 

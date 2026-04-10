@@ -96,7 +96,7 @@ function handleClick() {
                             {{ title }}
                         </AlertDialogTitle>
 
-                        <ErrorHeader :error="submitError" />
+                        <HeadersError :error="submitError" />
 
                         <AlertDialogDescription class="text-txt-secondary mt-2 mb-5 leading-normal">
                             {{ description }}

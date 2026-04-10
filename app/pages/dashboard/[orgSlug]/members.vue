@@ -92,7 +92,7 @@ async function removeFromOrg(memberId: string) {
 </script>
 
 <template>
-    <PageHeader 
+    <HeadersPage 
         title="Members"
         description="Manage team members and invitations." />
 

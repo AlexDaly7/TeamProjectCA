@@ -32,7 +32,7 @@ async function onSubmitNew({ name, slug }: z.infer<typeof validationSchema>): Pr
 
 <template>
     <div class="flex flex-col w-full max-w-prose mx-auto mt-6">
-        <PageHeader
+        <HeadersPage
             title="Create a new organization"
             description="Create a new organization to collaborate with a team." />
 

@@ -73,7 +73,7 @@ const selectItems = computed(() => {
 
 <template>
     <div class="flex flex-col w-full max-w-prose mx-auto mt-6">
-        <PageHeader
+        <HeadersPage
             title="Import project from GitHub"
             description="Start a project that syncs with a GitHub repo. You will need to have granted Mórchlár permissions to open/track issues." />
 
