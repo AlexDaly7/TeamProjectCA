@@ -5,7 +5,7 @@ withDefaults(defineProps<{
     type?: string,
     disabled?: boolean
     error?: string,
-    placeholder?: string,
+    placeholder?: any,
     required?: boolean
 }>(), {
     asType: 'input',

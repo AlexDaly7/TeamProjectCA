@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { zodDateRange } from '~~/shared/validation';
 import type { TimelineItemWithData } from '~/utils/types/timeline';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 import z from 'zod';
+import { VSModifyTask } from '~/utils/schemas/modifyTask';
 
 const props = defineProps<{
     selectedTask: TimelineItemWithData | null
@@ -10,13 +10,7 @@ const props = defineProps<{
 
 const { modifyTask } = useCurrentProject();
 
-// TODO: make this full
-const validationSchema = z.object({
-    title: z.string('A title is required'),
-    description: z.string().optional(),
-    dateRange: zodDateRange,
-});
-
+const validationSchema = VSModifyTask;
 type FormValues = z.infer<typeof validationSchema>;
 
 const initialValues = computed(() => {

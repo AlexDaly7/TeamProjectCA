@@ -27,12 +27,15 @@ const items = computed<TimelineItemWithData[]>(() => {
     if (!projectInfo.value) return [];
 
     return projectInfo.value.tasks.map((task) => {
+        const endTime = new Date(task.endTime);
+        endTime.setHours(23, 59, 59, 999);
+
         return {
             id: task.id.toString(),
             group: `${task.id}-group`,
             type: "range",
             start: new Date(task.startTime).getTime(),
-            end: new Date(task.endTime).getTime(),
+            end: endTime.getTime(),
             data: task,
         };
     });

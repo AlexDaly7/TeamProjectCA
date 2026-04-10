@@ -1,6 +1,6 @@
-import type { DateRange } from 'reka-ui';
+import type { z } from 'zod';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
-import type { ClientModifyTaskSchema, ClientInsertTaskSchema } from '~~/shared/validation';
+import type { ClientModifyTaskSchema, ClientInsertTaskSchema, zodDateRange } from '~~/shared/validation';
 
 export const useCurrentProject = () => {
     const route = useRoute();
@@ -16,8 +16,8 @@ export const useCurrentProject = () => {
 
     async function addTask(
         title: string,
-        description: string,
-        dateRange: DateRange,
+        description: string | undefined,
+        dateRange: z.infer<typeof zodDateRange>,
         parentId?: number,
     ): Promise<ActionButtonResult> {
         const { $csrfFetch } = useNuxtApp();
@@ -27,10 +27,7 @@ export const useCurrentProject = () => {
         // won't be a subtask
         const body: ClientInsertTaskSchema = {
             title,
-            dateRange: {
-                start: dateRange.start.toDate('utc'),
-                end: new Date(dateRange.end.toDate('utc').getTime() + 86399999), //add just under 24 hrs at the end in order to enable one day tasks
-            },
+            dateRange,
             description,
             parentId,
         };

@@ -223,7 +223,12 @@ function getBounds(value: { start: number, end: number }) {
                 <path v-for="line in lines.linesArr" :d="`${line.svgPath}`"
                     :style="`fill:none;stroke:${line.colour};stroke-width:3;`" class="z-50" marker-end="url(#arrow)" />
             </svg>
-            <Timeline id="timelineElement" :items :groups :initial-viewport-start="bounds.lower"
+
+            <Timeline 
+                id="timelineElement" 
+                :items 
+                :groups 
+                :initial-viewport-start="bounds.lower"
                 :initial-viewport-end="bounds.upper" @change-viewport="getBounds">
                 <template #group-label="{ group }">
                     <div class="flex items-center" :style="{ 'margin-left': `${(group.path.length - 1) * 16}px` }">
