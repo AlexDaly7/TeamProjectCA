@@ -27,6 +27,14 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     const orgProjects = await organizationService.listProjectsWithDetails(org.id);
 
+    // Fetch org members
+    const members = await auth.api.listMembers({
+        headers: event.headers,
+        query: {
+            organizationId: org.id,
+        }
+    });
+
     return {
         projects: orgProjects,
         organization: {
@@ -34,5 +42,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
             name: org.name,
             slug: org.slug,
         },
+        members,
     };
 });

@@ -34,5 +34,5 @@ const { value, setValue } = useField<number>(name);
             class="block w-6 h-6 bg-main-50 rounded-full hover:bg-main-200 shadow-sm focus:outline-none focus:shadow-sm focus:shadow-black"
             :aria-label="name" />
     </SliderRoot>
-    <span>{{ (value * 100).toFixed(0) }}%</span>
+    <span>{{ ((value ?? 0) * 100).toFixed(0) }}%</span>
 </template>
