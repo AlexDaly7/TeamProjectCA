@@ -63,8 +63,8 @@ const initialValues = computed(() => {
                     required: true,
                 }
             ]" />
-
-        <SettingsCard
+    </div>
+    <SettingsCard
             variant="danger"
             :require-confirmation="true"
             :action-disabled="activeOrg.org.value === undefined"
@@ -80,5 +80,4 @@ const initialValues = computed(() => {
                 Delete Organization
             </template>
         </SettingsCard>
-    </div>
 </template>
