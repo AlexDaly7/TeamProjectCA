@@ -18,6 +18,12 @@ export async function getTask(id: number) {
     });
 }
 
+export async function getTaskByGitHubIssueNodeId(ghIssueNodeId: string) {
+    return await db.query.tasks.findFirst({
+        where: eq(tasks.ghIssueNodeId, ghIssueNodeId),
+    });
+}
+
 export async function getTaskWithProject(id: number) {
     return await db.query.tasks.findFirst({
         where: eq(tasks.id, id),
