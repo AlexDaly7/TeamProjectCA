@@ -18,7 +18,7 @@ export const ClientInsertTask = z.object({
 export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
 
 
-const ClientModifyTask = ClientInsertTask.extend({
+export const ClientModifyTask = ClientInsertTask.extend({
     dateRange: z.object({
         start: preprocessDate,
         end: preprocessDate,
