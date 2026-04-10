@@ -14,11 +14,11 @@ import { user } from "./auth";
 export const taskAssignees = pgTable("task_assignees", {
     taskId: integer('task_id')
         .notNull()
-        .references(() => tasks.id),
+        .references(() => tasks.id, { onDelete: 'cascade' }),
     
     userId: text('user_id')
         .notNull()
-        .references(() => user.id),
+        .references(() => user.id, { onDelete: 'cascade' }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")

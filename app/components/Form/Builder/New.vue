@@ -31,6 +31,15 @@ type FieldType = {
         errorText?: string,
     },
 } | {
+    fieldType: 'select-multiple',
+    placeholder: string,
+    watcher?: (values: SchemaInferredType) => string[],
+    selectItems: {
+        list: { label: string, value: string, iconUrl?: string }[],
+        pendingText?: string,
+        errorText?: string,
+    },
+} | {
     fieldType: 'slider',
     placeholder?: undefined,
     watcher?: (values: SchemaInferredType) => number,
@@ -118,7 +127,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
             <Label 
                 class="font-medium"
                 :for="name">
-                {{ label }}
+                {{ label }}<span v-if="required" class="text-brand">*</span>
             </Label>
 
             <template 
@@ -153,6 +162,19 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :items-pending-text="selectItems.pendingText"
                     :items-pending-error-text="selectItems.errorText"
                     :error="errors[name]" />
+            </template>
+            <template 
+                v-else-if="fieldType === 'select-multiple'">
+                <FormBuilderSelect
+                    :name="name"
+                    :disabled="disabled ?? false"
+                    :required="required"
+                    :placeholder="placeholder"
+                    :items="selectItems.list"
+                    :items-pending-text="selectItems.pendingText"
+                    :items-pending-error-text="selectItems.errorText"
+                    :error="errors[name]"
+                    :multiple="true" />
             </template>
             <template 
                 v-else-if="fieldType === 'slider'">

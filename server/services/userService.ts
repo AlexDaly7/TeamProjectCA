@@ -54,3 +54,18 @@ export async function getGitHubIntegrationsStatus(userId: string): Promise<UserG
         manageUrl: installationUrl,
     };   
 }
+
+export async function getGitHubLogins(userIds: string[]) {
+    const githubAccounts = await userRepository.getGithubAccounts([...new Set(userIds)]);
+
+    const githubUsers = await Promise.all(
+        githubAccounts
+            .filter((account) => account.accessToken)
+            .map(async (account) => ({
+                userId: account.userId,
+                login: (await githubService.user.getInfo(account.accessToken!)).login,
+            })),
+    );
+
+    return githubUsers;
+}

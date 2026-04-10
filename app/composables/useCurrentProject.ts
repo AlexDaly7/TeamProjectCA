@@ -18,7 +18,9 @@ export const useCurrentProject = () => {
         title: string,
         description: string | undefined,
         dateRange: z.infer<typeof zodDateRange>,
+        progress: number,
         parentId?: number,
+        assigneeIds?: string[],
     ): Promise<ActionButtonResult> {
         const { $csrfFetch } = useNuxtApp();
         if (!dateRange.start || !dateRange.end) return { error: true, message: 'No date range start/end.' };
@@ -30,6 +32,8 @@ export const useCurrentProject = () => {
             dateRange,
             description,
             parentId,
+            progress,
+            assigneeIds,
         };
 
         try {

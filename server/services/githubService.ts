@@ -12,12 +12,40 @@ export const user = {
     }
 };
 
+async function getAssignableAssignees(
+    installationOctokit: Octokit,
+    repoOwner: string,
+    repoName: string,
+    assigneeUsernames?: string[],
+) {
+    if (assigneeUsernames === undefined) return undefined;
+    if (assigneeUsernames.length === 0) return [];
+
+    const assignableUsers = await installationOctokit.paginate(
+        installationOctokit.rest.issues.listAssignees,
+        {
+            owner: repoOwner,
+            repo: repoName,
+            per_page: 100,
+        },
+    );
+
+    const assignableLogins = new Set(
+        assignableUsers.map((user) => user.login.toLowerCase()),
+    );
+
+    return assigneeUsernames.filter((login) =>
+        assignableLogins.has(login.toLowerCase()),
+    );
+}
+
 export async function createIssue(
     repoOwner: string,
     repoName: string,
     projectId: number,
     values: Omit<InsertTaskSchema, 'creatorId' | 'ghIssueNodeId' | 'ghIssueNumber' | 'projectId'>,
     taskCreatorName: string,
+    taskAssignees?: string[]
 ) {
     const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
     if (!repoInstallation.data) {
@@ -30,6 +58,12 @@ export async function createIssue(
     }
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
+    const assignableAssignees = await getAssignableAssignees(
+        installationOctokit,
+        repoOwner,
+        repoName,
+        taskAssignees,
+    );
 
     const createdIssue = await installationOctokit.rest.issues.create(generateGithubIssue(
         {
@@ -42,6 +76,7 @@ export async function createIssue(
             progress: 0,
             startTime: values.startTime,
             endTime: values.endTime,
+            assigneeUsernames: assignableAssignees,
         },
         {
             taskCreatorName,
@@ -85,6 +120,7 @@ export async function updateIssue(
     values: InsertTaskSchema,
     creatorName: string,
     prevValues: TasksSchema,
+    assigneeUsernames?: string[],
 ) {
     const repoInstallation = await githubApp.octokit.rest.apps.getRepoInstallation({ owner: repoOwner, repo: repoName });
     if (!repoInstallation.data) {
@@ -97,6 +133,12 @@ export async function updateIssue(
     }
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
+    const assignableAssignees = await getAssignableAssignees(
+        installationOctokit,
+        repoOwner,
+        repoName,
+        assigneeUsernames,
+    );
 
     const issueGeneratorBody: InsertTaskSchema = {
         title: values.title ?? prevValues.title,
@@ -124,7 +166,10 @@ export async function updateIssue(
                 name: repoName,
                 owner: repoOwner,
             },
-            issueGeneratorBody,
+            {
+                ...issueGeneratorBody,
+                assigneeUsernames: assignableAssignees,
+            },
             {
                 taskCreatorName: creatorName,
                 projectId,
@@ -133,6 +178,10 @@ export async function updateIssue(
         issue_number: prevValues.ghIssueNumber,
         state,
         state_reason: stateReason,
+    };
+
+    if (assignableAssignees === undefined) {
+        delete updatePayload.assignees;
     }
 
     const updatedIssue = await installationOctokit.rest.issues.update(updatePayload);
@@ -150,8 +199,16 @@ export async function updateIssue(
     if ((values.parentId ?? null) !== (prevValues.parentId ?? null)) {
         // If the parent changed and the parentId is now blank, remove the subtask
         if (!values.parentId && prevValues.parentId) {
+            // Fetch the previous parent to get its GitHub issue number
+            const prevParentTask = await taskService.getTask(prevValues.parentId);
+            if (!prevParentTask) throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request',
+                message: 'Previous parent task doesn\'t exist.'
+            });
+            
             await installationOctokit.rest.issues.removeSubIssue({
-                issue_number: prevValues.parentId,
+                issue_number: prevParentTask.ghIssueNumber,
                 owner: repoOwner,
                 repo: repoName,
                 sub_issue_id: Number(prevValues.ghIssueNodeId),

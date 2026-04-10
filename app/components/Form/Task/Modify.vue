@@ -16,7 +16,7 @@ type FormValues = z.infer<typeof validationSchema>;
 const initialValues = computed(() => {
     if (!props.selectedTask?.data) return undefined;
     
-    const { title, description, startTime, endTime, progress } = props.selectedTask.data;
+    const { title, description, startTime, endTime, progress, assignees } = props.selectedTask.data;
     
     return {
         title,
@@ -26,6 +26,7 @@ const initialValues = computed(() => {
             end: new Date(endTime),
         },
         progress: progress ?? 0, 
+        assigneeIds: assignees.map((assignee) => assignee.user.id),
     } satisfies Partial<FormValues>;
 });
 
@@ -40,6 +41,8 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
             description: values.description,
             dateRange: values.dateRange,
             progress: values.progress,
+            parentId: props.selectedTask.data.parentId,
+            assigneeIds: values.assigneeIds,
         });
         
         return { error: false };
@@ -50,6 +53,24 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
         };
     }
 }
+
+const { members } = useCurrentOrg();
+
+const selectItems = computed(() => {
+    const list = (members.value?.members ?? []).map((member) => ({
+        value: member.user.id,
+        label: member.user.name,
+        iconUrl: member.user.image,
+    }));
+
+    const pendingText = !members.value ? 'Loading members...' : (members.value.members.length === 0 ? 'No members available' : undefined);
+
+    return {
+        list,
+        pendingText,
+        errorText: undefined,
+    }
+});
 </script>
 
 <template>
@@ -91,6 +112,14 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
                 min: 0,
                 max: 1,
                 step: 0.01,
+            },
+            {
+                fieldType: 'select-multiple',
+                label: 'Assignees',
+                name: 'assigneeIds',
+                placeholder: 'Select assignees...',
+                required: false,
+                selectItems,
             }
         ]" />
 </template>

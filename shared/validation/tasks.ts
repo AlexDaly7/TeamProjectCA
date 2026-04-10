@@ -13,6 +13,11 @@ export const ClientInsertTask = z.object({
         end: preprocessDate,
     }),
     order: z.number().nullable().optional(),
+    progress: z.number()
+        .min(0, 'Cannot be under 0%')
+        .max(1, 'Cannot be over 100%')
+        .nullable().optional(),
+    assigneeIds: z.array(z.string()).optional(),
 });
 
 export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
@@ -23,7 +28,6 @@ export const ClientModifyTask = ClientInsertTask.extend({
         start: preprocessDate,
         end: preprocessDate,
     }).optional(),
-    progress: z.number().nullable().optional(),
 });
 
 export type ClientModifyTaskSchema = z.infer<typeof ClientModifyTask>;

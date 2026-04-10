@@ -12,16 +12,18 @@ export function generateGithubIssue(
         progress?: number | null,
         startTime: Date,
         endTime: Date,
+        assigneeUsernames?: string[],
     },
     morchlar: {
         taskCreatorName: string,
         projectId: number,
-    }
+    },
 ): Endpoints['POST /repos/{owner}/{repo}/issues']['parameters'] {
     return {
         owner: repo.owner,
         repo: repo.name,
         title: `[Task] ${task.title}`,
+        assignees: task.assigneeUsernames,
         body: `## Description
 ${task.description != null ? task.description : '(No description provided).' }
 
