@@ -17,6 +17,10 @@ export async function getTask(id: number) {
     return await tasksRepository.getTask(id);
 }
 
+export async function getTaskByGitHubIssueNodeId(ghIssueNodeId: string) {
+    return await tasksRepository.getTaskByGitHubIssueNodeId(ghIssueNodeId);
+}
+
 export async function getTaskWithProject(id: number) {
     return await tasksRepository.getTaskWithProject(id);
 }

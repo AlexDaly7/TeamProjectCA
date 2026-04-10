@@ -13,16 +13,20 @@ export default defineNuxtConfig({
         '@vercel/analytics',
         '@nuxt/test-utils/module',
     ],
+
     vite: {
         plugins: [
             tailwindcss()
         ],
     },
+
     css: [ '~/assets/css/main.css' ],
+
     routeRules: {
         '/dashboard/**': { appLayout: 'dashboard' },
+        // @ts-expect-error - See: https://github.com/Morgbn/nuxt-csurf/issues/60
+        '/api/gh-webhook': { csurf: false }
     },
-
     app:{
         head:{
             title: 'Mórchlár',
