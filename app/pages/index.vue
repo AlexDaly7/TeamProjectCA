@@ -25,12 +25,29 @@ function signIn() {
 </script>
 
 <template>
-    <div class="h-full grow flex flex-col items-center justify-center">
-        <img 
-            class="w-200" 
-            src="/media/landing/logo.png" 
-            alt="The Logo for Mórchlár"
-            data-testid="logo">
+    <div class="h-full w-full max-w-6xl mx-auto flex flex-col items-center justify-center scroll-smooth">
+        <div 
+            class="fixed top-0 left-1/2 -translate-x-1/2 flex flex-row gap-0.5 z-10
+            bg-main-800 ring-md rounded-full p-1 mt-2 shadow-sm shadow-black text-sm font-semibold">
+            <RouterLink 
+                to="#hero"
+                class="rounded-full p-2 px-4 hover:bg-main-700 transition-colors duration-75">
+                Home
+            </RouterLink>
+            <RouterLink 
+                to="#features"
+                class="rounded-full p-2 px-4 hover:bg-main-700 transition-colors duration-75">
+                Features
+            </RouterLink>
+        </div>
+        <div class="w-2xl h-36 overflow-hidden mt-48">
+            <h1 id="hero" class="sr-only absolute top-0">Mórchlár</h1>
+            <img
+                class="size-full object-cover object-center drop-shadow-md drop-shadow-black"
+                src="/media/landing/logo.png" 
+                alt="Mórchlár Logo"
+                data-testid="logo">
+        </div>
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
         <AppButton 
             class="inline-flex gap-2 items-center"
@@ -43,40 +60,27 @@ function signIn() {
                 size="20"/>
             Sign in with GitHub
         </AppButton>
-    </div>
-    <div class="h-full grow flex flex-col items-center justify-center">
-        <p class="text-[75px]">Features!</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 mt-2 mb-2 mx-4 text-center">
-        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
-            <h1 class="text-[50px]"> Organisations! </h1>
-            <p class="text-[25px]"> Create your organisation and give it a custom link!</p>
-            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Organisations.webm" type="video/webm">
-            </video>
-        </div>
-        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
-            <h1 class="text-[50px]"> Add Members! </h1>
-            <p class="text-[25px]"> Collaborate with your teammates within the organisation!</p>
-            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Adding-Members.webm" type="video/webm">
-            </video>
-        </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 mt-2 mb-2 mx-4 text-center">
-        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
-            <h1 class="text-[50px]">GitHub Integration!</h1>
-            <p class="text-[25px]">Import your repos directly into the website!</p>
-            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Project.webm" type="video/webm">
-            </video>
-        </div>
-        <div class="h-full grow flex flex-col bg-main-700 border-solid border-main-500 border-[5px] rounded-xl p-5 mx-2">
-            <h1 class="text-[50px]">Add Tasks and Subtasks!</h1>
-            <p class="text-[25px]">Add tasks and subtasks to our Gannt chart and see how they link!</p>
-            <video class="border-main-500 border-[5px] rounded-xl" autoplay loop muted>
-                <source src="/media/landing/Tasks-and-Subtasks.webm" type="video/webm">
-            </video>
+
+        <h2 
+            id="features"
+            class="text-3xl font-bold mt-8">Features!</h2>
+        <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 m-4">
+            <LandingPageCard 
+                title="Organisations"
+                description="Create your organisation and give it a custom link"
+                video-src="/media/landing/Organisations.webm" />
+            <LandingPageCard 
+                title="Add members"
+                description="Collaborate with your teammates within the organisation"
+                video-src="/media/landing/Adding-Members.webm" />
+            <LandingPageCard 
+                title="GitHub Integration"
+                description="Import your repos directly into the website"
+                video-src="/media/landing/Project.webm" />
+            <LandingPageCard 
+                title="Add Tasks and Subtasks"
+                description="Add tasks and subtasks to our Gannt chart and see how they link"
+                video-src="/media/landing/Tasks-and-Subtasks.webm" />
         </div>
     </div>
 </template>
