@@ -150,8 +150,16 @@ export async function updateIssue(
     if ((values.parentId ?? null) !== (prevValues.parentId ?? null)) {
         // If the parent changed and the parentId is now blank, remove the subtask
         if (!values.parentId && prevValues.parentId) {
+            // Fetch the previous parent to get its GitHub issue number
+            const prevParentTask = await taskService.getTask(prevValues.parentId);
+            if (!prevParentTask) throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request',
+                message: 'Previous parent task doesn\'t exist.'
+            });
+            
             await installationOctokit.rest.issues.removeSubIssue({
-                issue_number: prevValues.parentId,
+                issue_number: prevParentTask.ghIssueNumber,
                 owner: repoOwner,
                 repo: repoName,
                 sub_issue_id: Number(prevValues.ghIssueNodeId),

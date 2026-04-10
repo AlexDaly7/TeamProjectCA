@@ -40,6 +40,7 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
             description: values.description,
             dateRange: values.dateRange,
             progress: values.progress,
+            parentId: props.selectedTask.data.parentId,
         });
         
         return { error: false };
