@@ -120,15 +120,15 @@ function selectTask(item: TimelineItemWithData) {
     </div>
 
     <div class="ring-md touch-none">
-        <AppGanttFallback
+        <ProjectGanttFallback
             v-if="projectInfoPending || projectInfoError"
             class="text-txt-secondary text-sm animate-pulse">
             {{ projectInfoPending
                 ? 'Loading chart...'
                 : 'There was an error loading the timeline. Please try again'}}
-        </AppGanttFallback>
+        </ProjectGanttFallback>
 
-        <AppGanttFallback v-else-if="projectInfo?.tasks.length === 0">
+        <ProjectGanttFallback v-else-if="projectInfo?.tasks.length === 0">
             <span>Looks like there's no added tasks.</span>
             <ProjectAddDialog>
                 <template #trigger>
@@ -138,9 +138,9 @@ function selectTask(item: TimelineItemWithData) {
                     </AppButton>
                 </template>
             </ProjectAddDialog>
-        </AppGanttFallback>
+        </ProjectGanttFallback>
 
-        <AppGantt 
+        <ProjectGantt 
             v-else
             :items
             :groupsInfo

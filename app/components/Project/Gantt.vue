@@ -252,7 +252,7 @@ function getBounds(value: { start: number, end: number }) {
             </Timeline>
         </div>
         <template #fallback>
-            <AppGanttFallback />
+            <ProjectGanttFallback class="text-txt-secondary text-sm animate-pulse" />
         </template>
     </ClientOnly>
 </template>
