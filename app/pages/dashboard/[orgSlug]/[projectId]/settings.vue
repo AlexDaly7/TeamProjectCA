@@ -58,22 +58,30 @@ const initialValues = computed(() => {
 </script>
 
 <template>
-    <FormBuilderNew
-            @submit="renameProject"
-            :validationSchema
-            :initialValues
-            :submit-btn="{
-                label: 'Save'
-            }"
-            :fields="[
-                {
-                    fieldType: 'text',
-                    label: 'Name',
-                    name: 'title',
-                    placeholder: 'New project name...',
-                    required: true,
-                }
-            ]" />
+    <HeadersPage
+        title="Settings"
+        description="Project settings." />
+    <div
+        class="flex flex-col gap-8 md:p-4"
+        :key="activeOrg.org.value?.id">
+        <FormBuilderNew
+                @submit="renameProject"
+                :validationSchema
+                :initialValues
+                :submit-btn="{
+                    label: 'Save'
+                }"
+                :fields="[
+                    {
+                        fieldType: 'text',
+                        label: 'Name',
+                        name: 'title',
+                        placeholder: 'New project name...',
+                        required: true,
+                    }
+                ]" />
+    </div>
+    <br/>
 
     <SettingsCard
         variant="danger"
