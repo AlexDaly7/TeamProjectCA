@@ -10,5 +10,6 @@ export const VSModifyTask = z.object({
         .max(2000, 'Too long!')
         .optional(),
     dateRange: zodDateRange,
-    progress: z.number()
+    progress: z.number(),
+    assigneeIds: z.array(z.string()).optional(),
 });

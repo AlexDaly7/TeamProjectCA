@@ -14,6 +14,7 @@ export const useCurrentOrg = () => {
     );
 
     const currentOrg = computed(() => data.value?.organization);
+    const members = computed(() => data.value?.members ?? null);
 
     async function renameCurrentOrg(newName: string): Promise<ActionButtonResult> {
         const { $authClient } = useNuxtApp();
@@ -83,12 +84,13 @@ export const useCurrentOrg = () => {
         orgSlug,
         orgData: data,
         org: currentOrg,
+        members,
         projects: computed(() => data.value?.projects ?? []),
         pending,
         error,
+        refresh,
         renameCurrentOrg,
         deleteCurrentOrg,
-        refresh,
         renameProject,
         deleteProject,
     };

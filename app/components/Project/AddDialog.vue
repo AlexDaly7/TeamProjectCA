@@ -13,6 +13,8 @@ const {
     addTask: addTaskHelper
 } = useCurrentProject();
 
+const { members } = useCurrentOrg();
+
 const isOpen = ref(false);
 
 const validationSchema = VSModifyTask;
@@ -24,7 +26,8 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
         values.description,
         values.dateRange,
         values.progress,
-        props.parentId
+        props.parentId,
+        values.assigneeIds
     );
 
     if (result.error) {
@@ -34,6 +37,22 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
     isOpen.value = false;
     return { error: false };
 }
+
+const selectItems = computed(() => {
+    const list = (members.value?.members ?? []).map((member) => ({
+        value: member.id,
+        label: member.user.name,
+        iconUrl: member.user.image,
+    }));
+
+    const pendingText = !members.value ? 'Loading members...' : (members.value.members.length === 0 ? 'No members available' : undefined);
+
+    return {
+        list,
+        pendingText,
+        errorText: undefined,
+    }
+});
 </script>
 
 <template>
@@ -80,6 +99,14 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
                         max: 1,
                         min: 0,
                         step: 0.01,
+                    },
+                    {
+                        fieldType: 'select-multiple',
+                        label: 'Assignees',
+                        name: 'assigneeIds',
+                        placeholder: 'Select assignees...',
+                        required: false,
+                        selectItems,
                     }
                 ]" />
         </template>

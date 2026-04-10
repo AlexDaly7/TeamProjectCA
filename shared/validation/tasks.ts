@@ -17,6 +17,7 @@ export const ClientInsertTask = z.object({
         .min(0, 'Cannot be under 0%')
         .max(1, 'Cannot be over 100%')
         .nullable().optional(),
+    assigneeIds: z.array(z.string()).optional(),
 });
 
 export type ClientInsertTaskSchema = z.infer<typeof ClientInsertTask>;
