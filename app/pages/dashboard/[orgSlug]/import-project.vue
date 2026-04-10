@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import z from "zod";
+import { VSImportProject } from "~/utils/schemas/importProject";
 import type { ActionButtonResult } from "~/utils/types/actionButton";
 import { type ClientInsertProjectSchema } from "~~/shared/validation";
 
 const { $csrfFetch } = useNuxtApp();
 const { org, refresh: refreshProjects } = useCurrentOrg();
 const router = useRouter();
+
+const validationSchema = VSImportProject;
 
 async function onSubmit(values: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
     if (!org.value) return { error: true, message: 'Error: No organization selected.' };
@@ -36,11 +39,6 @@ async function onSubmit(values: z.infer<typeof validationSchema>): Promise<Actio
 
     return { error: false };
 }
-
-const validationSchema = z.object({
-    title: z.string('Title is required.').min(3, 'Too short!'),
-    repo: z.string('Repo is required'),
-});
 
 const {
     data,
