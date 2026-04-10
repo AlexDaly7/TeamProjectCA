@@ -52,7 +52,7 @@ async function renameProject({ title }: SchemaValues): Promise<ActionButtonResul
 }
 
 const initialValues = computed(() => {
-    return { title: activeOrg.org.value?.name ?? '' };
+    return { title: currentProject?.title ?? '' };
 });
 
 </script>
