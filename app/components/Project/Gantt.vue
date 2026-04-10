@@ -243,7 +243,17 @@ function getBounds(value: { start: number, end: number }) {
                 </template>
 
                 <template #item="{ item }">
-                    <div class="size-full bg-brand ring-md rounded-sm" @click="$emit('selectedTask', item)">
+                    <div 
+                        class="size-full bg-brand-dark ring-md rounded-sm" 
+                        @click="$emit('selectedTask', item)">
+                        <div 
+                            class="h-full bg-brand flex items-center"
+                            :style="{ width: `${(item.data.progress ?? 0) * 100}%` }">
+                            <span
+                                class="text-txt-primary text-sm font-medium ml-1">
+                                {{ (item.data.progress ?? 0) * 100 }}%
+                            </span>
+                        </div>
                     </div>
                 </template>
             </Timeline>
@@ -253,3 +263,15 @@ function getBounds(value: { start: number, end: number }) {
         </template>
     </ClientOnly>
 </template>
+
+<style>
+.item {
+    opacity: 1 !important;
+}
+
+.item:hover,
+.item.active {
+    filter: brightness(1.2);
+}
+
+</style>
