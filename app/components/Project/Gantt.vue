@@ -10,6 +10,8 @@ const props = defineProps<{
     groupsInfo: TimelineTaskGroup[], // all including hidden
 }>();
 
+const ARROW_COLOR = 'var(--color-txt-secondary)';
+
 defineEmits<{
     (e: 'selectedTask', item: TimelineItemWithData): void,
 }>();
@@ -95,9 +97,10 @@ const lines = computed(() => {
         const item = props.items.find((task) => task.id + "-group" == group.id);
         const itemStart = item?.start;
         const itemEnd = item?.end;
+        
         let svgData = {
             svgPath: ``,
-            colour: "cyan",
+            colour: ARROW_COLOR,
         }
 
         if (itemStart && itemEnd) {
@@ -169,19 +172,13 @@ const lines = computed(() => {
     return { linesArr, spacing };
 });
 
-//draw the line now extending 10px behind the furthest back item
+// draw the line now extending 10px behind the furthest back item
 function drawLines(secondItemPosX: number, itemPosX: number, spacing: number) {
-    let svgData = {
-        svgPath: ``,
-        colour: "cyan",
-    }
     if (secondItemPosX < itemPosX) {
-        svgData.svgPath = `M${itemPosX} ${spacing + 70} L${secondItemPosX - 10} ${spacing + 70} L${secondItemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
+        return `M${itemPosX} ${spacing + 70} L${secondItemPosX - 10} ${spacing + 70} L${secondItemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
+    } else {
+        return `M${itemPosX} ${spacing + 70} L${itemPosX - 10} ${spacing + 70} L${itemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
     }
-    else {
-        svgData.svgPath = `M${itemPosX} ${spacing + 70} L${itemPosX - 10} ${spacing + 70} L${itemPosX - 10} ${(spacing) + 120} L${secondItemPosX} ${(spacing) + 120}`;
-    }
-    return svgData.svgPath;
 }
 
 function getItemSibling(item: TimelineItemWithData) {
@@ -216,7 +213,7 @@ function getBounds(value: { start: number, end: number }) {
                 <defs>
                     <marker id="arrow" markerWidth="4" markerHeight="4" viewBox="0 0 10 10" refX="5" refY="5"
                         orient="auto">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="red" />
+                        <path d="M 0 0 L 10 5 L 0 10 z" :fill="ARROW_COLOR" />
 
                     </marker>
                 </defs>
