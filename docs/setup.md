@@ -49,7 +49,7 @@ This will be the most involved part of the setup process, as you need to make su
 - For homepage url, set this to the URL of your app / the `BETTER_AUTH_URL`. 
 - Set the callback URL to the same url plus `/api/auth/callback/github`. E.g. `http://localhost:3000/api/auth/callback/github`.
 - Make sure 'Request user authorization (OAuth) during installation' is **disabled**, otherwise you will get a Better Auth error when logging in.
-- Turn off webhook (TODO).
+- Set webhook to active. For URL, either use \<production-url\>/api/gh-webhook, or if testing locally, go to [smee](https://smee.io/) and get a URL from there. Follow the instructions to set up local testing as shown on the smee website.
 - For repository permissions, set 'Administration' to Read and write, and set 'Issues' to 'Read and write'. 'Metadata' should have been automatically selected as mandatory read-only.
 - No organization permissions required.
 - For Account permissions, set 'Email addresses' to Read only.
