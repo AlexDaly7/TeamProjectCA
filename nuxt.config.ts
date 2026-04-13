@@ -19,6 +19,12 @@ export default defineNuxtConfig({
         plugins: [
             tailwindcss()
         ],
+        optimizeDeps: {
+            include: [
+                'better-auth/vue',
+                'better-auth/client/plugins',
+            ],
+        },
     },
 
     // nitro: {

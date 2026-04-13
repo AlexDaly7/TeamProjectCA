@@ -63,7 +63,7 @@ function signIn() {
                 alt="Mórchlár"
                 fetchpriority="high"
                 class="w-full drop-shadow-md drop-shadow-black"
-                data-testid="logo">
+                data-testid="hero-img">
 
             <p class="text-txt-secondary mt-2 mb-4">
                 Collaborative team project tracking with GitHub integration.
