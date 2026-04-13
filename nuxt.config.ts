@@ -21,16 +21,16 @@ export default defineNuxtConfig({
         ],
     },
 
-    nitro: {
-        prerender: {
-            routes: ['/'],
-        },
-    },
+    // nitro: {
+    //     prerender: {
+    //         routes: ['/'],
+    //     },
+    // },
 
     css: [ '~/assets/css/main.css' ],
 
     routeRules: {
-        '/': { prerender: true },
+        // '/': { prerender: true },
         
         '/dashboard/**': { appLayout: 'dashboard' },
 
