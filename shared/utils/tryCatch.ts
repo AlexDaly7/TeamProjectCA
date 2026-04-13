@@ -1,10 +1,8 @@
 // Sourced: https://gist.github.com/t3dotgg/a486c4ae66d32bf17c09c73609dacc5b
-import type { Result } from "../types/results";
+import type { Result } from '../types/results';
 
 // Main wrapper function
-export async function tryCatch<T, E = Error>(
-    promise: Promise<T>,
-): Promise<Result<T, E>> {
+export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Result<T, E>> {
     try {
         const data = await promise;
         return { data, error: null };

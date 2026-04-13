@@ -1,5 +1,5 @@
 import { type InsertTaskSchema } from '~~/server/lib/db/schema';
-import { ClientInsertTask } from "~~/shared/validation";
+import { ClientInsertTask } from '~~/shared/validation';
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService, taskService, userService } from '~~/server/services';
 import { validateBody } from '~~/server/utils/validation';
@@ -11,19 +11,18 @@ export default defineAuthenticatedEventHandler(async (event) => {
 
     // Get project from router param
     const project = await projectService.getByIdForUser(projectId, event.context.user.id);
-    if (!project) throw createError({
-        status: 404,
-        statusText: 'Project not found',
-    });
+    if (!project)
+        throw createError({
+            status: 404,
+            statusText: 'Project not found',
+        });
 
     // Ensure user has permission in project's org
     await ensureOrganizationPermission(event, project.organizationId, {
-        task: ['create']
+        task: ['create'],
     });
 
-    const organizationMemberIds = new Set(
-        project.organization.members.map((member) => member.userId),
-    );
+    const organizationMemberIds = new Set(project.organization.members.map((member) => member.userId));
 
     if (assigneeIds.some((assigneeId) => !organizationMemberIds.has(assigneeId))) {
         throw createError({
@@ -33,8 +32,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         });
     }
 
-    const assigneeUsernames = (await userService.getGitHubLogins(assigneeIds))
-        .map((user) => user.login);
+    const assigneeUsernames = (await userService.getGitHubLogins(assigneeIds)).map((user) => user.login);
 
     const insertionBody: Omit<InsertTaskSchema, 'creatorId' | 'ghIssueNodeId' | 'ghIssueNumber' | 'projectId'> = {
         title: body.title,
@@ -45,7 +43,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
         parentId: body.parentId ?? null,
         progress: body.progress,
     };
-
 
     // Create the issue on GitHub
     const createdIssue = await githubService.createIssue(
@@ -77,8 +74,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
     if (error) {
         throw createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error",
-            message: "There was a problem creating the task."
+            statusMessage: 'Internal Server Error',
+            message: 'There was a problem creating the task.',
         });
     }
 

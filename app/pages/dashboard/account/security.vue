@@ -10,7 +10,5 @@ useAppHead({
 </script>
 
 <template>
-    <AccountPageWrapper>
-        
-    </AccountPageWrapper>
+    <AccountPageWrapper> </AccountPageWrapper>
 </template>

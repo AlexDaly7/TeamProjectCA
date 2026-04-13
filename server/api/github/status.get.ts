@@ -1,4 +1,4 @@
-import { userService } from "~~/server/services";
+import { userService } from '~~/server/services';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const user = event.context.user;

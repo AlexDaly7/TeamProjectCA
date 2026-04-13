@@ -1,8 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-    title: string,
-    description: string,
-    videoSrc: string
+    title: string;
+    description: string;
+    videoSrc: string;
 }>();
 </script>
 
@@ -11,15 +11,8 @@ defineProps<{
         <h3 class="text-xl font-semibold">{{ title }}</h3>
         <p class="text-txt-secondary mb-2">{{ description }}</p>
 
-        <video 
-            class="ring-md rounded-xl shadow-sm shadow-black"
-            autoplay
-            loop
-            muted
-            playsinline>
-            <source 
-                type="video/webm"
-                :src="videoSrc">
+        <video class="ring-md rounded-xl shadow-sm shadow-black" autoplay loop muted playsinline>
+            <source type="video/webm" :src="videoSrc" />
         </video>
     </div>
 </template>

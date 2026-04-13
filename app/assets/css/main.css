@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
     --color-main-50: var(--color-slate-50);
@@ -75,10 +75,11 @@ body {
     opacity: 0;
 }
 
-
 .dialog-scale-enter-active,
 .dialog-scale-leave-active {
-    transition: transform 0.1s, opacity 0.1s;
+    transition:
+        transform 0.1s,
+        opacity 0.1s;
 }
 .dialog-scale-enter-from,
 .dialog-scale-leave-to {
@@ -89,20 +90,20 @@ body {
 /*Drawer Transition*/
 .drawer-fade-enter-active,
 .drawer-fade-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .drawer-fade-enter-from,
 .drawer-fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 
 .drawer-slide-enter-active,
 .drawer-slide-leave-active {
-  transition: right 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: right 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .drawer-slide-enter-from,
 .drawer-slide-leave-to {
-  right: -24rem;
+    right: -24rem;
 }

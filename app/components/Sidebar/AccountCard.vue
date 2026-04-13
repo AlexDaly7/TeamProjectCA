@@ -19,16 +19,12 @@ async function signOut() {
 </script>
 
 <template>
-    <AppPopover 
-        :is-open="popoverOpen"
-        @update:is-open="onOpen">
-        <template #trigger> 
-            <div class="w-full p-2 rounded-lg inline-flex gap-2 items-center cursor-pointer select-none
-                hover:bg-main-700 transition-all duration-75"
+    <AppPopover :is-open="popoverOpen" @update:is-open="onOpen">
+        <template #trigger>
+            <div
+                class="w-full p-2 rounded-lg inline-flex gap-2 items-center cursor-pointer select-none hover:bg-main-700 transition-all duration-75"
                 :class="{ 'bg-main-700! ring-md': popoverOpen }">
-                <template v-if="!auth.user.value">
-
-                </template>
+                <template v-if="!auth.user.value"> </template>
                 <template v-else>
                     <AppAvatar
                         :image="auth.user.value.image ?? undefined"
@@ -58,9 +54,7 @@ async function signOut() {
                                 {{ auth.user.value?.email }}
                             </span>
                         </div>
-                        <Icon 
-                            name="hugeicons:account-setting-01"
-                            size="20"/>
+                        <Icon name="hugeicons:account-setting-01" size="20" />
                     </AppButton>
                 </div>
 
@@ -73,9 +67,7 @@ async function signOut() {
                         class="inline-flex justify-between items-center rounded-lg!"
                         @click="signOut">
                         <span class="text-txt-primary">Sign Out</span>
-                        <Icon 
-                            name="hugeicons:logout-square-01" 
-                            class="text-txt-secondary" />
+                        <Icon name="hugeicons:logout-square-01" class="text-txt-secondary" />
                     </AppButton>
                 </div>
             </div>

@@ -2,23 +2,26 @@
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 import type { ButtonSize, ButtonVariant } from '~/utils/types/buttonTypes';
 
-const props = withDefaults(defineProps<{
-    action: (() => Promise<ActionButtonResult>) | Promise<ActionButtonResult>,
-    title?: string,
-    description?: string,
-    requireAreYouSure?: boolean,
-    variant?: ButtonVariant,
-    size?: ButtonSize,
-}>(), {
-    title: 'Are you sure?',
-    description: 'This action is irreversible.',
-    requireAreYouSure: false,
-    variant: 'secondary',
-    size: 'md',
-});
+const props = withDefaults(
+    defineProps<{
+        action: (() => Promise<ActionButtonResult>) | Promise<ActionButtonResult>;
+        title?: string;
+        description?: string;
+        requireAreYouSure?: boolean;
+        variant?: ButtonVariant;
+        size?: ButtonSize;
+    }>(),
+    {
+        title: 'Are you sure?',
+        description: 'This action is irreversible.',
+        requireAreYouSure: false,
+        variant: 'secondary',
+        size: 'md',
+    },
+);
 
 const emit = defineEmits<{
-    onSuccess: [],
+    onSuccess: [];
 }>();
 
 const isLoading = ref(false);
@@ -55,30 +58,25 @@ function handleClick() {
         performAction();
     }
 }
-
 </script>
 
 <template>
     <template v-if="!requireAreYouSure">
-        <AppButton
-            :variant
-            :size
-            :loading="isLoading"
-            v-bind="$attrs"
-            @click="handleClick">
+        <AppButton :variant :size :loading="isLoading" v-bind="$attrs" @click="handleClick">
             <slot name="trigger">Button</slot>
         </AppButton>
     </template>
 
     <template v-else>
-        <AlertDialogRoot 
+        <AlertDialogRoot
             :open="dialogOpen || isLoading"
-            @update:open="val => { if (isLoading) dialogOpen = val }">
+            @update:open="
+                (val) => {
+                    if (isLoading) dialogOpen = val;
+                }
+            ">
             <AlertDialogTrigger :as-child="true">
-                <AppButton
-                    :variant
-                    v-bind="$attrs"
-                    @click="handleClick">
+                <AppButton :variant v-bind="$attrs" @click="handleClick">
                     <slot name="trigger">Button</slot>
                 </AppButton>
             </AlertDialogTrigger>
@@ -89,9 +87,8 @@ function handleClick() {
                 </Transition>
 
                 <Transition name="dialog-scale">
-                    <AlertDialogContent class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
-                        bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
-                        focus:outline-none">
+                    <AlertDialogContent
+                        class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100 bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md focus:outline-none">
                         <AlertDialogTitle class="text-xl font-semibold mb-2">
                             {{ title }}
                         </AlertDialogTitle>
@@ -114,13 +111,10 @@ function handleClick() {
                                     </AppButton>
                                 </slot>
                             </AlertDialogCancel>
-                            
+
                             <AlertDialogAction :as-child="true">
                                 <slot name="action-button">
-                                    <AppButton
-                                        class="min-w-24"
-                                        :loading="isLoading"
-                                        @click="performAction">
+                                    <AppButton class="min-w-24" :loading="isLoading" @click="performAction">
                                         Confirm
                                     </AppButton>
                                 </slot>

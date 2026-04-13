@@ -14,16 +14,18 @@ useAppHead({
 
 const { $authClient } = useNuxtApp();
 
-const { data: orgMembers, error: orgMembersError, pending: orgMembersPending, refresh } = useFetch(
-    () => `/api/organizations/${org.value?.id}/members`,
-    {
-        method: 'GET',
-        key: `orgmembers:${org.value?.id}`,
-        lazy: true,
-    }
-);
+const {
+    data: orgMembers,
+    error: orgMembersError,
+    pending: orgMembersPending,
+    refresh,
+} = useFetch(() => `/api/organizations/${org.value?.id}/members`, {
+    method: 'GET',
+    key: `orgmembers:${org.value?.id}`,
+    lazy: true,
+});
 
-const inviteeEmail = ref<string>("");
+const inviteeEmail = ref<string>('');
 const inviteeRole = ref<'admin' | 'owner' | 'member' | null>(null);
 const invitePending = ref(false);
 const inviteError = ref<string | null>(null);
@@ -53,7 +55,7 @@ async function addUserToGroup() {
 }
 
 const tabs = computed(() => {
-    let tabsBuilding = [ { name: 'Members', value: 'members' } ];
+    let tabsBuilding = [{ name: 'Members', value: 'members' }];
 
     if (orgMembers.value?.invitations !== null) {
         tabsBuilding.push({ name: 'Pending Invites', value: 'invites' });
@@ -62,8 +64,9 @@ const tabs = computed(() => {
     return tabsBuilding;
 });
 
-const pendingInvites = computed(() => (orgMembers.value?.invitations ?? []).filter(i => i.status === 'pending' || i.status === 'rejected'));
-
+const pendingInvites = computed(() =>
+    (orgMembers.value?.invitations ?? []).filter((i) => i.status === 'pending' || i.status === 'rejected'),
+);
 
 async function cancelInvite(invitationId: string): Promise<ActionButtonResult> {
     const { error } = await $authClient.organization.cancelInvitation({
@@ -71,14 +74,13 @@ async function cancelInvite(invitationId: string): Promise<ActionButtonResult> {
     });
 
     if (error) {
-        return  { error: true, message: error.message ?? 'Unknown error.' };
+        return { error: true, message: error.message ?? 'Unknown error.' };
     } else {
         return { error: false };
     }
 }
 
 const onCancelInviteSuccess = () => refresh();
-
 
 async function removeFromOrg(memberId: string) {
     const { error } = await $authClient.organization.removeMember({
@@ -92,22 +94,18 @@ async function removeFromOrg(memberId: string) {
 </script>
 
 <template>
-    <HeadersPage 
-        title="Members"
-        description="Manage team members and invitations." />
+    <HeadersPage title="Members" description="Manage team members and invitations." />
 
     <div class="flex flex-col gap-2">
         <!-- todo: use vee validate -->
-        <form
-            class="ring-md bg-main-800 rounded-lg flex flex-col gap-2 p-3" 
-            @submit.prevent="addUserToGroup">
-            <div 
-                v-if="inviteError" 
+        <form class="ring-md bg-main-800 rounded-lg flex flex-col gap-2 p-3" @submit.prevent="addUserToGroup">
+            <div
+                v-if="inviteError"
                 class="w-full bg-danger-bg ring-danger-bg-hover ring-1 ring-inset text-danger-txt p-2 rounded-lg">
                 Error: {{ inviteError }}
             </div>
 
-            <div 
+            <div
                 v-if="inviteSuccessMessage"
                 class="w-full bg-success-bg ring-success-bg-hover ring-1 ring-inset text-success-txt p-2 rounded-lg">
                 {{ inviteSuccessMessage }}
@@ -121,14 +119,11 @@ async function removeFromOrg(memberId: string) {
                         name="userInput"
                         type="email"
                         :disabled="invitePending"
-                        v-model="inviteeEmail"/>
+                        v-model="inviteeEmail" />
                 </div>
                 <!-- todo: replace with custom app-wide selector -->
                 <div class="flex flex-col gap-2 grow">
-                    <Label 
-                        class="text-sm text-txt-secondary">
-                        Role
-                    </Label>
+                    <Label class="text-sm text-txt-secondary"> Role </Label>
                     <select
                         class="bg-main-700 ring-md h-8 px-2 rounded-md"
                         :class="{ 'opacity-60': invitePending }"
@@ -140,55 +135,42 @@ async function removeFromOrg(memberId: string) {
                     </select>
                 </div>
             </div>
-            <AppButton
-                class="w-fit ml-auto" 
-                type="submit"
-                :loading="invitePending">
-                Add member
-            </AppButton>
+            <AppButton class="w-fit ml-auto" type="submit" :loading="invitePending"> Add member </AppButton>
         </form>
-        <div 
-            v-if="orgMembersPending"
-            class="w-full min-h-full flex items-center justify-center">
+        <div v-if="orgMembersPending" class="w-full min-h-full flex items-center justify-center">
             <LoadingIcon :size="32" />
         </div>
         <div v-else-if="orgMembersError || !orgMembers">
             Error loading organization members: {{ orgMembersError?.message ?? 'Unknown error' }}
         </div>
-        <AppTabsContainer
-            v-else
-            :tabs
-            default="members">
+        <AppTabsContainer v-else :tabs default="members">
             <TabsContent value="members">
-                <ul 
-                    class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-2">
                     <li
                         v-for="member in orgMembers.members.members"
                         class="inline-flex gap-3 items-center bg-main-800 p-3 rounded-lg ring-md"
                         :key="member.id">
-                        <AppAvatar
-                            :image="member.user.image"
-                            :name="member.user.name" />
+                        <AppAvatar :image="member.user.image" :name="member.user.name" />
                         <div class="flex flex-col">
                             <span>
                                 {{ member.user.name }}
                             </span>
-                            <span 
-                                class="text-txt-secondary text-sm font-medium">
+                            <span class="text-txt-secondary text-sm font-medium">
                                 {{ member.user.email }}
                             </span>
                         </div>
                         <div class="ml-auto inline-flex items-center gap-2">
-                            <span 
+                            <span
                                 class="text-txt-secondary capitalize text-sm font-medium"
                                 :class="{
-                                    'font-black! text-success-txt!': member.role === 'owner'
+                                    'font-black! text-success-txt!': member.role === 'owner',
                                 }">
                                 {{ member.role }}
                             </span>
                             <AppDropdown>
                                 <template #trigger>
-                                    <div class="size-8 flex items-center justify-center rounded-md cursor-pointer data-[state=open]:bg-main-700 hover:bg-main-700">
+                                    <div
+                                        class="size-8 flex items-center justify-center rounded-md cursor-pointer data-[state=open]:bg-main-700 hover:bg-main-700">
                                         <Icon name="hugeicons:more-horizontal" size="20" />
                                     </div>
                                 </template>
@@ -210,15 +192,9 @@ async function removeFromOrg(memberId: string) {
                     </li>
                 </ul>
             </TabsContent>
-            <TabsContent
-                v-if="orgMembers.invitations !== null"
-                value="invites">
-                <div v-if="pendingInvites.length === 0">
-                    No sent invites...
-                </div>
-                <ul
-                    v-else
-                    class="flex flex-col gap-2">
+            <TabsContent v-if="orgMembers.invitations !== null" value="invites">
+                <div v-if="pendingInvites.length === 0">No sent invites...</div>
+                <ul v-else class="flex flex-col gap-2">
                     <li
                         v-for="invite in pendingInvites"
                         class="inline-flex gap-3 items-center bg-main-800 p-3 rounded-lg ring-md"
@@ -229,8 +205,7 @@ async function removeFromOrg(memberId: string) {
                                 <span class="text-txt-secondary"> as </span>
                                 <span class="capitalize">{{ invite.role }}</span>
                             </div>
-                            <span 
-                                class="text-txt-secondary text-sm font-medium capitalize">
+                            <span class="text-txt-secondary text-sm font-medium capitalize">
                                 Status: {{ invite.status }}
                             </span>
                         </div>

@@ -28,7 +28,7 @@ async function renameOrg({ title }: SchemaValues): Promise<ActionButtonResult> {
 
     if (result.error) return result;
 
-    await activeOrg.refresh(); 
+    await activeOrg.refresh();
     await refreshOrganizations();
 
     return result;
@@ -40,19 +40,15 @@ const initialValues = computed(() => {
 </script>
 
 <template>
-    <HeadersPage
-        title="Settings"
-        description="Organization settings." />
-    
-    <div 
-        class="flex flex-col gap-8 md:p-4"
-        :key="activeOrg.org.value?.id">
+    <HeadersPage title="Settings" description="Organization settings." />
+
+    <div class="flex flex-col gap-8 md:p-4" :key="activeOrg.org.value?.id">
         <FormBuilderNew
             @submit="renameOrg"
             :validationSchema
             :initialValues
             :submit-btn="{
-                label: 'Save'
+                label: 'Save',
             }"
             :fields="[
                 {
@@ -61,23 +57,19 @@ const initialValues = computed(() => {
                     name: 'title',
                     placeholder: 'New org name...',
                     required: true,
-                }
+                },
             ]" />
     </div>
     <SettingsCard
-            variant="danger"
-            :require-confirmation="true"
-            :action-disabled="activeOrg.org.value === undefined"
-            :action="deleteOrg"
-            @on-success="router.push({ name: 'dashboard' })">
-            <template #title>
-                Delete Organization
-            </template>
-            <template #description>
-                Permanently remove this organization from Mórchlár. This action is not reversible.
-            </template>
-            <template #action>
-                Delete Organization
-            </template>
-        </SettingsCard>
+        variant="danger"
+        :require-confirmation="true"
+        :action-disabled="activeOrg.org.value === undefined"
+        :action="deleteOrg"
+        @on-success="router.push({ name: 'dashboard' })">
+        <template #title> Delete Organization </template>
+        <template #description>
+            Permanently remove this organization from Mórchlár. This action is not reversible.
+        </template>
+        <template #action> Delete Organization </template>
+    </SettingsCard>
 </template>

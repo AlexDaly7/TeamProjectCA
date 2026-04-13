@@ -1,21 +1,22 @@
-import { notifyPusherChannel } from "~~/server/lib/pusher";
-import { githubService, taskService } from "~~/server/services";
+import { notifyPusherChannel } from '~~/server/lib/pusher';
+import { githubService, taskService } from '~~/server/services';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const taskId = validateRouterParam(event, 'id');
 
     // Get task from DB
-    const taskWithProject = await taskService.getTaskWithProject(taskId)
-    if (!taskWithProject) throw createError({
-        status: 404,
-        statusText: 'Task not found',
-    });
+    const taskWithProject = await taskService.getTaskWithProject(taskId);
+    if (!taskWithProject)
+        throw createError({
+            status: 404,
+            statusText: 'Task not found',
+        });
 
     const { organizationId, repoOwner, repoName, id: projectId } = taskWithProject.project;
 
     // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
-        task: ['delete']
+        task: ['delete'],
     });
 
     // Delete on GitHub
@@ -30,12 +31,12 @@ export default defineAuthenticatedEventHandler(async (event) => {
     }
 
     // Delete in DB
-    const result = await taskService.deleteTask(taskId);;
+    const result = await taskService.deleteTask(taskId);
     if (result.length === 0) {
         throw createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error",
-            message: "There was a problem while deleting the task.",
+            statusMessage: 'Internal Server Error',
+            message: 'There was a problem while deleting the task.',
         });
     }
 

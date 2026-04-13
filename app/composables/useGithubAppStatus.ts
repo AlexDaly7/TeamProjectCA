@@ -3,13 +3,11 @@ export const useGitHubAppStatus = () => {
 
     return {
         data,
-        availableRepositories: computed(() => 
-            data.value?.status === 'app_connected'
-            ? data.value.availableRepositories ?? [] 
-            : []
+        availableRepositories: computed(() =>
+            data.value?.status === 'app_connected' ? (data.value.availableRepositories ?? []) : [],
         ),
         pending,
         error,
-        refresh
+        refresh,
     };
-}
+};

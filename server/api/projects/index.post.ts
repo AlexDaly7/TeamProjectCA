@@ -1,20 +1,19 @@
-import type { InsertProjectSchema } from "~~/server/lib/db/schema";
-import { projectService } from "~~/server/services";
-import { getUserGitHubAuthToken } from "~~/server/utils/auth";
-import { verifyGitHubRepoAccess } from "~~/server/utils/github";
-import { validateBody } from "~~/server/utils/validation";
-import { ClientInsertProject } from "~~/shared/validation";
-
+import type { InsertProjectSchema } from '~~/server/lib/db/schema';
+import { projectService } from '~~/server/services';
+import { getUserGitHubAuthToken } from '~~/server/utils/auth';
+import { verifyGitHubRepoAccess } from '~~/server/utils/github';
+import { validateBody } from '~~/server/utils/validation';
+import { ClientInsertProject } from '~~/shared/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;
     const bodyData = await validateBody(event, ClientInsertProject);
 
-    const [ repoOwner, repoName ] = bodyData.repo.split('/');
+    const [repoOwner, repoName] = bodyData.repo.split('/');
     if (!repoOwner || !repoName) return;
 
     await ensureOrganizationPermission(event, bodyData.organizationId, {
-        project: ['create']
+        project: ['create'],
     });
 
     try {
@@ -26,7 +25,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Bad Request',
-                message: 'Invalid repo'
+                message: 'Invalid repo',
             });
         }
 
@@ -43,7 +42,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Internal Server Error',
-                message: 'Failed to create project'
+                message: 'Failed to create project',
             });
         }
 
@@ -58,4 +57,4 @@ export default defineAuthenticatedEventHandler(async (event) => {
             });
         }
     }
-})
+});

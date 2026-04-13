@@ -1,4 +1,4 @@
-import { auth } from "~~/server/lib/auth/auth"
+import { auth } from '~~/server/lib/auth/auth';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const inviteId = validateRouterParam(event, 'id', false);
@@ -16,7 +16,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         throw createError({
             statusCode: 404,
             statusMessage: 'Not Found',
-            message: 'Invite not found.'
+            message: 'Invite not found.',
         });
     } else {
         return invite;

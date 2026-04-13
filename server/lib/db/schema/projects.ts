@@ -5,26 +5,26 @@ import z from 'zod';
 import { organization } from './auth';
 import { tasks } from './tasks';
 
-export const projects = pgTable("projects", {
-    id: serial("id").primaryKey(),
-    title: text("title").notNull(),
-    
-    organizationId: text("organization_id").notNull(),
+export const projects = pgTable('projects', {
+    id: serial('id').primaryKey(),
+    title: text('title').notNull(),
 
-    repoId: integer("repo_id").notNull(),
+    organizationId: text('organization_id').notNull(),
+
+    repoId: integer('repo_id').notNull(),
     repoName: text('repo_name').notNull(),
     repoOwner: text('repo_owner').notNull(),
 
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
         .$onUpdate(() => new Date())
         .notNull(),
 });
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
     organization: one(organization, {
-        fields: [ projects.organizationId ],
-        references: [ organization.id ],
+        fields: [projects.organizationId],
+        references: [organization.id],
     }),
     tasks: many(tasks),
 }));
@@ -37,7 +37,6 @@ export const InsertProject = createInsertSchema(projects).omit({
 });
 
 export type InsertProjectSchema = z.infer<typeof InsertProject>;
-
 
 export const UpdateProject = createUpdateSchema(projects).omit({
     id: true,

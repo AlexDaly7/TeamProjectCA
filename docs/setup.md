@@ -26,7 +26,6 @@ This project uses **Neon** severless Postgres as a database. You can set up a cl
 
 One you have a connection URL, set this as the value for `DATABASE_URL` in the env file. Then, run the migrations to setup the database with `bun run db:migrate`.
 
-
 ### 2.2. Better Auth
 
 The `BETTER_AUTH_URL` is the URL of your app. By default for local development this should be `http://localhost:3000`, but will need to be changed to your production URL once in production.
@@ -43,10 +42,10 @@ This will be the most involved part of the setup process, as you need to make su
 
 **Step 1**
 
-- Go to [https://github.com/settings/apps](https://github.com/settings/apps) and create a new GitHub App (not OAuth App). 
-> If you are creating an app for an organization, go to `https://github.com/organizations/<your-org>/settings/apps`
-- Set the name and description to whatever you wish. 
-- For homepage url, set this to the URL of your app / the `BETTER_AUTH_URL`. 
+- Go to [https://github.com/settings/apps](https://github.com/settings/apps) and create a new GitHub App (not OAuth App).
+    > If you are creating an app for an organization, go to `https://github.com/organizations/<your-org>/settings/apps`
+- Set the name and description to whatever you wish.
+- For homepage url, set this to the URL of your app / the `BETTER_AUTH_URL`.
 - Set the callback URL to the same url plus `/api/auth/callback/github`. E.g. `http://localhost:3000/api/auth/callback/github`.
 - Make sure 'Request user authorization (OAuth) during installation' is **disabled**, otherwise you will get a Better Auth error when logging in.
 - Set webhook to active. For URL, either use \<production-url\>/api/gh-webhook, or if testing locally, go to [smee](https://smee.io/) and get a URL from there. Follow the instructions to set up local testing as shown on the smee website.
@@ -78,9 +77,7 @@ into:
 
 then, paste this inside double quotes into your env file as `GITHUB_APP_PRIVATE_KEY`.
 
-
 After this, generate a new client secret in the GitHub app page, and copy it's contents to `GITHUB_CLIENT_SECRET`. This should be your GitHub app set-up. You can customise the name, description, and image as you wish.
-
 
 ### 2.4. Pusher
 
@@ -91,7 +88,6 @@ TODO (Alex)
 Create a resend account at [https://resend.com/signup](https://resend.com/signup). Once you have verified your email and logged in, you will be given an API key. Set the API key as the value for `RESEND_API_KEY`.
 
 You will need to setup your domain to work with Resend before any emails can be sent.
-
 
 ### 3. Installing dependencies
 

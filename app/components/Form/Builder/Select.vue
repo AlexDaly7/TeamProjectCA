@@ -2,25 +2,28 @@
 import type { AcceptableValue } from 'reka-ui';
 
 type ListItem = {
-    label: string,
-    value: string,
-    iconUrl?: string,
+    label: string;
+    value: string;
+    iconUrl?: string;
 };
 
-const props = withDefaults(defineProps<{
-    name: string,
-    required: boolean,
-    placeholder: string,
-    disabled?: boolean,
-    error?: string,
-    items: ListItem[],
-    itemsPendingText?: string,
-    itemsPendingErrorText?: string,
-    multiple?: boolean,
-}>(), {
-    disabled: false,
-    multiple: false,
-});
+const props = withDefaults(
+    defineProps<{
+        name: string;
+        required: boolean;
+        placeholder: string;
+        disabled?: boolean;
+        error?: string;
+        items: ListItem[];
+        itemsPendingText?: string;
+        itemsPendingErrorText?: string;
+        multiple?: boolean;
+    }>(),
+    {
+        disabled: false,
+        multiple: false,
+    },
+);
 
 const placeholderText = computed(() => {
     if (props.itemsPendingText) {
@@ -34,26 +37,24 @@ const placeholderText = computed(() => {
 
 const name = toRef(props, 'name');
 
-const {
-    value: inputValue,
-    handleBlur,
-    handleChange,
-} = useField<AcceptableValue>(name);
+const { value: inputValue, handleBlur, handleChange } = useField<AcceptableValue>(name);
 </script>
 
 <template>
-    <SelectRoot 
+    <SelectRoot
         :name
         :required
         :disabled
         :multiple
-
         :model-value="inputValue"
         @update:model-value="handleChange"
-        @update:open="(o) => { if (!o) handleBlur() }">
+        @update:open="
+            (o) => {
+                if (!o) handleBlur();
+            }
+        ">
         <SelectTrigger
-            class="inline-flex min-w-40 items-center justify-between 
-            rounded-lg px-4 leading-none h-8 gap-1 bg-main-700 ring-md data-disabled:text-txt-secondary outline-none"
+            class="inline-flex min-w-40 items-center justify-between rounded-lg px-4 leading-none h-8 gap-1 bg-main-700 ring-md data-disabled:text-txt-secondary outline-none"
             :disabled="!!itemsPendingErrorText">
             <SelectValue :placeholder="placeholderText" />
             <Icon name="hugeicons:arrow-down-01" class="size-3.5" />
@@ -71,8 +72,7 @@ const {
                     <SelectItem
                         v-for="(item, index) in items"
                         :key="index"
-                        class="leading-none rounded-md flex items-center h-8 pr-8 pl-6 relative select-none
-                        data-highlighted:outline-none data-highlighted:bg-main-200 data-highlighted:text-main-900"
+                        class="leading-none rounded-md flex items-center h-8 pr-8 pl-6 relative select-none data-highlighted:outline-none data-highlighted:bg-main-200 data-highlighted:text-main-900"
                         :value="item.value">
                         <SelectItemIndicator class="absolute left-1 w-6 inline-flex items-center jusify-center">
                             <Icon name="hugeicons:tick-02" />

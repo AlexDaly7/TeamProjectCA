@@ -1,18 +1,19 @@
-import { projectService } from "~~/server/services";
-import { ensureOrganizationPermission } from "~~/server/utils/userPermission";
+import { projectService } from '~~/server/services';
+import { ensureOrganizationPermission } from '~~/server/utils/userPermission';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const projectId = validateRouterParam(event, 'id');
 
     const project = await projectService.getProjectById(projectId);
-    if (!project) throw createError({
-        statusCode: 404,
-        statusMessage: 'Project not found.'
-    });
+    if (!project)
+        throw createError({
+            statusCode: 404,
+            statusMessage: 'Project not found.',
+        });
 
     // This is where we also validate if user has access to org
     await ensureOrganizationPermission(event, project.organizationId, {
-        project: ['delete']
+        project: ['delete'],
     });
 
     const deleted = await projectService.deleteProject(project.id, project.organizationId);

@@ -12,18 +12,13 @@ export default defineNuxtConfig({
         '@nuxt/fonts',
         '@nuxt/test-utils/module',
         '@vercel/analytics',
-        '@vercel/speed-insights'
+        '@vercel/speed-insights',
     ],
 
     vite: {
-        plugins: [
-            tailwindcss()
-        ],
+        plugins: [tailwindcss()],
         optimizeDeps: {
-            include: [
-                'better-auth/vue',
-                'better-auth/client/plugins',
-            ],
+            include: ['better-auth/vue', 'better-auth/client/plugins'],
         },
     },
 
@@ -33,40 +28,40 @@ export default defineNuxtConfig({
     //     },
     // },
 
-    css: [ '~/assets/css/main.css' ],
+    css: ['~/assets/css/main.css'],
 
     routeRules: {
         // '/': { prerender: true },
-        
+
         '/dashboard/**': { appLayout: 'dashboard' },
 
         // @ts-expect-error - See: https://github.com/Morgbn/nuxt-csurf/issues/60
-        '/api/gh-webhook': { csurf: false }
+        '/api/gh-webhook': { csurf: false },
     },
-    app:{
-        head:{
+    app: {
+        head: {
             title: 'Mórchlár',
             htmlAttrs: {
                 lang: 'en',
             },
             link: [
                 { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
+                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             ],
-        }
+        },
     },
 
     runtimeConfig: {
         public: {
-            betterAuthBaseUrl: '' // Overriden in envs
-        }
+            betterAuthBaseUrl: '', // Overriden in envs
+        },
     },
 
     fonts: {
-        families: [ { name: 'Geist', provider: 'local' } ],
+        families: [{ name: 'Geist', provider: 'local' }],
     },
 
     imports: {
-        dirs: [ 'shared/validation/**/*' ]
-    }
+        dirs: ['shared/validation/**/*'],
+    },
 });

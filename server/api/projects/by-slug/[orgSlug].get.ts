@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
-import { auth } from "~~/server/lib/auth/auth";
-import db from "~~/server/lib/db";
-import { organization } from "~~/server/lib/db/schema";
-import { organizationService } from "~~/server/services";
-import validateRouterParam from "~~/server/utils/validateRouterParam";
+import { eq } from 'drizzle-orm';
+import { auth } from '~~/server/lib/auth/auth';
+import db from '~~/server/lib/db';
+import { organization } from '~~/server/lib/db/schema';
+import { organizationService } from '~~/server/services';
+import validateRouterParam from '~~/server/utils/validateRouterParam';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const orgSlug = validateRouterParam(event, 'orgSlug', false);
@@ -32,7 +32,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         headers: event.headers,
         query: {
             organizationId: org.id,
-        }
+        },
     });
 
     return {

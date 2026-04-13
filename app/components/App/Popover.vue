@@ -1,17 +1,18 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-    showClose?: boolean,
-}>(), {
-    showClose: false,
-});
+withDefaults(
+    defineProps<{
+        showClose?: boolean;
+    }>(),
+    {
+        showClose: false,
+    },
+);
 
 const isOpen = defineModel('isOpen', { default: false });
 </script>
 
 <template>
-    <PopoverRoot 
-        v-model:open="isOpen"
-        v-slot="{ close }">
+    <PopoverRoot v-model:open="isOpen" v-slot="{ close }">
         <PopoverTrigger :as-child="true">
             <slot name="trigger">
                 <span>placeholder popover trigger</span>
@@ -19,18 +20,15 @@ const isOpen = defineModel('isOpen', { default: false });
         </PopoverTrigger>
 
         <PopoverPortal>
-            <PopoverContent 
-                class="bg-main-700 rounded-xl ring-md shadow-sm shadow-black
-                origin-(--reka-popover-content-transform-origin) animate-scale-in"
+            <PopoverContent
+                class="bg-main-700 rounded-xl ring-md shadow-sm shadow-black origin-(--reka-popover-content-transform-origin) animate-scale-in"
                 :side-offset="5"
                 :collision-padding="5">
                 <slot name="content" :close>
                     <span>placeholder popover content</span>
                 </slot>
 
-                <PopoverClose
-                    v-if="showClose"
-                    :as-child="true">
+                <PopoverClose v-if="showClose" :as-child="true">
                     <slot name="close">
                         <span>close</span>
                     </slot>

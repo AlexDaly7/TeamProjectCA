@@ -5,7 +5,7 @@ import z from 'zod';
 import { VSModifyTask } from '~/utils/schemas/modifyTask';
 
 const props = defineProps<{
-    selectedTask: TimelineItemWithData | null
+    selectedTask: TimelineItemWithData | null;
 }>();
 
 const { modifyTask } = useCurrentProject();
@@ -15,9 +15,9 @@ type FormValues = z.infer<typeof validationSchema>;
 
 const initialValues = computed(() => {
     if (!props.selectedTask?.data) return undefined;
-    
+
     const { title, description, startTime, endTime, progress, assignees } = props.selectedTask.data;
-    
+
     return {
         title,
         description: description ?? '',
@@ -25,7 +25,7 @@ const initialValues = computed(() => {
             start: new Date(startTime),
             end: new Date(endTime),
         },
-        progress: progress ?? 0, 
+        progress: progress ?? 0,
         assigneeIds: assignees.map((assignee) => assignee.user.id),
     } satisfies Partial<FormValues>;
 });
@@ -44,12 +44,12 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
             parentId: props.selectedTask.data.parentId,
             assigneeIds: values.assigneeIds,
         });
-        
+
         return { error: false };
     } catch (error) {
-        return { 
-            error: true, 
-            message: error instanceof Error ? error.message : 'Failed to modify task.' 
+        return {
+            error: true,
+            message: error instanceof Error ? error.message : 'Failed to modify task.',
         };
     }
 }
@@ -63,13 +63,17 @@ const selectItems = computed(() => {
         iconUrl: member.user.image,
     }));
 
-    const pendingText = !members.value ? 'Loading members...' : (members.value.members.length === 0 ? 'No members available' : undefined);
+    const pendingText = !members.value
+        ? 'Loading members...'
+        : members.value.members.length === 0
+          ? 'No members available'
+          : undefined;
 
     return {
         list,
         pendingText,
         errorText: undefined,
-    }
+    };
 });
 </script>
 
@@ -120,6 +124,6 @@ const selectItems = computed(() => {
                 placeholder: 'Select assignees...',
                 required: false,
                 selectItems,
-            }
+            },
         ]" />
 </template>

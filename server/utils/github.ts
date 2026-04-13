@@ -1,6 +1,10 @@
-import { Octokit } from "octokit";
+import { Octokit } from 'octokit';
 
-export async function verifyGitHubRepoAccess(ghToken: string, owner: string, repo: string): Promise<{ valid: false } | { valid: true, id: number}> {
+export async function verifyGitHubRepoAccess(
+    ghToken: string,
+    owner: string,
+    repo: string,
+): Promise<{ valid: false } | { valid: true; id: number }> {
     const octokit = new Octokit({ auth: ghToken });
     const repoInfo = await octokit.rest.repos.get({ owner, repo });
 

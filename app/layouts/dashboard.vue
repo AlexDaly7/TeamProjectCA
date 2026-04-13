@@ -11,19 +11,20 @@ const activeOrg = $authClient.useActiveOrganization();
 
 // If on the client
 if (import.meta.client) {
-    watch([ orgSlug, () => activeOrg.value.data?.slug ?? null ],
+    watch(
+        [orgSlug, () => activeOrg.value.data?.slug ?? null],
         async ([currentOrgSlug, activeOrgSlug]) => {
             // Watch for changes in the org slug from the route and the active org slug from the auth client.
             if (!currentOrgSlug || currentOrgSlug === activeOrgSlug) return;
             await $authClient.organization.setActive({ organizationSlug: currentOrgSlug });
         },
-    { 
-        immediate: true
-    });
+        {
+            immediate: true,
+        },
+    );
 }
 
 const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.value === 'project');
-
 </script>
 
 <template>
@@ -38,7 +39,7 @@ const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.val
                     icon="hugeicons:arrow-left-01"
                     class="w-full px-2!" />
             </div>
-            
+
             <div class="flex flex-col gap-2 p-2">
                 <SidebarTypeUser v-if="sidebarType === 'user'" />
                 <SidebarTypeOrg v-else-if="sidebarType === 'org'" />
@@ -51,9 +52,7 @@ const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.val
         </aside>
 
         <div class="grow flex flex-col min-h-14">
-            <nav 
-                class="inline-flex gap-2 items-center p-2 min-h-14 relative
-                bg-main-800 border-b border-main-50/10">
+            <nav class="inline-flex gap-2 items-center p-2 min-h-14 relative bg-main-800 border-b border-main-50/10">
                 <NavbarProjectsDropdown v-if="inOrgsPage" />
                 <div v-else></div>
 
@@ -64,7 +63,7 @@ const inOrgsPage = computed(() => sidebarType.value === 'org' || sidebarType.val
                     <Icon name="hugeicons:alert-01" />
                     GitHub app not installed
                 </NuxtLink>
-                
+
                 <span class="absolute left-1/2 -translate-x-1/2 text-sm font-bold">
                     {{ pageTitle }}
                 </span>

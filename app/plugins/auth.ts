@@ -1,15 +1,14 @@
-import type { UseFetchOptions } from "#app";
-import { createAuthClient } from "better-auth/vue";
-import { organizationClient } from "better-auth/client/plugins";
+import type { UseFetchOptions } from '#app';
+import { createAuthClient } from 'better-auth/vue';
+import { organizationClient } from 'better-auth/client/plugins';
 
 // Adapted: https://github.com/better-auth/better-auth/issues/5358#issuecomment-3411807797
-const relativeFetch = (<T>(url: string, opts?: UseFetchOptions<T>) => {
+const relativeFetch = <T>(url: string, opts?: UseFetchOptions<T>) => {
     try {
         if (url.startsWith('http')) url = new URL(url).pathname;
     } catch {}
     return useFetch(url, opts);
-});
-
+};
 
 export default defineNuxtPlugin(async () => {
     const { csrf } = useCsrf();
@@ -22,7 +21,7 @@ export default defineNuxtPlugin(async () => {
                 'csrf-token': csrf,
             },
         },
-        plugins: [ organizationClient() ]
+        plugins: [organizationClient()],
     });
 
     const session = await authClient.useSession(relativeFetch);

@@ -1,5 +1,5 @@
-import type { InsertProjectSchema, UpdateProjectSchema } from "~~/server/lib/db/schema";
-import { projectRepository } from "../repositories";
+import type { InsertProjectSchema, UpdateProjectSchema } from '~~/server/lib/db/schema';
+import { projectRepository } from '../repositories';
 
 // Create
 export async function createProject(data: InsertProjectSchema) {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { TimelineItemWithData, TimelineTaskGroup } from "~/utils/types/timeline";
+import type { TimelineItemWithData, TimelineTaskGroup } from '~/utils/types/timeline';
 
 definePageMeta({
-    sidebarType: "project",
+    sidebarType: 'project',
 });
 
 useAppHead({
@@ -17,8 +17,8 @@ const {
     data: projectInfo,
     pending: projectInfoPending,
     error: projectInfoError,
-    refresh: refreshProjectInfo
-} = useFetch(() => `/api/projects/${currentProjectId.value}`, { method: "GET" });
+    refresh: refreshProjectInfo,
+} = useFetch(() => `/api/projects/${currentProjectId.value}`, { method: 'GET' });
 
 // maybe add controls later on
 // https://laurens94.github.io/vue-timeline-chart/examples/set-viewport.html#set-viewport-example
@@ -33,7 +33,7 @@ const items = computed<TimelineItemWithData[]>(() => {
         return {
             id: task.id.toString(),
             group: `${task.id}-group`,
-            type: "range",
+            type: 'range',
             start: new Date(task.startTime).getTime(),
             end: endTime.getTime(),
             data: task,
@@ -46,54 +46,60 @@ const items = computed<TimelineItemWithData[]>(() => {
 let cleanup: (() => void) | null = null;
 
 watch(
-    () => projectInfo.value?.id, 
+    () => projectInfo.value?.id,
     (projectId) => {
-    cleanup?.();
-    cleanup = null;
+        cleanup?.();
+        cleanup = null;
 
-    if (!projectId) return;
+        if (!projectId) return;
 
-    const sub = subscribeToProject(projectId, refreshProjectInfo);
+        const sub = subscribeToProject(projectId, refreshProjectInfo);
 
-    cleanup = sub?.unsubscribe ?? null;
-}, {
-    immediate: true,
-});
+        cleanup = sub?.unsubscribe ?? null;
+    },
+    {
+        immediate: true,
+    },
+);
 
 // Groups
 const groupsInfo = reactive<TimelineTaskGroup[]>([]);
-watch(() => projectInfo.value?.tasks, (newTasks) => {
-    if (!newTasks) return;
+watch(
+    () => projectInfo.value?.tasks,
+    (newTasks) => {
+        if (!newTasks) return;
 
-    const incoming = newTasks.map<TimelineTaskGroup>((task) => {
-        const existing = groupsInfo.find((g) => g.id === `${task.id}-group`);
+        const incoming = newTasks.map<TimelineTaskGroup>((task) => {
+            const existing = groupsInfo.find((g) => g.id === `${task.id}-group`);
 
-        return {
-            id: `${task.id}-group`,
-            label: task.title,
-            expanded: existing?.expanded ?? true,
-            parentId: task.parentId,
-            cssVariables: { '--item-background': 'transparent' },
+            return {
+                id: `${task.id}-group`,
+                label: task.title,
+                expanded: existing?.expanded ?? true,
+                parentId: task.parentId,
+                cssVariables: { '--item-background': 'transparent' },
 
-            order: task.order,
-            depth: task.depth,
-            path: task.path,
-        };
-    })
+                order: task.order,
+                depth: task.depth,
+                path: task.path,
+            };
+        });
 
-    // instead of re-assigning groupsInfo, we use this to simultaneously
-    // remove all items and add in new ones, causing the chart to catch the
-    // update and change accordingly
-    groupsInfo.splice(0, groupsInfo.length, ...incoming);
-}, {
-    immediate: true,
-});
+        // instead of re-assigning groupsInfo, we use this to simultaneously
+        // remove all items and add in new ones, causing the chart to catch the
+        // update and change accordingly
+        groupsInfo.splice(0, groupsInfo.length, ...incoming);
+    },
+    {
+        immediate: true,
+    },
+);
 
 // Selected task
 const selectedTask = ref<TimelineItemWithData | null>(null);
 const isDrawerOpen = ref<boolean>(false);
 function selectTask(item: TimelineItemWithData) {
-    if (item.type === "range") {
+    if (item.type === 'range') {
         selectedTask.value = item;
         isDrawerOpen.value = true;
     }
@@ -131,9 +137,7 @@ function selectTask(item: TimelineItemWithData) {
         <ProjectGanttFallback
             v-if="projectInfoPending || projectInfoError"
             class="text-txt-secondary text-sm animate-pulse">
-            {{ projectInfoPending
-                ? 'Loading chart...'
-                : 'There was an error loading the timeline. Please try again'}}
+            {{ projectInfoPending ? 'Loading chart...' : 'There was an error loading the timeline. Please try again' }}
         </ProjectGanttFallback>
 
         <ProjectGanttFallback v-else-if="projectInfo?.tasks.length === 0">
@@ -148,16 +152,8 @@ function selectTask(item: TimelineItemWithData) {
             </ProjectAddDialog>
         </ProjectGanttFallback>
 
-        <ProjectGantt 
-            v-else
-            :items
-            :groupsInfo
-            @selected-task="selectTask"/>
+        <ProjectGantt v-else :items :groupsInfo @selected-task="selectTask" />
     </div>
 
-
-    <ProjectDrawer 
-        v-model:isOpen="isDrawerOpen" 
-        :selected-task="selectedTask">
-    </ProjectDrawer>
+    <ProjectDrawer v-model:isOpen="isDrawerOpen" :selected-task="selectedTask"> </ProjectDrawer>
 </template>

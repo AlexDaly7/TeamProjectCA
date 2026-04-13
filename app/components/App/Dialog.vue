@@ -1,16 +1,18 @@
 <script setup lang="ts">
 defineOptions({ inheritAttrs: false });
 
-withDefaults(defineProps<{
-    title: string;
-    description: string;
-    triggerAsChild?: boolean; // Should the trigger be the slotted component or a wrapper?
-}>(), {
-    triggerAsChild: true,
-});
+withDefaults(
+    defineProps<{
+        title: string;
+        description: string;
+        triggerAsChild?: boolean; // Should the trigger be the slotted component or a wrapper?
+    }>(),
+    {
+        triggerAsChild: true,
+    },
+);
 
 const isOpen = defineModel('isOpen', { default: false });
-
 </script>
 
 <template>
@@ -24,20 +26,16 @@ const isOpen = defineModel('isOpen', { default: false });
             </Transition>
 
             <Transition name="dialog-scale">
-                <DialogContent 
-                    class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100
-                    bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md
-                    focus:outline-none">
+                <DialogContent
+                    class="fixed top-1/2 left-1/2 max-h-[80dvh] w-[90dvw] max-w-md -translate-x-1/2 -translate-y-1/2 z-100 bg-main-800 rounded-xl p-6 shadow-md shadow-black ring-md focus:outline-none">
                     <DialogTitle class="text-xl font-semibold mb-3">
                         {{ title }}
                     </DialogTitle>
                     <DialogDescription class="text-sm text-txt-secondary leading-snug mb-4">
-                        {{ description }}    
+                        {{ description }}
                     </DialogDescription>
                     <slot name="body"></slot>
-                    <DialogClose
-                        class="absolute top-3 right-3"
-                        aria-label="Close">
+                    <DialogClose class="absolute top-3 right-3" aria-label="Close">
                         <div class="hover:bg-main-700 flex p-1 rounded-full">
                             <Icon name="hugeicons:cancel-01" size="20" />
                         </div>

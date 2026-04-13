@@ -10,4 +10,4 @@ export const useOrganizations = () => {
         organizationsError: error,
         refreshOrganizations: refresh,
     };
-}
+};

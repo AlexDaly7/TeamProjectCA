@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import z from "zod";
-import { VSImportProject } from "~/utils/schemas/importProject";
-import type { ActionButtonResult } from "~/utils/types/actionButton";
-import { type ClientInsertProjectSchema } from "~~/shared/validation";
+import z from 'zod';
+import { VSImportProject } from '~/utils/schemas/importProject';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
+import { type ClientInsertProjectSchema } from '~~/shared/validation';
 
 const { $csrfFetch } = useNuxtApp();
 const { org, refresh: refreshProjects } = useCurrentOrg();
@@ -19,34 +19,30 @@ async function onSubmit(values: z.infer<typeof validationSchema>): Promise<Actio
         repo: values.repo,
     };
 
-    const { data, error } = await tryCatch($csrfFetch<{ id: number }>('/api/projects', {
-        method: 'POST',
-        body,
-    }));
+    const { data, error } = await tryCatch(
+        $csrfFetch<{ id: number }>('/api/projects', {
+            method: 'POST',
+            body,
+        }),
+    );
 
     if (error) {
         return { error: true, message: error.message };
     }
 
     await refreshProjects();
-    router.push({ 
+    router.push({
         name: 'dashboard-orgSlug-projectId',
         params: {
             orgSlug: org.value.slug,
-            projectId: data.id 
-        }
+            projectId: data.id,
+        },
     });
 
     return { error: false };
 }
 
-const {
-    data,
-    pending,
-    error,
-    availableRepositories: repos,
-} = useGitHubAppStatus();
-
+const { data, pending, error, availableRepositories: repos } = useGitHubAppStatus();
 
 const selectItems = computed(() => {
     const list = repos.value.map((repo) => ({
@@ -66,9 +62,8 @@ const selectItems = computed(() => {
         list,
         pendingText,
         errorText,
-    }
-})
-
+    };
+});
 </script>
 
 <template>
@@ -99,7 +94,7 @@ const selectItems = computed(() => {
                     placeholder: 'Select a repo...',
                     required: true,
                     selectItems,
-                }
+                },
             ]" />
     </div>
 </template>

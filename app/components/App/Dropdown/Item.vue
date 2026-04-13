@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { NuxtLink } from '#components';
 
-withDefaults(defineProps<{
-    icon?: string,
-    text: string,
-    variant?: 'default' | 'danger',
-    type?: 'default' | 'link',
-    disabled?: boolean;
-}>(), {
-    variant: 'default',
-    type: 'default',
-});
+withDefaults(
+    defineProps<{
+        icon?: string;
+        text: string;
+        variant?: 'default' | 'danger';
+        type?: 'default' | 'link';
+        disabled?: boolean;
+    }>(),
+    {
+        variant: 'default',
+        type: 'default',
+    },
+);
 
 defineEmits(['select']);
 </script>
@@ -22,9 +25,7 @@ defineEmits(['select']);
         :disabled
         :as="type === 'link' ? NuxtLink : 'div'"
         @select="$emit('select')">
-        <Icon 
-            v-if="icon" 
-            :name="icon" />
+        <Icon v-if="icon" :name="icon" />
         <span>{{ text }}</span>
     </DropdownMenuItem>
 </template>

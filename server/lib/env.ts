@@ -1,4 +1,4 @@
-import z, { ZodError, ZodObject, type ZodRawShape } from "zod";
+import z, { ZodError, ZodObject, type ZodRawShape } from 'zod';
 
 function tryParseEnv<T extends ZodRawShape>(
     EnvSchema: ZodObject<T>,
@@ -8,13 +8,13 @@ function tryParseEnv<T extends ZodRawShape>(
         EnvSchema.parse(buildEnv);
     } catch (error) {
         if (error instanceof ZodError) {
-            let message = "Missing required values in .env:\n";
-            error.issues.forEach(issue => {
+            let message = 'Missing required values in .env:\n';
+            error.issues.forEach((issue) => {
                 message += `${String(issue.path[0])}\n`;
             });
 
             const e = new Error(message);
-            e.stack = "";
+            e.stack = '';
             throw e;
         } else {
             throw error;

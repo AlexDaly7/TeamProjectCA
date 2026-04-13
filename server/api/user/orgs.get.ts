@@ -1,4 +1,4 @@
-import { auth } from "~~/server/lib/auth/auth"
+import { auth } from '~~/server/lib/auth/auth';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const session = await auth.api.getSession({ headers: event.headers });
@@ -23,6 +23,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
         return {
             active: activeOrg,
             all: allOrgs,
-        }
+        };
     }
 });

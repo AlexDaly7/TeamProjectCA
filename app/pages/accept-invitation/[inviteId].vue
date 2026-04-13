@@ -29,21 +29,16 @@ async function acceptInvite() {
         <div v-if="pending">
             <LoadingIcon />
         </div>
-        <div v-else-if="error || !data">
-            Error fetching invite data: {{ error?.statusText ?? 'Unknown error' }}
-        </div>
-        <div 
-            v-else
-            class="ring-md bg-main-800 p-4 rounded-lg flex flex-col gap-2 min-w-md">
+        <div v-else-if="error || !data">Error fetching invite data: {{ error?.statusText ?? 'Unknown error' }}</div>
+        <div v-else class="ring-md bg-main-800 p-4 rounded-lg flex flex-col gap-2 min-w-md">
             <h1 class="text-3xl font-bold">Accept Invite</h1>
-            <span>Joining '<b>{{ data.organizationName }}</b>' as role <b class="capitalize">{{ data.role }}</b>.</span>
+            <span
+                >Joining '<b>{{ data.organizationName }}</b
+                >' as role <b class="capitalize">{{ data.role }}</b
+                >.</span
+            >
             <p class="text-sm text-txt-secondary">Click the button to accept invitation.</p>
-            <AppButton
-                class="mt-8"
-                :loading="accepting"
-                @click="acceptInvite">
-                Accept Invitation
-            </AppButton>
+            <AppButton class="mt-8" :loading="accepting" @click="acceptInvite"> Accept Invitation </AppButton>
         </div>
     </div>
 </template>

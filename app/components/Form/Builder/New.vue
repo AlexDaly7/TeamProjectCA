@@ -6,62 +6,67 @@ import type { ActionButtonResult } from '~/utils/types/actionButton';
 type SchemaInferredType = z.infer<TValidationSchema>;
 
 type FieldType = {
-    label: string,
-    name: string,
-    required: boolean,
-    disabled?: boolean,
-    watcherDebounceMs?: number
-} & ({
-    fieldType: 'text' | 'text-multiline' | 'text-email',
-    placeholder: string;
-    watcher?: (values: SchemaInferredType) => string
-    selectItems?: undefined,
-} | {
-    fieldType: 'date-range',
-    placeholder?: DateRange,
-    watcher?: (values: SchemaInferredType) => DateRange
-    selectItems?: undefined,
-} | {
-    fieldType: 'select',
-    placeholder: string,
-    watcher?: (values: SchemaInferredType) => string,
-    selectItems: {
-        list: { label: string, value: string, iconUrl?: string }[],
-        pendingText?: string,
-        errorText?: string,
-    },
-} | {
-    fieldType: 'select-multiple',
-    placeholder: string,
-    watcher?: (values: SchemaInferredType) => string[],
-    selectItems: {
-        list: { label: string, value: string, iconUrl?: string }[],
-        pendingText?: string,
-        errorText?: string,
-    },
-} | {
-    fieldType: 'slider',
-    placeholder?: undefined,
-    watcher?: (values: SchemaInferredType) => number,
-    selectItems?: undefined,
-    min: number,
-    max: number,
-    step: number,
-});
+    label: string;
+    name: string;
+    required: boolean;
+    disabled?: boolean;
+    watcherDebounceMs?: number;
+} & (
+    | {
+          fieldType: 'text' | 'text-multiline' | 'text-email';
+          placeholder: string;
+          watcher?: (values: SchemaInferredType) => string;
+          selectItems?: undefined;
+      }
+    | {
+          fieldType: 'date-range';
+          placeholder?: DateRange;
+          watcher?: (values: SchemaInferredType) => DateRange;
+          selectItems?: undefined;
+      }
+    | {
+          fieldType: 'select';
+          placeholder: string;
+          watcher?: (values: SchemaInferredType) => string;
+          selectItems: {
+              list: { label: string; value: string; iconUrl?: string }[];
+              pendingText?: string;
+              errorText?: string;
+          };
+      }
+    | {
+          fieldType: 'select-multiple';
+          placeholder: string;
+          watcher?: (values: SchemaInferredType) => string[];
+          selectItems: {
+              list: { label: string; value: string; iconUrl?: string }[];
+              pendingText?: string;
+              errorText?: string;
+          };
+      }
+    | {
+          fieldType: 'slider';
+          placeholder?: undefined;
+          watcher?: (values: SchemaInferredType) => number;
+          selectItems?: undefined;
+          min: number;
+          max: number;
+          step: number;
+      }
+);
 
 const props = defineProps<{
-    onSubmit: 
-        ((values: SchemaInferredType) => ActionButtonResult) |
-        ((values: SchemaInferredType) => Promise<ActionButtonResult>),
-    initialValues?: Partial<SchemaInferredType>,
-    validationSchema: TValidationSchema,
+    onSubmit:
+        | ((values: SchemaInferredType) => ActionButtonResult)
+        | ((values: SchemaInferredType) => Promise<ActionButtonResult>);
+    initialValues?: Partial<SchemaInferredType>;
+    validationSchema: TValidationSchema;
     submitBtn: {
-        label: string,
-        icon?: string,
-    },
-    fields: FieldType[],
+        label: string;
+        icon?: string;
+    };
+    fields: FieldType[];
 }>();
-
 
 const submitError = ref<string | null>(null);
 
@@ -81,34 +86,40 @@ async function submitHelper() {
     if (result.error) {
         submitError.value = result.message ?? 'Unknown error.';
     }
-    
+
     isSubmitting.value = false;
 }
 
-
 const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
-watch(values, (newValues) => {
-    for (const field of props.fields) {
-        // If no watcher skip
-        if (!field.watcher) continue;
+watch(
+    values,
+    (newValues) => {
+        for (const field of props.fields) {
+            // If no watcher skip
+            if (!field.watcher) continue;
 
-        // If user already modified it themselves, skip doing the watcher's update.
-        if (isFieldTouched(field.name)) continue;
+            // If user already modified it themselves, skip doing the watcher's update.
+            if (isFieldTouched(field.name)) continue;
 
-        if (field.watcherDebounceMs) {
-            clearTimeout(debounceTimers.get(field.name));
+            if (field.watcherDebounceMs) {
+                clearTimeout(debounceTimers.get(field.name));
 
-            debounceTimers.set(field.name, setTimeout(() => {
-                const returnedValue = field.watcher!(newValues as unknown as z.infer<TValidationSchema>);
+                debounceTimers.set(
+                    field.name,
+                    setTimeout(() => {
+                        const returnedValue = field.watcher!(newValues as unknown as z.infer<TValidationSchema>);
+                        setFieldValue(field.name, returnedValue);
+                    }, field.watcherDebounceMs),
+                );
+            } else {
+                const returnedValue = field.watcher(newValues as unknown as z.infer<TValidationSchema>);
                 setFieldValue(field.name, returnedValue);
-            }, field.watcherDebounceMs));
-        } else {
-            const returnedValue = field.watcher(newValues as unknown as z.infer<TValidationSchema>);
-            setFieldValue(field.name, returnedValue);
+            }
         }
-    }
-}, { deep: true });
+    },
+    { deep: true },
+);
 
 onUnmounted(() => debounceTimers.forEach(clearTimeout));
 </script>
@@ -116,24 +127,16 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
 <template>
     <HeadersError :error="submitError" />
 
-    <form 
-        class="flex flex-col gap-2" 
-        @submit.prevent="submitHelper">
-        
-        <div 
+    <form class="flex flex-col gap-2" @submit.prevent="submitHelper">
+        <div
             v-for="{ fieldType, name, label, disabled, placeholder, required, selectItems, ...attrs } in fields"
             class="flex flex-col gap-2"
             :key="name">
-            <Label 
-                class="font-medium"
-                :for="name">
+            <Label class="font-medium" :for="name">
                 {{ label }}<span v-if="required" class="text-brand">*</span>
             </Label>
 
-            <template 
-                v-if="fieldType === 'text'
-                    || fieldType === 'text-email'
-                    || fieldType === 'text-multiline'">
+            <template v-if="fieldType === 'text' || fieldType === 'text-email' || fieldType === 'text-multiline'">
                 <FormBuilderInputRaw
                     :as-type="fieldType === 'text-multiline' ? 'textarea' : 'input'"
                     :name="name"
@@ -142,8 +145,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :placeholder="placeholder"
                     :error="errors[name]" />
             </template>
-            <template 
-                v-else-if="fieldType === 'date-range'">
+            <template v-else-if="fieldType === 'date-range'">
                 <FormBuilderDateRangeInput
                     :name="name"
                     :disabled="disabled ?? false"
@@ -151,8 +153,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :placeholder="placeholder"
                     :error="errors[name]" />
             </template>
-            <template 
-                v-else-if="fieldType === 'select'">
+            <template v-else-if="fieldType === 'select'">
                 <FormBuilderSelect
                     :name="name"
                     :disabled="disabled ?? false"
@@ -163,8 +164,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :items-pending-error-text="selectItems.errorText"
                     :error="errors[name]" />
             </template>
-            <template 
-                v-else-if="fieldType === 'select-multiple'">
+            <template v-else-if="fieldType === 'select-multiple'">
                 <FormBuilderSelect
                     :name="name"
                     :disabled="disabled ?? false"
@@ -176,8 +176,7 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :error="errors[name]"
                     :multiple="true" />
             </template>
-            <template 
-                v-else-if="fieldType === 'slider'">
+            <template v-else-if="fieldType === 'slider'">
                 <FormBuilderComponentSlider
                     :name="name"
                     :disabled="disabled ?? false"
@@ -188,20 +187,13 @@ onUnmounted(() => debounceTimers.forEach(clearTimeout));
                     :error="errors[name]" />
             </template>
 
-            <ErrorMessage 
-                class="text-sm text-danger-txt"
-                :name="name" />
+            <ErrorMessage class="text-sm text-danger-txt" :name="name" />
         </div>
-        
+
         <div class="flex justify-end mt-2">
-            <AppButton
-                type="submit" 
-                :loading="isSubmitting"
-                :disabled="!meta.valid">
+            <AppButton type="submit" :loading="isSubmitting" :disabled="!meta.valid">
                 <div class="inline-flex items-center gap-2">
-                    <Icon 
-                        v-if="submitBtn.icon" 
-                        :name="submitBtn.icon" />
+                    <Icon v-if="submitBtn.icon" :name="submitBtn.icon" />
                     <span>{{ submitBtn.label }}</span>
                 </div>
             </AppButton>

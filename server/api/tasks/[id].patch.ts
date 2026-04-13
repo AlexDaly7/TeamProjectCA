@@ -1,8 +1,8 @@
-import { type ModifyTaskSchema } from "~~/server/lib/db/schema";
-import { notifyPusherChannel } from "~~/server/lib/pusher";
-import { githubService, projectService, taskService, userService } from "~~/server/services";
-import { validateBody } from "~~/server/utils/validation";
-import { ClientModifyTask } from "~~/shared/validation";
+import { type ModifyTaskSchema } from '~~/server/lib/db/schema';
+import { notifyPusherChannel } from '~~/server/lib/pusher';
+import { githubService, projectService, taskService, userService } from '~~/server/services';
+import { validateBody } from '~~/server/utils/validation';
+import { ClientModifyTask } from '~~/shared/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const body = await validateBody(event, ClientModifyTask);
@@ -10,17 +10,18 @@ export default defineAuthenticatedEventHandler(async (event) => {
     const assigneeIds = body.assigneeIds ? [...new Set(body.assigneeIds)] : body.assigneeIds;
 
     // Get task from DB
-    const taskWithProject = await taskService.getTaskWithProject(taskId)
-    if (!taskWithProject) throw createError({
-        status: 404,
-        statusText: 'Task not found',
-    });
+    const taskWithProject = await taskService.getTaskWithProject(taskId);
+    if (!taskWithProject)
+        throw createError({
+            status: 404,
+            statusText: 'Task not found',
+        });
 
     const { organizationId, repoOwner, repoName, id: projectId } = taskWithProject.project;
 
     // Ensure user has permission level in org
     await ensureOrganizationPermission(event, organizationId, {
-        task: ['update']
+        task: ['update'],
     });
 
     if (assigneeIds !== undefined) {
@@ -33,9 +34,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
             });
         }
 
-        const organizationMemberIds = new Set(
-            projectWithMembers.organization.members.map((member) => member.userId),
-        );
+        const organizationMemberIds = new Set(projectWithMembers.organization.members.map((member) => member.userId));
 
         if (assigneeIds.some((assigneeId) => !organizationMemberIds.has(assigneeId))) {
             throw createError({
@@ -46,9 +45,10 @@ export default defineAuthenticatedEventHandler(async (event) => {
         }
     }
 
-    const assigneeUsernames = assigneeIds === undefined
-        ? undefined
-        : (await userService.getGitHubLogins(assigneeIds)).map((user) => user.login);
+    const assigneeUsernames =
+        assigneeIds === undefined
+            ? undefined
+            : (await userService.getGitHubLogins(assigneeIds)).map((user) => user.login);
 
     const updateData: ModifyTaskSchema = {
         title: body.title,
@@ -57,8 +57,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
         startTime: body.dateRange?.start,
         endTime: body.dateRange?.end,
         progress: body.progress,
-        order: body.order
-    }
+        order: body.order,
+    };
 
     // Update on GitHub
     await githubService.updateIssue(
@@ -76,12 +76,12 @@ export default defineAuthenticatedEventHandler(async (event) => {
     if (error) {
         throw createError({
             status: 400,
-            statusText: error.message
+            statusText: error.message,
         });
     }
 
     // Notify users in pusher channel
     await notifyPusherChannel(projectId);
 
-    setResponseStatus(event, 204)
+    setResponseStatus(event, 204);
 });

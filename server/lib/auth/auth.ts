@@ -1,12 +1,12 @@
-import { betterAuth } from "better-auth/minimal";
-import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { organization } from "better-auth/plugins";
+import { betterAuth } from 'better-auth/minimal';
+import { drizzleAdapter } from '@better-auth/drizzle-adapter';
+import { organization } from 'better-auth/plugins';
 
 import { ac, owner, admin, member } from './auth-permissions';
 import * as schema from '../db/schema';
-import env from "../env";
-import resend from "../resend";
-import db from "../db";
+import env from '../env';
+import resend from '../resend';
+import db from '../db';
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -18,10 +18,10 @@ export const auth = betterAuth({
             clientId: env.GITHUB_CLIENT_ID,
             clientSecret: env.GITHUB_CLIENT_SECRET,
             disableDefaultScope: true,
-            scope: [ 'user:email', 'repo' ]
+            scope: ['user:email', 'repo'],
         },
     },
-    trustedOrigins: [ env.BETTER_AUTH_URL ],
+    trustedOrigins: [env.BETTER_AUTH_URL],
     user: {
         deleteUser: {
             enabled: true,
@@ -43,9 +43,9 @@ export const auth = betterAuth({
                         data: {
                             ...organization,
                             slug: `org-${organization.slug}`,
-                        }
-                    }
-                }
+                        },
+                    };
+                },
             },
             sendInvitationEmail: async (data) => {
                 const url = `${env.BETTER_AUTH_URL}/accept-invitation/${data.id}`;
@@ -57,11 +57,11 @@ export const auth = betterAuth({
                         id: 'organization-invite',
                         variables: {
                             ORG_NAME: data.organization.name,
-                            INVITE_LINK: url
-                        }
-                    }
+                            INVITE_LINK: url,
+                        },
+                    },
                 });
-            }
+            },
         }),
     ],
 });

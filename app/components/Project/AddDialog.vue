@@ -4,14 +4,12 @@ import { VSModifyTask } from '~/utils/schemas/modifyTask';
 import type { ActionButtonResult } from '~/utils/types/actionButton';
 
 const props = defineProps<{
-    popupTitle?: string,
-    popupdescription?: string,
-    parentId?: number,
+    popupTitle?: string;
+    popupdescription?: string;
+    parentId?: number;
 }>();
 
-const {
-    addTask: addTaskHelper
-} = useCurrentProject();
+const { addTask: addTaskHelper } = useCurrentProject();
 
 const { members } = useCurrentOrg();
 
@@ -27,11 +25,11 @@ async function onSubmit(values: FormValues): Promise<ActionButtonResult> {
         values.dateRange,
         values.progress,
         props.parentId,
-        values.assigneeIds
+        values.assigneeIds,
     );
 
     if (result.error) {
-        return { error: true, message: result.message ?? 'Unknown error.' }
+        return { error: true, message: result.message ?? 'Unknown error.' };
     }
 
     isOpen.value = false;
@@ -45,20 +43,24 @@ const selectItems = computed(() => {
         iconUrl: member.user.image,
     }));
 
-    const pendingText = !members.value ? 'Loading members...' : (members.value.members.length === 0 ? 'No members available' : undefined);
+    const pendingText = !members.value
+        ? 'Loading members...'
+        : members.value.members.length === 0
+          ? 'No members available'
+          : undefined;
 
     return {
         list,
         pendingText,
         errorText: undefined,
-    }
+    };
 });
 </script>
 
 <template>
     <AppDialog
-        v-model:is-open="isOpen" 
-        :title="popupTitle ?? 'Add a new task'" 
+        v-model:is-open="isOpen"
+        :title="popupTitle ?? 'Add a new task'"
         :description="popupdescription ?? 'Select a title, description, and date range.'">
         <template #trigger>
             <slot name="trigger" />
@@ -68,7 +70,7 @@ const selectItems = computed(() => {
                 @submit="onSubmit"
                 :validationSchema
                 :submit-btn="{
-                    label: 'Create Task'
+                    label: 'Create Task',
                 }"
                 :fields="[
                     {
@@ -107,7 +109,7 @@ const selectItems = computed(() => {
                         placeholder: 'Select assignees...',
                         required: false,
                         selectItems,
-                    }
+                    },
                 ]" />
         </template>
     </AppDialog>

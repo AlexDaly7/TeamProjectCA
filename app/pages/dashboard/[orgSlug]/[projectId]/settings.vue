@@ -11,41 +11,42 @@ useAppHead({
     prefix: 'Project',
 });
 
-
 const router = useRouter();
 const activeProject = useCurrentProject();
 const activeOrg = useCurrentOrg();
 const { refreshOrganizations } = useOrganizations();
 
 const projectId = activeProject.currentProject.value?.id;
-const currentProject = activeOrg.projects.value.find((project)=>project.id===projectId);
+const currentProject = activeOrg.projects.value.find((project) => project.id === projectId);
 
 const validationSchema = VSImportProject.pick({ title: true });
 type SchemaValues = z.infer<typeof validationSchema>;
 
 async function deleteProject(): Promise<ActionButtonResult> {
-    if(projectId===null||currentProject===undefined) return {
-        error: true,
-        message: "Please ensure a project is selected."
-    };
+    if (projectId === null || currentProject === undefined)
+        return {
+            error: true,
+            message: 'Please ensure a project is selected.',
+        };
 
     router.push({ name: 'dashboard-orgSlug', params: { orgSlug: activeOrg.orgSlug.value } });
 
     activeOrg.refresh();
 
-    return activeOrg.deleteProject(currentProject);    
+    return activeOrg.deleteProject(currentProject);
 }
 
 async function renameProject({ title }: SchemaValues): Promise<ActionButtonResult> {
-    if(currentProject===undefined) return {
-        error: true,
-        message: "Please ensure a project is selected."
-    };
+    if (currentProject === undefined)
+        return {
+            error: true,
+            message: 'Please ensure a project is selected.',
+        };
     const result = await activeOrg.renameProject(currentProject, title);
 
     if (result.error) return result;
 
-    await activeOrg.refresh(); 
+    await activeOrg.refresh();
     await refreshOrganizations();
 
     return result;
@@ -54,34 +55,29 @@ async function renameProject({ title }: SchemaValues): Promise<ActionButtonResul
 const initialValues = computed(() => {
     return { title: currentProject?.title ?? '' };
 });
-
 </script>
 
 <template>
-    <HeadersPage
-        title="Settings"
-        description="Project settings." />
-    <div
-        class="flex flex-col gap-8 md:p-4"
-        :key="activeOrg.org.value?.id">
+    <HeadersPage title="Settings" description="Project settings." />
+    <div class="flex flex-col gap-8 md:p-4" :key="activeOrg.org.value?.id">
         <FormBuilderNew
-                @submit="renameProject"
-                :validationSchema
-                :initialValues
-                :submit-btn="{
-                    label: 'Save'
-                }"
-                :fields="[
-                    {
-                        fieldType: 'text',
-                        label: 'Name',
-                        name: 'title',
-                        placeholder: 'New project name...',
-                        required: true,
-                    }
-                ]" />
+            @submit="renameProject"
+            :validationSchema
+            :initialValues
+            :submit-btn="{
+                label: 'Save',
+            }"
+            :fields="[
+                {
+                    fieldType: 'text',
+                    label: 'Name',
+                    name: 'title',
+                    placeholder: 'New project name...',
+                    required: true,
+                },
+            ]" />
     </div>
-    <br/>
+    <br />
 
     <SettingsCard
         variant="danger"
@@ -89,14 +85,10 @@ const initialValues = computed(() => {
         :action-disabled="currentProject === undefined"
         :action="deleteProject"
         @on-success="router.push({ name: 'dashboard' })">
-        <template #title>
-            Delete Project
-        </template>
+        <template #title> Delete Project </template>
         <template #description>
             Permanently remove this project from Mórchlár. This action is not reversible.
         </template>
-        <template #action>
-            Delete Project
-        </template>
+        <template #action> Delete Project </template>
     </SettingsCard>
 </template>

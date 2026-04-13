@@ -8,36 +8,22 @@ useAppHead({
     prefix: 'Settings',
 });
 
-const {
-    data,
-    availableRepositories,
-    pending,
-    error
-} = useGitHubAppStatus();
-
+const { data, availableRepositories, pending, error } = useGitHubAppStatus();
 </script>
 
 <template>
     <AccountPageWrapper>
         <div class="flex flex-col gap-2">
-            <div v-if="pending">
-                Loading...
-            </div>
+            <div v-if="pending">Loading...</div>
             <div v-else-if="error || !data">
                 Error loading GitHub integration info: {{ error?.message ?? 'An unknown error occurred' }}
             </div>
-            <div 
-                v-else
-                class="flex flex-col gap-2">
+            <div v-else class="flex flex-col gap-2">
                 <div class="ring-md p-4 rounded-lg flex flex-col gap-2 relative">
                     <div class="inline-flex items-center gap-2">
                         <Icon name="hugeicons:link-01" />
                         <span class="text-lg font-bold">GitHub Integration</span>
-                        <AppButton
-                            class="ml-auto"
-                            :href="data.manageUrl">
-                            Manage ↗
-                        </AppButton>
+                        <AppButton class="ml-auto" :href="data.manageUrl"> Manage ↗ </AppButton>
                     </div>
 
                     <ul class="flex flex-col gap-2 ml-2 *:gap-2 *:inline-flex *:items-center">
@@ -69,18 +55,13 @@ const {
                                 <span>App installed</span>
                             </li>
                             <li>
-                                Repository selection type: {{ 
-                                    data.selectedRepositories === 'all' 
-                                    ? 'All repositories'
-                                    : 'Only selection'
-                                }}
+                                Repository selection type:
+                                {{ data.selectedRepositories === 'all' ? 'All repositories' : 'Only selection' }}
                             </li>
                             <li class="flex flex-col items-start!">
                                 Available repositories ({{ availableRepositories.length }}):
                                 <ul class="ml-4 list-disc list-inside">
-                                    <li
-                                        v-for="repo in availableRepositories"
-                                        :key="`${repo.owner}/${repo.repo}`">
+                                    <li v-for="repo in availableRepositories" :key="`${repo.owner}/${repo.repo}`">
                                         {{ repo.owner }}/{{ repo.repo }}
                                     </li>
                                 </ul>

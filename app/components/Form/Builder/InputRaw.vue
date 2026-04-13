@@ -1,18 +1,21 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-    asType?: 'input' | 'textarea',
-    name: string,
-    type?: string,
-    disabled?: boolean
-    error?: string,
-    placeholder?: any,
-    required?: boolean
-}>(), {
-    asType: 'input',
-    type: 'text',
-    disabled: false,
-    placeholder: '(placeholder)',
-});
+withDefaults(
+    defineProps<{
+        asType?: 'input' | 'textarea';
+        name: string;
+        type?: string;
+        disabled?: boolean;
+        error?: string;
+        placeholder?: any;
+        required?: boolean;
+    }>(),
+    {
+        asType: 'input',
+        type: 'text',
+        disabled: false,
+        placeholder: '(placeholder)',
+    },
+);
 </script>
 
 <template>

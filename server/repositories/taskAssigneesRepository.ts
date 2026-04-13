@@ -1,12 +1,12 @@
-import { eq, inArray } from "drizzle-orm";
-import db from "../lib/db";
-import { taskAssignees, tasks } from "~~/server/lib/db/schema";
-import type { InsertTaskAssigneeSchema } from "~~/server/lib/db/schema";
+import { eq, inArray } from 'drizzle-orm';
+import db from '../lib/db';
+import { taskAssignees, tasks } from '~~/server/lib/db/schema';
+import type { InsertTaskAssigneeSchema } from '~~/server/lib/db/schema';
 
 // Create
 export async function insertTaskAssignees(values: InsertTaskAssigneeSchema[]) {
     if (values.length === 0) return [];
-    
+
     return await db
         .insert(taskAssignees)
         .values(values)
@@ -31,9 +31,9 @@ export async function getTaskAssignees(taskId: number) {
                     id: true,
                     name: true,
                     image: true,
-                }
-            }
-        }
+                },
+            },
+        },
     });
 }
 
@@ -55,10 +55,7 @@ export async function getTaskAssigneesByTaskIds(taskIds: number[]) {
 }
 
 export async function getTaskAssigneesByProjectId(projectId: number) {
-    const taskRows = await db
-        .select({ id: tasks.id })
-        .from(tasks)
-        .where(eq(tasks.projectId, projectId));
+    const taskRows = await db.select({ id: tasks.id }).from(tasks).where(eq(tasks.projectId, projectId));
 
     return await getTaskAssigneesByTaskIds(taskRows.map((task) => task.id));
 }

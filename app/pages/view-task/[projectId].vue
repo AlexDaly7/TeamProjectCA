@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware: [ 'view-task-redirect' ],
+    middleware: ['view-task-redirect'],
 });
 </script>
 

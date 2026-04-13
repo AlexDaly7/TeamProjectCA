@@ -1,14 +1,11 @@
-import { eq, sql } from "drizzle-orm";
-import db from "../lib/db";
-import { tasks } from "~~/server/lib/db/schema";
-import type { InsertTaskSchema, ModifyTaskSchema, TasksSchema } from "~~/server/lib/db/schema";
+import { eq, sql } from 'drizzle-orm';
+import db from '../lib/db';
+import { tasks } from '~~/server/lib/db/schema';
+import type { InsertTaskSchema, ModifyTaskSchema, TasksSchema } from '~~/server/lib/db/schema';
 
 // Create
 export async function insertTask(values: InsertTaskSchema) {
-    return await db
-        .insert(tasks)
-        .values(values)
-        .returning({ id: tasks.id });
+    return await db.insert(tasks).values(values).returning({ id: tasks.id });
 }
 
 // Read
@@ -34,28 +31,25 @@ export async function getTaskWithProject(id: number) {
                     organizationId: true,
                     repoOwner: true,
                     repoName: true,
-                }
+                },
             },
             creator: {
                 columns: {
                     id: true,
-                    name: true
-                }
-            }
-        }
+                    name: true,
+                },
+            },
+        },
     });
 }
 
 export async function getTasksWithDepthAndPath(
     projectId: number,
 ): Promise<(TasksSchema & { depth: number; path: number[] })[]> {
-    const snakeToCamel = (text: string) =>
-        text.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+    const snakeToCamel = (text: string) => text.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
     const mapKeys = <T>(row: Record<string, unknown>): T =>
-        Object.fromEntries(
-            Object.entries(row).map(([k, v]) => [snakeToCamel(k), v]),
-        ) as T;
+        Object.fromEntries(Object.entries(row).map(([k, v]) => [snakeToCamel(k), v])) as T;
 
     try {
         const result = await db.execute(sql`
@@ -76,9 +70,7 @@ export async function getTasksWithDepthAndPath(
             ORDER BY path
         `);
 
-        return result.rows.map((row) =>
-            mapKeys<TasksSchema & { depth: number; path: number[] }>(row),
-        );
+        return result.rows.map((row) => mapKeys<TasksSchema & { depth: number; path: number[] }>(row));
     } catch (error) {
         throw error;
     }
@@ -87,17 +79,10 @@ export type TasksWithDepth = Awaited<ReturnType<typeof getTasksWithDepthAndPath>
 
 // Update
 export async function modifyTask(taskId: number, values: ModifyTaskSchema) {
-    return await db
-        .update(tasks)
-        .set(values)
-        .where(eq(tasks.id, taskId))
-        .returning({ id: tasks.id });
+    return await db.update(tasks).set(values).where(eq(tasks.id, taskId)).returning({ id: tasks.id });
 }
 
 // Delete
 export async function deleteTask(id: number) {
-    return await db
-        .delete(tasks)
-        .where(eq(tasks.id, id))
-        .returning({ id: tasks.id });
+    return await db.delete(tasks).where(eq(tasks.id, id)).returning({ id: tasks.id });
 }

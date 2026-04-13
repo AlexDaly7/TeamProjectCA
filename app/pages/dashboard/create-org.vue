@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import z from "zod";
-import type { ActionButtonResult } from "~/utils/types/actionButton";
+import z from 'zod';
+import type { ActionButtonResult } from '~/utils/types/actionButton';
 import slugify from 'slugify';
-import { VSCreateOrg } from "~/utils/schemas/createOrg";
+import { VSCreateOrg } from '~/utils/schemas/createOrg';
 
 useAppHead({
     pageTitle: 'Create an Organization',
@@ -16,11 +16,11 @@ const validationSchema = VSCreateOrg;
 
 async function onSubmitNew({ name, slug }: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
     const { data: created, error } = await tryCatch($authClient.organization.create({ name, slug }));
-    
+
     if (error) {
-        return { error: true, message: 'Unknown error. Please try again.' }
+        return { error: true, message: 'Unknown error. Please try again.' };
     } else if (created.error) {
-        return { error: true, message: created.error.message ?? 'Unknown error creating org.' }
+        return { error: true, message: created.error.message ?? 'Unknown error creating org.' };
     }
 
     await refreshOrganizations();
@@ -59,7 +59,7 @@ async function onSubmitNew({ name, slug }: z.infer<typeof validationSchema>): Pr
                     required: true,
                     watcher: ({ name }) => slugify(name),
                     watcherDebounceMs: 300,
-                }
+                },
             ]" />
     </div>
 </template>

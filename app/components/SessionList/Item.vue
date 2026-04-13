@@ -2,20 +2,23 @@
 import { UAParser } from 'ua-parser-js';
 import type { ApiResponse } from '~/utils/types/apiResponse';
 
-const props = withDefaults(defineProps<{
-    session: ApiResponse<"/api/user/get-sessions", "get">[number],
-    isCurrentSession?: boolean,
-}>(), {
-    isCurrentSession: false,
-});
+const props = withDefaults(
+    defineProps<{
+        session: ApiResponse<'/api/user/get-sessions', 'get'>[number];
+        isCurrentSession?: boolean;
+    }>(),
+    {
+        isCurrentSession: false,
+    },
+);
 
-const userAgentInfo = computed(() => props.session.userAgent ? UAParser(props.session.userAgent) : null);
+const userAgentInfo = computed(() => (props.session.userAgent ? UAParser(props.session.userAgent) : null));
 
 function getBrowserInformation(userAgent: UAParser.IResult | null) {
-    if (!userAgent) return "Unknown Device";
+    if (!userAgent) return 'Unknown Device';
 
     if (userAgent.browser.name === null && userAgent.os.name == null) {
-        return "Unknown Device";
+        return 'Unknown Device';
     }
 
     if (userAgent.browser.name === null) return userAgent.os.name;
@@ -25,7 +28,7 @@ function getBrowserInformation(userAgent: UAParser.IResult | null) {
 }
 
 defineEmits<{
-    (e: 'revokeSession'): void,
+    (e: 'revokeSession'): void;
 }>();
 </script>
 
@@ -35,9 +38,7 @@ defineEmits<{
             <span class="text-lg font-bold">
                 {{ getBrowserInformation(userAgentInfo) }}
             </span>
-            <span 
-                v-if="isCurrentSession"
-                class="text-sm bg-txt-primary text-main-900 p-1 rounded-md px-2">
+            <span v-if="isCurrentSession" class="text-sm bg-txt-primary text-main-900 p-1 rounded-md px-2">
                 Current Session
             </span>
         </div>
@@ -47,20 +48,16 @@ defineEmits<{
                 size="48"
                 class="my-auto" />
             <div class="flex flex-col text-txt-secondary">
-                <span>
-                    Created: {{ session.createdAt.toLocaleString() }}
-                </span>
-                <span>
-                    Expires: {{ session.expiresAt.toLocaleString() }}
-                </span>
+                <span> Created: {{ session.createdAt.toLocaleString() }} </span>
+                <span> Expires: {{ session.expiresAt.toLocaleString() }} </span>
             </div>
-            <AppButton 
-                v-if="!isCurrentSession" 
+            <AppButton
+                v-if="!isCurrentSession"
                 variant="danger"
                 class="ml-auto inline-flex items-center justify-center"
                 @click="$emit('revokeSession')">
                 <Icon name="hugeicons:delete-02" size="20" />
             </AppButton>
-        </div> 
+        </div>
     </div>
 </template>

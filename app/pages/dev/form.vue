@@ -6,17 +6,16 @@ import { zodDateRange } from '~~/shared/validation';
 const { $authClient } = useNuxtApp();
 
 async function onSubmit(values: z.infer<typeof validationSchema>): Promise<ActionButtonResult> {
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     alert(JSON.stringify(values));
     return { error: true, message: 'Test' };
 }
 
-
 const validationSchema = z.object({
-    name: z.string('Name is required.')
-        .min(3, 'Too short!'),
+    name: z.string('Name is required.').min(3, 'Too short!'),
 
-    tag: z.string('Tag is required')
+    tag: z
+        .string('Tag is required')
         .min(3, 'Too short!')
         .refine((tag) => tag.indexOf(' ') < 0, {
             error: 'Tag cannot have whitespace!',
@@ -34,9 +33,11 @@ const validationSchema = z.object({
 });
 
 async function validateTag(tag: string): Promise<boolean> {
-    const { data, error } = await tryCatch($authClient.organization.checkSlug({
-        slug: `org-${tag}`,
-    }));
+    const { data, error } = await tryCatch(
+        $authClient.organization.checkSlug({
+            slug: `org-${tag}`,
+        }),
+    );
 
     if (error || data.error || !data.data.status) {
         return false;
@@ -103,9 +104,9 @@ async function validateTag(tag: string): Promise<boolean> {
                             { label: 'Dogs', value: 'dogs', iconUrl: 'https://picsum.photos/256' },
                             { label: 'Cats', value: 'cats', iconUrl: 'https://picsum.photos/256' },
                             { label: 'Rabbits', value: 'rabbits', iconUrl: 'https://picsum.photos/256' },
-                        ]
-                    }
-                }
+                        ],
+                    },
+                },
             ]" />
     </div>
 </template>

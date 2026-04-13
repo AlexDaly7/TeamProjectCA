@@ -25,7 +25,7 @@
 
 - [**Bun**](https://bun.com/) for dependency management and running.
 - **PostgreSQL** for database.
-  - [**Neon**](https://neon.com/) as a cloud Postgres provider.
+- [**Neon**](https://neon.com/) as a cloud Postgres provider.
 - [**Pusher**](https://pusher.com/) for realtime updates.
 - [**Resend**](https://resend.com/) for emails/email invites.
 - [**Octokit**](https://github.com/octokit) for GitHub API integration

@@ -7,16 +7,15 @@ export const useAuth = () => {
     const signInWithGitHub = async () => {
         await $authClient.signIn.social({
             provider: 'github',
-            scopes: [ 'user:email', 'repo' ],
+            scopes: ['user:email', 'repo'],
             callbackURL: '/dashboard',
             errorCallbackURL: '/error',
         });
     };
 
-    
     const listSessions = async () => {
         return await $authClient.listSessions();
-    }
+    };
 
     const currentSessionToken = computed(() => $authSession.data.value?.session.token);
 
@@ -40,8 +39,7 @@ export const useAuth = () => {
         listSessions,
 
         signOut,
-        
 
         currentSessionToken,
     };
-}
+};

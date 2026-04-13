@@ -1,6 +1,6 @@
-import { count, eq, getTableColumns, max } from "drizzle-orm";
-import { projects, tasks } from "~~/server/lib/db/schema";
-import db from "../lib/db";
+import { count, eq, getTableColumns, max } from 'drizzle-orm';
+import { projects, tasks } from '~~/server/lib/db/schema';
+import db from '../lib/db';
 
 export async function listProjectsWithDetails(organizationId: string) {
     return await db

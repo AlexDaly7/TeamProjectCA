@@ -1,8 +1,12 @@
-import { H3Event } from "h3";
+import { H3Event } from 'h3';
 
 export default function validateRouterParam(event: H3Event, paramName: string, ensureInt?: true): number;
 export default function validateRouterParam(event: H3Event, paramName: string, ensureInt: false): string;
-export default function validateRouterParam(event: H3Event, paramName: string, ensureInt: boolean = true): string | number {
+export default function validateRouterParam(
+    event: H3Event,
+    paramName: string,
+    ensureInt: boolean = true,
+): string | number {
     const param = getRouterParam(event, paramName);
     if (!param) {
         throw createError({
@@ -10,7 +14,7 @@ export default function validateRouterParam(event: H3Event, paramName: string, e
             statusMessage: 'Bad Request',
             message: `'${paramName}' is required.`,
         });
-    } 
+    }
 
     if (ensureInt) {
         const parsedParam = Number(param);

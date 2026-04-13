@@ -1,1 +1,1 @@
-export type ActionButtonResult = { error: boolean, message?: string };
+export type ActionButtonResult = { error: boolean; message?: string };

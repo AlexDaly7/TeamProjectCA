@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
     if (!projectId || isNaN(Number(projectId))) {
         return navigateTo('/error');
     }
-    
+
     const { data, error } = await useFetch(`/api/projects/${projectId}`, { method: 'get' });
     if (error.value || !data.value) {
         return navigateTo('/error');

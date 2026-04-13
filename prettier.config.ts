@@ -1,4 +1,4 @@
-import type { Config } from "prettier";
+import type { Config } from 'prettier';
 
 const config: Config = {
     tabWidth: 4,
@@ -6,10 +6,10 @@ const config: Config = {
     semi: true,
     printWidth: 120,
     singleQuote: true,
-    trailingComma: "all",
+    trailingComma: 'all',
     bracketSpacing: true,
     bracketSameLine: true,
-    arrowParens: "always",
+    arrowParens: 'always',
     vueIndentScriptAndStyle: false,
 };
 

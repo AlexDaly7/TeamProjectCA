@@ -1,4 +1,4 @@
-import { auth } from "~~/server/lib/auth/auth"
+import { auth } from '~~/server/lib/auth/auth';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const orgId = validateRouterParam(event, 'id', false);
@@ -9,7 +9,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
         headers: event.headers,
         query: {
             organizationId: orgId,
-        }
+        },
     });
 
     // If has project create permissions, aka is admin, also show invites.
@@ -20,7 +20,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
             permissions: {
                 project: ['create'],
             },
-        }
+        },
     });
 
     if (error) {
@@ -30,9 +30,9 @@ export default defineAuthenticatedEventHandler(async (event) => {
             headers: event.headers,
             query: {
                 organizationId: orgId,
-            }
+            },
         });
-        
+
         return { members, invitations };
     }
 });

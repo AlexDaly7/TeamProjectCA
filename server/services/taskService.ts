@@ -1,15 +1,12 @@
-import type { InsertTaskSchema, ModifyTaskSchema } from "~~/server/lib/db/schema";
-import { taskAssigneesRepository, tasksRepository } from "../repositories";
-import type { Result } from "#shared/types/results";
+import type { InsertTaskSchema, ModifyTaskSchema } from '~~/server/lib/db/schema';
+import { taskAssigneesRepository, tasksRepository } from '../repositories';
+import type { Result } from '#shared/types/results';
 
 function normalizeAssigneeIds(assigneeIds?: string[]) {
     return [...new Set(assigneeIds ?? [])];
 }
 
-export async function insertTask(
-    values: InsertTaskSchema,
-    assigneeIds?: string[],
-): Promise<Result<{ id: number }>> {
+export async function insertTask(values: InsertTaskSchema, assigneeIds?: string[]): Promise<Result<{ id: number }>> {
     const inserted = await tasksRepository.insertTask(values);
 
     if (inserted.length === 0) {

@@ -1,14 +1,13 @@
 <script setup lang="ts">
 definePageMeta({
     sidebarType: 'user',
-    middleware: [ 'dashboard' ],
+    middleware: ['dashboard'],
 });
 
 useAppHead({
     pageTitle: 'Org Selection',
     prefix: 'Home',
 });
-
 </script>
 
 <template>

@@ -1,15 +1,18 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-    name: string,
-    required: boolean,
-    disabled?: boolean,
-    error?: string,
-    min: number,
-    max: number,
-    step: number,
-}>(), {
-    disabled: false,
-});
+const props = withDefaults(
+    defineProps<{
+        name: string;
+        required: boolean;
+        disabled?: boolean;
+        error?: string;
+        min: number;
+        max: number;
+        step: number;
+    }>(),
+    {
+        disabled: false,
+    },
+);
 
 const name = toRef(props, 'name');
 
@@ -28,11 +31,11 @@ onMounted(() => {
         :name
         :required
         :disabled
-        :min 
+        :min
         :max
         :step
-        :default-value="[ value ?? min ]"
-        @update:model-value="(value) => setValue(value ? value[0] ?? 0 : 0)">
+        :default-value="[value ?? min]"
+        @update:model-value="(value) => setValue(value ? (value[0] ?? 0) : 0)">
         <SliderTrack class="bg-main-700 relative grow rounded-full h-2">
             <SliderRange class="absolute bg-brand rounded-full h-full" />
         </SliderTrack>

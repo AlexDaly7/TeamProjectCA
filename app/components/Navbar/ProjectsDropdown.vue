@@ -1,15 +1,7 @@
 <script setup lang="ts">
-const {
-    orgData,
-    orgSlug,
-    pending: orgDataPending,
-} = useCurrentOrg();
+const { orgData, orgSlug, pending: orgDataPending } = useCurrentOrg();
 
-const {
-    currentProjectId,
-    currentProject,
-} = useCurrentProject();
-
+const { currentProjectId, currentProject } = useCurrentProject();
 </script>
 
 <template>
@@ -30,11 +22,9 @@ const {
         <template #content="{ close }">
             <div class="min-w-68">
                 <div class="flex flex-col gap-2 p-2">
-                    <template v-if="orgDataPending || !orgData?.projects">
-                        Loading...
-                    </template>
+                    <template v-if="orgDataPending || !orgData?.projects"> Loading... </template>
                     <template v-else>
-                        <AppButton 
+                        <AppButton
                             v-for="project in orgData.projects"
                             variant="tertiary"
                             size="sm-even"
@@ -51,10 +41,7 @@ const {
                                     :alt="`Icon for ${project.title}`" /> -->
                                 <span>{{ project.title }}</span>
                             </div>
-                            <Icon 
-                                v-if="project.id === Number(currentProjectId)"
-                                name="hugeicons:tick-02"
-                                size="16" />
+                            <Icon v-if="project.id === Number(currentProjectId)" name="hugeicons:tick-02" size="16" />
                         </AppButton>
                     </template>
                 </div>
@@ -70,16 +57,10 @@ const {
                             class="w-full inline-flex items-center gap-2 rounded-lg!"
                             :to="{ name: 'dashboard-orgSlug', params: { orgSlug } }"
                             @click="close">
-                            <Icon 
-                                name="hugeicons:grid-view"
-                                size="20"/>
+                            <Icon name="hugeicons:grid-view" size="20" />
                             <div class="flex flex-col items-start">
-                                <span>
-                                    All Projects
-                                </span>
-                                <span class="text-xs text-txt-secondary">
-                                    View all projects in this org.
-                                </span>
+                                <span> All Projects </span>
+                                <span class="text-xs text-txt-secondary"> View all projects in this org. </span>
                             </div>
                         </AppButton>
                     </div>

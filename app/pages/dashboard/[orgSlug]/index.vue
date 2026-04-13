@@ -10,7 +10,7 @@ const {
     error: orgDataError,
     refresh: refreshProjects,
     renameProject: renameProjectHelper,
-    deleteProject: deleteProjectHelper
+    deleteProject: deleteProjectHelper,
 } = useCurrentOrg();
 
 useAppHead({
@@ -29,9 +29,9 @@ function projectLastUpdatedText(project: CurrentOrgProject): string {
     if (daysAgo > 1) {
         return `Updated ${daysAgo} days ago`;
     } else if (daysAgo === 1) {
-        return "Updated 1 day ago";
+        return 'Updated 1 day ago';
     } else {
-        return "Updated today";
+        return 'Updated today';
     }
 }
 
@@ -58,18 +58,12 @@ async function deleteProject(project: CurrentOrgProject) {
 </script>
 
 <template>
-    <HeadersPage
-        title="Projects"
-        description="Manage your organization's projects." />
+    <HeadersPage title="Projects" description="Manage your organization's projects." />
 
-    <div 
-        v-if="orgDataPending"
-        class="mt-4 grow flex items-center justify-center">
+    <div v-if="orgDataPending" class="mt-4 grow flex items-center justify-center">
         <LoadingIcon :size="32" />
     </div>
-    <div 
-        v-else-if="orgDataError || !orgData?.projects"
-        class="mt-4 grow flex items-center justify-center">
+    <div v-else-if="orgDataError || !orgData?.projects" class="mt-4 grow flex items-center justify-center">
         An error occured loading projects: {{ orgDataError ?? 'Unknown Error' }}
     </div>
     <div v-else class="h-full grid grid-cols-4 auto-rows-[30%] gap-2 overflow-y-auto">
@@ -87,16 +81,14 @@ async function deleteProject(project: CurrentOrgProject) {
 
                 <AppDropdown>
                     <template #trigger>
-                        <div class="size-8 flex items-center justify-center rounded-md cursor-pointer data-[state=open]:bg-main-700 hover:bg-main-700">
+                        <div
+                            class="size-8 flex items-center justify-center rounded-md cursor-pointer data-[state=open]:bg-main-700 hover:bg-main-700">
                             <Icon name="hugeicons:more-horizontal" size="20" />
                         </div>
                     </template>
 
                     <template #content>
-                        <AppDropdownItem
-                            text="Rename"
-                            icon="hugeicons:edit-04"
-                            @select="renameProject(project)" />
+                        <AppDropdownItem text="Rename" icon="hugeicons:edit-04" @select="renameProject(project)" />
                         <AppDropdownItem
                             text="Delete"
                             icon="hugeicons:delete-02"
@@ -117,7 +109,7 @@ async function deleteProject(project: CurrentOrgProject) {
                     class="inline-flex justify-between items-center"
                     :to="{
                         name: 'dashboard-orgSlug-projectId',
-                        params: { orgSlug: orgData.organization.slug, projectId: project.id }
+                        params: { orgSlug: orgData.organization.slug, projectId: project.id },
                     }">
                     Open
                     <Icon name="hugeicons:arrow-right-01" />
@@ -125,17 +117,18 @@ async function deleteProject(project: CurrentOrgProject) {
             </div>
         </div>
 
-        <div class="flex flex-col items-center justify-center min-h-40 p-4 gap-1 bg-main-800 rounded-lg border border-dashed border-main-50/10">
+        <div
+            class="flex flex-col items-center justify-center min-h-40 p-4 gap-1 bg-main-800 rounded-lg border border-dashed border-main-50/10">
             <Icon name="hugeicons:github-01" size="24" />
             <span class="text-lg font-bold">Import from GitHub</span>
             <span class="text-sm text-txt-secondary">Connect a repo to get started</span>
-            
-            <AppButton 
+
+            <AppButton
                 variant="secondary"
                 class="mt-1"
-                :to="{ 
+                :to="{
                     name: 'dashboard-orgSlug-import-project',
-                    params: { orgSlug: orgData.organization.slug }
+                    params: { orgSlug: orgData.organization.slug },
                 }">
                 Import
             </AppButton>
