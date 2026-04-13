@@ -20,10 +20,19 @@ export default defineNuxtConfig({
         ],
     },
 
+    nitro: {
+        prerender: {
+            routes: ['/'],
+        },
+    },
+
     css: [ '~/assets/css/main.css' ],
 
     routeRules: {
+        '/': { prerender: true },
+        
         '/dashboard/**': { appLayout: 'dashboard' },
+
         // @ts-expect-error - See: https://github.com/Morgbn/nuxt-csurf/issues/60
         '/api/gh-webhook': { csurf: false }
     },
