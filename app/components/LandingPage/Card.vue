@@ -15,7 +15,8 @@ defineProps<{
             class="ring-md rounded-xl shadow-sm shadow-black"
             autoplay
             loop
-            muted>
+            muted
+            playsinline>
             <source 
                 type="video/webm"
                 :src="videoSrc">

@@ -10,7 +10,7 @@ useSeoMeta({
     ogDescription: 'Collaborative team project tracking with GitHub integration.',
     ogSiteName: 'Mórchlár',
     ogTitle: 'Mórchlár: Collaborative team project tracking with GitHub integration',
-    ogImage: 'http://www.morchlar.com/media/landing/logo.png',
+    ogImage: 'http://www.morchlar.com/media/landing/logo.webp',
     twitterCard: 'summary_large_image',
 });
 
@@ -52,12 +52,15 @@ function signIn() {
                 GitHub ↗
             </a>
         </div>
-        <div class="w-2xl h-36 overflow-hidden mt-48">
+        <div class="w-2xl mt-48 mb-2">
             <h1 id="hero" class="sr-only absolute top-0">Mórchlár</h1>
             <img
+                src="/media/landing/logo.webp"
+                width="1909"
+                height="380" 
+                alt="Mórchlár"
+                fetchpriority="high"
                 class="size-full object-cover object-center drop-shadow-md drop-shadow-black"
-                src="/media/landing/logo.png" 
-                alt="Mórchlár Logo"
                 data-testid="logo">
         </div>
         <p class="text-txt-secondary mb-4">Collaborative team project tracking with GitHub integration.</p>
