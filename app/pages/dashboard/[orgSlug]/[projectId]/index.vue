@@ -43,11 +43,19 @@ const items = computed<TimelineItemWithData[]>(() => {
 
 // Pusher
 // Sub to pusher channel for active project.
-watch(currentProjectId, () => {
-    const projectIdFromInfo = projectInfo.value?.id;
-    if (!projectIdFromInfo) return;
+let cleanup: (() => void) | null = null;
 
-    subscribeToProject(projectIdFromInfo, () => refreshProjectInfo());
+watch(
+    () => projectInfo.value?.id, 
+    (projectId) => {
+    cleanup?.();
+    cleanup = null;
+
+    if (!projectId) return;
+
+    const sub = subscribeToProject(projectId, refreshProjectInfo);
+
+    cleanup = sub?.unsubscribe ?? null;
 }, {
     immediate: true,
 });

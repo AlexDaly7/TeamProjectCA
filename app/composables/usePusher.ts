@@ -1,14 +1,36 @@
+import Pusher from "pusher-js";
+
+let pusher: Pusher | null = null;
+
 export const usePusher = () => {
-    const { $pusher } = useNuxtApp();
+    // If we haven't set up pusher and are running on the client
+    if (!pusher && import.meta.client) {
+        pusher = new Pusher("e41e7620d6ab296d33aa", { 
+            cluster: "eu"
+        });
+
+        Pusher.logToConsole = true;
+    }
 
     function subscribeToProject(
         projectId: number, 
         onUpdate: () => void,
     ) {
-        const channel = $pusher.subscribe(`project-${projectId}`);
-        channel.bind("tasks-updated", onUpdate);
+        if (!pusher) return;
 
-        return channel;
+        const channelName = `project-${projectId}`;
+        const channel = pusher.subscribe(channelName);
+
+        const handler = () => onUpdate();
+        
+        channel.bind('tasks-updated', handler);
+
+        const unsubscribe = () => {
+            channel.unbind('tasks-updated', handler);
+            pusher?.unsubscribe(channelName);
+        }
+
+        return { unsubscribe };
     }
 
     return {
