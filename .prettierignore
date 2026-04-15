@@ -1,4 +1,3 @@
 # Ignore artifacts:
-build
-coverage
-.github/
+.github/workflows
+server/lib/db/migrations
