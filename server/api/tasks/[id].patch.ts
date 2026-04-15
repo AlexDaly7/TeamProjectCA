@@ -1,7 +1,7 @@
 import { type ModifyTaskSchema } from '~~/server/lib/db/schema';
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService, taskService, userService } from '~~/server/services';
-import { validateBody } from '~~/server/utils/validation';
+import { validateBody, validateRouterParam } from '~~/server/utils/validation';
 import { ClientModifyTask } from '~~/shared/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {

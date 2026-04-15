@@ -1,5 +1,5 @@
 import { projectService, taskService } from '~~/server/services';
-import validateRouterParam from '~~/server/utils/validateRouterParam';
+import { validateRouterParam } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const userId = event.context.user.id;

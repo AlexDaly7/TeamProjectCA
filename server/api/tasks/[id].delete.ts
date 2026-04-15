@@ -1,5 +1,6 @@
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, taskService } from '~~/server/services';
+import { validateRouterParam } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const taskId = validateRouterParam(event, 'id');
