@@ -12,6 +12,7 @@
         "db:migrate": "bun drizzle-kit migrate",
         "db:studio": "bun drizzle-kit studio",
         "test": "bunx vitest",
+        "test:nuxt": "bunx vitest run test/nuxt",
         "test:coverage": "bunx vitest --coverage"
     },
     "dependencies": {
