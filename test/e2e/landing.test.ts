@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createPage, setup, url } from '@nuxt/test-utils/e2e';
 
 describe('landing page', async () => {
-    await setup();
+    await setup({ dev: true });
 
     it('displays the hero image', async () => {
         const page = await createPage();
