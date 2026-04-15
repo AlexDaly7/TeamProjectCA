@@ -1,6 +1,7 @@
 import { UpdateProject } from '~~/server/lib/db/schema';
 import { projectService } from '~~/server/services';
 import { ensureOrganizationPermission } from '~~/server/utils/userPermission';
+import { validateRouterParam } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const projectId = validateRouterParam(event, 'id');

@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3';
+import { type H3Event, getRouterParam, createError, readValidatedBody } from 'h3';
 import z from 'zod';
 
 export async function validateBody<T>(event: H3Event, schema: z.ZodType<T>): Promise<T> {
@@ -16,7 +16,7 @@ export async function validateBody<T>(event: H3Event, schema: z.ZodType<T>): Pro
         );
 
         throw createError({
-            status: 422,
+            statusCode: 422,
             statusMessage,
             data: statusData,
         });
@@ -25,16 +25,34 @@ export async function validateBody<T>(event: H3Event, schema: z.ZodType<T>): Pro
     return result.data;
 }
 
-export function parseIdParam(event: H3Event): number {
-    const idString = getRouterParam(event, 'id');
-    const id = parseInt(idString ?? '');
-
-    if (isNaN(id) || id <= 0) {
+export function validateRouterParam(event: H3Event, paramName: string, ensureInt?: true): number;
+export function validateRouterParam(event: H3Event, paramName: string, ensureInt: false): string;
+export function validateRouterParam(
+    event: H3Event,
+    paramName: string,
+    ensureInt: boolean = true,
+): string | number {
+    const param = getRouterParam(event, paramName);
+    if (param === undefined || param === null) {
         throw createError({
-            status: 400,
-            statusMessage: 'Invalid ID.',
+            statusCode: 400,
+            statusMessage: 'Bad Request',
+            message: `'${paramName}' is required.`,
         });
     }
 
-    return id;
+    if (ensureInt) {
+        const parsedParam = Number(param);
+        if (isNaN(parsedParam) || !Number.isInteger(parsedParam)) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: 'Bad Request',
+                message: `'${paramName}' needs to be an integer.`,
+            });
+        }
+
+        return parsedParam;
+    }
+
+    return param;
 }

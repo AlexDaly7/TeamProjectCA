@@ -2,7 +2,7 @@ import { type InsertTaskSchema } from '~~/server/lib/db/schema';
 import { ClientInsertTask } from '~~/shared/validation';
 import { notifyPusherChannel } from '~~/server/lib/pusher';
 import { githubService, projectService, taskService, userService } from '~~/server/services';
-import { validateBody } from '~~/server/utils/validation';
+import { validateBody, validateRouterParam } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const body = await validateBody(event, ClientInsertTask);

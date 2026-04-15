@@ -1,4 +1,5 @@
 import { auth } from '~~/server/lib/auth/auth';
+import { validateRouterParam } from '~~/server/utils/validation';
 
 export default defineAuthenticatedEventHandler(async (event) => {
     const orgId = validateRouterParam(event, 'id', false);
