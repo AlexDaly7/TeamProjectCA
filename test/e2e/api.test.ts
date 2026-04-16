@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { auth } from "../../server/lib/auth/auth";
-import { setup, fetch } from "@nuxt/test-utils/e2e";
+import { describe, it, expect, vi } from 'vitest';
+import { auth } from '../../server/lib/auth/auth';
+import { setup, fetch } from '@nuxt/test-utils/e2e';
 
 vi.mock('~~/server/lib/auth/auth', () => ({
     auth: {
@@ -8,10 +8,10 @@ vi.mock('~~/server/lib/auth/auth', () => ({
             getSession: vi.fn(),
             listUserAccounts: vi.fn(),
         },
-    }
+    },
 }));
 
-describe("GET /api/user/get-accounts", async () => {
+describe('GET /api/user/get-accounts', async () => {
     await setup({
         host: 'http://localhost:3000',
     });

@@ -1,8 +1,7 @@
-import { vi } from "vitest";
-import { auth } from "../../server/lib/auth/auth";
-import defineAuthenticatedEventHandler from "../../server/utils/defineAuthenticatedEventHandler";
-import { H3Event, H3EventContext,  } from "h3";
-import { User } from "better-auth";
+import { vi } from 'vitest';
+import { auth } from '../../server/lib/auth/auth';
+import { H3Event, H3EventContext } from 'h3';
+import { User } from 'better-auth';
 
 vi.mock('~~/server/lib/auth/auth', () => ({
     auth: {
@@ -10,7 +9,7 @@ vi.mock('~~/server/lib/auth/auth', () => ({
             getSession: vi.fn(),
             listUserAccounts: vi.fn(),
         },
-    }
+    },
 }));
 
 vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -33,7 +32,7 @@ vi.mocked(auth.api.getSession).mockResolvedValue({
         name: 'Example User',
         updatedAt: new Date(),
         image: null,
-    }
+    },
 });
 
 type AuthenticatedEvent = H3Event & {
@@ -47,6 +46,6 @@ vi.mock('~~/server/utils/defineAuthenticatedEventHandler', () => ({
         return async (event: any) => {
             event.context.user = {};
             return handler(event as AuthenticatedEvent);
-        }
-    }
+        };
+    },
 }));

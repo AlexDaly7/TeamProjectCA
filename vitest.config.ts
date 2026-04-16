@@ -1,11 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import { defineVitestProject } from '@nuxt/test-utils/config';
 import path from 'path';
-import {  } from "vitest/config";
 
 const resolve = {
     alias: {
-        '~~': path.resolve(__dirname, './')
+        '~~': path.resolve(__dirname, './'),
     },
 };
 

@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, vi } from "vitest";
+import { afterAll, beforeEach, vi } from 'vitest';
 
 import './mocks/auth';
 

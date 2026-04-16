@@ -27,11 +27,7 @@ export async function validateBody<T>(event: H3Event, schema: z.ZodType<T>): Pro
 
 export function validateRouterParam(event: H3Event, paramName: string, ensureInt?: true): number;
 export function validateRouterParam(event: H3Event, paramName: string, ensureInt: false): string;
-export function validateRouterParam(
-    event: H3Event,
-    paramName: string,
-    ensureInt: boolean = true,
-): string | number {
+export function validateRouterParam(event: H3Event, paramName: string, ensureInt: boolean = true): string | number {
     const param = getRouterParam(event, paramName);
     if (param === undefined || param === null) {
         throw createError({

@@ -23,20 +23,17 @@ vi.mock("~/server/utils/github", ()=> ({
 }));*/
 
 vi.mock('../../server/utils/userPermission', () => {
-  return {
-    ensureOrganizationPermission: vi.fn(() => 'Mocked Response')
-  }
-})
+    return {
+        ensureOrganizationPermission: vi.fn(() => 'Mocked Response'),
+    };
+});
 
-describe("POST /api/projects", ()=> {
-    
-    beforeEach(()=> {
+describe('POST /api/projects', () => {
+    beforeEach(() => {
         vi.clearAllMocks();
-    })
+    });
 
-    test("Should fail if user does not have permission", async ()=> {
-        
+    test('Should fail if user does not have permission', async () => {
         await expect();
-
-    })
-})
+    });
+});

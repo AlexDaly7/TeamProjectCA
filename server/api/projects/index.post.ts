@@ -28,7 +28,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
                 message: 'Invalid repo',
             });
         }
-        
+
         const projectData: InsertProjectSchema = {
             title: bodyData.title,
             organizationId: bodyData.organizationId,

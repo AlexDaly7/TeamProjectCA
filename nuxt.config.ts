@@ -68,6 +68,6 @@ export default defineNuxtConfig({
     $test: {
         experimental: {
             serverAppConfig: false,
-        }
-    }
+        },
+    },
 });
