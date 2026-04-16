@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -27,4 +27,4 @@ jobs:
       run: npm install
 
     - name: Run only Nuxt tests
-      run: npm run test:nuxt
+      run: npm run test
