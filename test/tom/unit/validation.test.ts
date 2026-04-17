@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
 
-import { validateBody, validateRouterParam } from '../../server/utils/validation';
-import { createMockEvent } from '../utils/event';
-import { handlerExpectStatusAsync, handlerExpectStatus } from '../utils/handlerExpectStatus';
+import { validateBody, validateRouterParam } from '../../../server/utils/validation';
+import { createMockEvent } from '../../utils/event';
+import { handlerExpectStatusAsync, handlerExpectStatus } from '../../utils/handlerExpectStatus';
 
 describe('validateBody', () => {
     const TestSchema = z.object({

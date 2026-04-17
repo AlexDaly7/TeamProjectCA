@@ -3,7 +3,7 @@ import { createPage, setup, url } from '@nuxt/test-utils/e2e';
 
 describe('landing page', async () => {
     await setup({
-        host: 'http://localhost:3000',
+        dev: true,
     });
 
     it('displays the hero image', async () => {

@@ -13,6 +13,31 @@ export default defineConfig({
         projects: [
             {
                 test: {
+                    name: 'tom-unit',
+                    include: ['test/tom/unit/*.{test,spec}.ts'],
+                    environment: 'node',
+                },
+                resolve,
+            },
+            {
+                test: {
+                    name: 'tom-e2e',
+                    include: ['test/tom/e2e/*.{test,spec}.ts'],
+                    environment: 'node',
+                    setupFiles: ['./test/setup.ts'],
+                },
+                resolve,
+            },
+            await defineVitestProject({
+                test: {
+                    name: 'tom-nuxt',
+                    include: ['test/tom/nuxt/*.{test,spec}.ts'],
+                    environment: 'nuxt',
+                },
+                resolve,
+            }),
+            {
+                test: {
                     name: 'unit',
                     include: ['test/unit/*.{test,spec}.ts'],
                     environment: 'node',
