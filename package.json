@@ -14,7 +14,8 @@
         "test": "bunx vitest",
         "test:nuxt": "bunx vitest run test/nuxt",
         "test:coverage": "bunx vitest --coverage",
-        "test:tom": "bunx vitest --project tom-e2e --project tom-nuxt --project tom-unit"
+        "test:tom": "bunx vitest --project tom-e2e --project tom-nuxt --project tom-unit",
+        "test:alex": "bunx vitest --project alexsTests"
     },
     "dependencies": {
         "@neondatabase/serverless": "^1.0.2",

@@ -39,7 +39,7 @@ describe("githubService.ts deleteIssue()", async ()=> {
         
         await expect(deleteIssue()).rejects.toThrow('Internal server error');
     });
-
+  
     test("Repo installation is found", async () => {
         vi.mocked(githubApp.octokit.rest.apps.getRepoInstallation).mockResolvedValue({
             data: {
