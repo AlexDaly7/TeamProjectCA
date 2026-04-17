@@ -1,5 +1,9 @@
 import { expect } from 'vitest';
-import { H3Error } from 'h3';
+import { H3Error, type StatusCode, type H3Event } from 'h3';
+
+export function expectResponseStatus<T extends H3Event>(event: T, statusCode: StatusCode) {
+    expect(event.node.res.statusCode).toBe(statusCode);
+}
 
 export function handlerExpectStatus(fn: () => any, statusCode: number) {
     try {

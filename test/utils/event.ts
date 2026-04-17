@@ -1,5 +1,20 @@
-import { createEvent, H3Event } from 'h3';
-import { Body, createRequest, createResponse, Headers, Params, Query, RequestMethod } from 'node-mocks-http';
+import { createEvent, H3Event, type H3EventContext } from 'h3';
+import {
+    type Body,
+    createRequest,
+    createResponse,
+    type Headers,
+    type Params,
+    type Query,
+    type RequestMethod,
+} from 'node-mocks-http';
+import type { User } from 'better-auth';
+
+type AuthenticatedEvent = H3Event & {
+    context: H3EventContext & {
+        user?: User;
+    };
+};
 
 export function createMockEvent(data: {
     url?: string;
@@ -8,7 +23,8 @@ export function createMockEvent(data: {
     headers?: Headers;
     params?: Params;
     query?: Query;
-}): H3Event {
+    user?: User;
+}): AuthenticatedEvent {
     const req = createRequest({
         url: data.url,
         headers: {
@@ -23,11 +39,15 @@ export function createMockEvent(data: {
 
     const res = createResponse();
 
-    const event = createEvent(req, res);
+    const event = createEvent(req, res) as AuthenticatedEvent;
 
     // H3 includes this on all event objects
     if (data.params) {
         event.context.params = data.params;
+    }
+
+    if (data.user) {
+        event.context.user = data.user;
     }
 
     return event;
