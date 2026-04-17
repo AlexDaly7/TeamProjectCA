@@ -6,6 +6,7 @@ type AuthenticatedEvent = H3Event & {
         user: User;
     };
 };
+
 export default function defineAuthenticatedEventHandler<T>(handler: (event: AuthenticatedEvent) => T) {
     return defineEventHandler(async (event) => {
         if (!event.context.user) {

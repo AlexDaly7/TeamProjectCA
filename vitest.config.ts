@@ -53,6 +53,15 @@ export default defineConfig({
                 },
                 resolve,
             },
+            {
+                test: {
+                    name: 'alexsTests',
+                    include: ['test/alexsTests/*.{test,spec}.ts'],
+                    environment: 'node',
+                    setupFiles: ['./test/setup.ts'],
+                },
+                resolve,
+            },
             await defineVitestProject({
                 test: {
                     name: 'nuxt',
