@@ -1,63 +1,42 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createError } from 'h3';
 import { createMockEvent } from '../utils/event';
-import { type User } from 'better-auth';
-
-const USER_MOCK: User = {
-    createdAt: new Date(),
-    email: 'user@example.com',
-    emailVerified: true,
-    id: 'exampleuserid',
-    name: 'Example User',
-    updatedAt: new Date(),
-    image: null,
-};
-
-const servicesMock = vi.hoisted(() => ({
-    projectService: {
-        getByIdForUser: vi.fn(),
-    },
-    githubService: {
-        createIssue: vi.fn(),
-    },
-    taskService: {
-        insertTask: vi.fn(),
-    },
-    userService: {
-        getGitHubLogins: vi.fn(),
-    },
-}));
+import {
+    PROJECT_MOCK,
+    pusherMock,
+    resetTaskApiMocks,
+    servicesMock,
+    setupTaskApiGlobals,
+    TASK_BODY,
+    TASK_WITH_PROJECT_MOCK,
+    USER_MOCK,
+} from '../mocks/taskApi';
 
 vi.mock('~~/server/services', () => servicesMock);
-vi.mock('~~/server/lib/pusher', () => ({
-    notifyPusherChannel: vi.fn(),
-}));
+vi.mock('~~/server/lib/pusher', () => pusherMock);
+
+async function expectHandlerError(
+    handler: (event: any) => Promise<unknown>,
+    event: ReturnType<typeof createMockEvent>,
+    expectedStatus: number,
+    expectedMessage?: string,
+) {
+    try {
+        await handler(event);
+        expect.fail(`Handler expected to throw a ${expectedStatus} error`);
+    } catch (error: any) {
+        expect(error.statusCode ?? error.status).toBe(expectedStatus);
+
+        if (expectedMessage) {
+            expect(error.message ?? error.statusMessage ?? error.statusText).toBe(expectedMessage);
+        }
+    }
+}
 
 describe('POST /api/projects/:id/tasks', () => {
     beforeEach(() => {
         vi.resetModules();
-        servicesMock.projectService.getByIdForUser.mockReset();
-        servicesMock.githubService.createIssue.mockReset();
-        servicesMock.taskService.insertTask.mockReset();
-        servicesMock.userService.getGitHubLogins.mockReset();
-
-        vi.stubGlobal('defineAuthenticatedEventHandler', (fn: (event: any) => any) => {
-            return async (event: any) => {
-                if (!event.context.user) {
-                    throw createError({
-                        statusCode: 401,
-                        statusMessage: 'Unauthorized',
-                    });
-                }
-
-                return fn(event);
-            };
-        });
-        vi.stubGlobal('createError', createError);
-        vi.stubGlobal('ensureOrganizationPermission', vi.fn());
-        vi.stubGlobal('setResponseStatus', (event: any, statusCode: number) => {
-            event.node.res.statusCode = statusCode;
-        });
+        resetTaskApiMocks();
+        setupTaskApiGlobals();
     });
 
     afterAll(() => {
@@ -71,24 +50,248 @@ describe('POST /api/projects/:id/tasks', () => {
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: '999999' },
-            body: {
-                title: 'Any task',
-                dateRange: {
-                    start: new Date('2026-04-17T09:00:00.000Z'),
-                    end: new Date('2026-04-17T10:00:00.000Z'),
-                },
-            },
+            body: TASK_BODY,
         });
 
-        try {
-            await handler(event);
-            expect.fail('Handler expected to throw a 404 error');
-        } catch (error: any) {
-            expect(error.statusCode ?? error.status).toBe(404);
-            expect(error.statusMessage ?? error.statusText).toBe('Project not found');
-        }
+        await expectHandlerError(handler, event, 404, 'Project not found');
 
         expect(servicesMock.githubService.createIssue).not.toHaveBeenCalled();
         expect(servicesMock.taskService.insertTask).not.toHaveBeenCalled();
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 401 when the request has no authenticated user', async () => {
+        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const event = createMockEvent({
+            params: { id: '123' },
+            body: TASK_BODY,
+        });
+
+        await expectHandlerError(handler, event, 401, 'Unauthorized');
+
+        expect(servicesMock.projectService.getByIdForUser).not.toHaveBeenCalled();
+        expect(servicesMock.githubService.createIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.insertTask).not.toHaveBeenCalled();
+    });
+
+    it('returns 400 when an assignee is not in the project organization', async () => {
+        servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
+
+        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(PROJECT_MOCK.id) },
+            body: {
+                ...TASK_BODY,
+                assigneeIds: ['outside-user'],
+            },
+        });
+
+        await expectHandlerError(handler, event, 400, 'All assignees must be members of the project organization.');
+
+        expect(servicesMock.userService.getGitHubLogins).not.toHaveBeenCalled();
+        expect(servicesMock.githubService.createIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.insertTask).not.toHaveBeenCalled();
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 204 when a task is created successfully', async () => {
+        // Setup mocks
+        servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
+        servicesMock.userService.getGitHubLogins.mockResolvedValue([
+            { userId: 'otheruserid', login: 'member-2-login' },
+        ]);
+        servicesMock.githubService.createIssue.mockResolvedValue({
+            node_id: 'issue-node-1',
+            number: 42,
+        });
+        servicesMock.taskService.insertTask.mockResolvedValue({
+            data: { id: 777 },
+            error: null,
+        });
+
+        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(PROJECT_MOCK.id) },
+            body: {
+                ...TASK_BODY,
+                assigneeIds: ['member-2', 'member-2'],
+            },
+        });
+
+        const result = await handler(event);
+
+        expect(result).toBeUndefined();
+        expect(servicesMock.projectService.getByIdForUser).toHaveBeenCalledWith(PROJECT_MOCK.id, USER_MOCK.id);
+
+        // Expect we check for the other user
+        expect(servicesMock.userService.getGitHubLogins).toHaveBeenCalledWith(['member-2']);
+
+        // Expect that we created the GitHub issue
+        expect(servicesMock.githubService.createIssue).toHaveBeenCalledWith(
+            PROJECT_MOCK.repoOwner,
+            PROJECT_MOCK.repoName,
+            PROJECT_MOCK.id,
+            {
+                title: TASK_BODY.title,
+                description: TASK_BODY.description,
+                startTime: TASK_BODY.dateRange.start,
+                endTime: TASK_BODY.dateRange.end,
+                order: null,
+                parentId: null,
+            },
+            USER_MOCK.name,
+            ['member-2-login'],
+        );
+
+        // Expect that we run the task service's insert function with the actual data
+        expect(servicesMock.taskService.insertTask).toHaveBeenCalledWith(
+            {
+                title: TASK_BODY.title,
+                description: TASK_BODY.description,
+                startTime: TASK_BODY.dateRange.start,
+                endTime: TASK_BODY.dateRange.end,
+                order: null,
+                parentId: null,
+                progress: TASK_BODY.progress,
+                creatorId: USER_MOCK.id,
+                ghIssueNodeId: 'issue-node-1',
+                ghIssueNumber: 42,
+                projectId: PROJECT_MOCK.id,
+            },
+            ['member-2'],
+        );
+
+        // Expect that we notify everyone in the pusher channel
+        expect(pusherMock.notifyPusherChannel).toHaveBeenCalledWith(PROJECT_MOCK.id);
+    });
+});
+
+describe('PATCH /api/tasks/:id', () => {
+    beforeEach(() => {
+        vi.resetModules();
+        resetTaskApiMocks();
+        setupTaskApiGlobals();
+    });
+
+    afterAll(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("returns 404 when modifying a task that doesn't exist", async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(undefined);
+
+        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: '999999' },
+            body: TASK_BODY,
+        });
+
+        await expectHandlerError(handler, event, 404, 'Task not found');
+
+        expect(servicesMock.githubService.updateIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.updateTask).not.toHaveBeenCalled();
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 401 when the request has no authenticated user', async () => {
+        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const event = createMockEvent({
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            body: TASK_BODY,
+        });
+
+        await expectHandlerError(handler, event, 401, 'Unauthorized');
+
+        expect(servicesMock.taskService.getTaskWithProject).not.toHaveBeenCalled();
+        expect(servicesMock.githubService.updateIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.updateTask).not.toHaveBeenCalled();
+    });
+
+    it('returns 400 when an assignee is not in the project organization', async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
+        servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
+
+        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            body: {
+                ...TASK_BODY,
+                assigneeIds: ['outside-user'],
+            },
+        });
+
+        await expectHandlerError(handler, event, 400, 'All assignees must be members of the project organization.');
+
+        expect(servicesMock.userService.getGitHubLogins).not.toHaveBeenCalled();
+        expect(servicesMock.githubService.updateIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.updateTask).not.toHaveBeenCalled();
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 204 when a task is updated successfully', async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
+        servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
+        servicesMock.userService.getGitHubLogins.mockResolvedValue([
+            { userId: 'member-2', login: 'member-2-login' },
+        ]);
+        servicesMock.taskService.updateTask.mockResolvedValue({
+            data: null,
+            error: null,
+        });
+
+        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            body: {
+                ...TASK_BODY,
+                assigneeIds: ['member-2', 'member-2'],
+                parentId: 44,
+                order: 8,
+            },
+        });
+
+        const result = await handler(event);
+
+        expect(result).toBeUndefined();
+        expect(servicesMock.taskService.getTaskWithProject).toHaveBeenCalledWith(TASK_WITH_PROJECT_MOCK.id);
+        expect(servicesMock.projectService.getByIdForUser).toHaveBeenCalledWith(PROJECT_MOCK.id, USER_MOCK.id);
+        expect(servicesMock.userService.getGitHubLogins).toHaveBeenCalledWith(['member-2']);
+        expect(servicesMock.githubService.updateIssue).toHaveBeenCalledWith(
+            PROJECT_MOCK.repoOwner,
+            PROJECT_MOCK.repoName,
+            PROJECT_MOCK.id,
+            {
+                ...TASK_WITH_PROJECT_MOCK,
+                title: TASK_BODY.title,
+                description: TASK_BODY.description,
+                parentId: 44,
+                startTime: TASK_BODY.dateRange.start,
+                endTime: TASK_BODY.dateRange.end,
+                progress: TASK_BODY.progress,
+                order: 8,
+            },
+            USER_MOCK.name,
+            TASK_WITH_PROJECT_MOCK,
+            ['member-2-login'],
+        );
+        expect(servicesMock.taskService.updateTask).toHaveBeenCalledWith(
+            TASK_WITH_PROJECT_MOCK.id,
+            {
+                title: TASK_BODY.title,
+                description: TASK_BODY.description,
+                parentId: 44,
+                startTime: TASK_BODY.dateRange.start,
+                endTime: TASK_BODY.dateRange.end,
+                progress: TASK_BODY.progress,
+                order: 8,
+            },
+            ['member-2'],
+        );
+        expect(pusherMock.notifyPusherChannel).toHaveBeenCalledWith(PROJECT_MOCK.id);
     });
 });
