@@ -10,27 +10,10 @@ import {
     TASK_WITH_PROJECT_MOCK,
     USER_MOCK,
 } from '../mocks/taskApi';
+import { expectHandlerError } from '../utils/handlerExpectStatus';
 
 vi.mock('~~/server/services', () => servicesMock);
 vi.mock('~~/server/lib/pusher', () => pusherMock);
-
-async function expectHandlerError(
-    handler: (event: any) => Promise<unknown>,
-    event: ReturnType<typeof createMockEvent>,
-    expectedStatus: number,
-    expectedMessage?: string,
-) {
-    try {
-        await handler(event);
-        expect.fail(`Handler expected to throw a ${expectedStatus} error`);
-    } catch (error: any) {
-        expect(error.statusCode ?? error.status).toBe(expectedStatus);
-
-        if (expectedMessage) {
-            expect(error.message ?? error.statusMessage ?? error.statusText).toBe(expectedMessage);
-        }
-    }
-}
 
 describe('POST /api/projects/:id/tasks', () => {
     beforeEach(() => {
@@ -235,9 +218,7 @@ describe('PATCH /api/tasks/:id', () => {
     it('returns 204 when a task is updated successfully', async () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
         servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
-        servicesMock.userService.getGitHubLogins.mockResolvedValue([
-            { userId: 'member-2', login: 'member-2-login' },
-        ]);
+        servicesMock.userService.getGitHubLogins.mockResolvedValue([{ userId: 'member-2', login: 'member-2-login' }]);
         servicesMock.taskService.updateTask.mockResolvedValue({
             data: null,
             error: null,
@@ -292,6 +273,125 @@ describe('PATCH /api/tasks/:id', () => {
             },
             ['member-2'],
         );
+        expect(pusherMock.notifyPusherChannel).toHaveBeenCalledWith(PROJECT_MOCK.id);
+    });
+});
+
+describe('DELETE /api/tasks/:id', () => {
+    beforeEach(() => {
+        vi.resetModules();
+        resetTaskApiMocks();
+        setupTaskApiGlobals();
+    });
+
+    afterAll(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("returns 404 when deleting a task that doesn't exist", async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(undefined);
+
+        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: '999999' },
+            method: 'DELETE',
+        });
+
+        await expectHandlerError(handler, event, 404, 'Task not found');
+
+        expect(servicesMock.githubService.deleteIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.deleteTask).not.toHaveBeenCalled();
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 401 when the request has no authenticated user', async () => {
+        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const event = createMockEvent({
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            method: 'DELETE',
+        });
+
+        await expectHandlerError(handler, event, 401, 'Unauthorized');
+
+        expect(servicesMock.taskService.getTaskWithProject).not.toHaveBeenCalled();
+        expect(servicesMock.githubService.deleteIssue).not.toHaveBeenCalled();
+        expect(servicesMock.taskService.deleteTask).not.toHaveBeenCalled();
+    });
+
+    it('returns 500 when deleting the GitHub issue fails', async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
+        servicesMock.githubService.deleteIssue.mockRejectedValue(new Error('GitHub delete failed'));
+
+        // Suppress console.error — this test intentionally triggers a caught error in the handler
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            method: 'DELETE',
+        });
+
+        try {
+            await expectHandlerError(handler, event, 500, 'Internal Server Error');
+
+            expect(servicesMock.taskService.getTaskWithProject).toHaveBeenCalledWith(TASK_WITH_PROJECT_MOCK.id);
+            expect(servicesMock.githubService.deleteIssue).toHaveBeenCalledWith(
+                PROJECT_MOCK.repoOwner,
+                PROJECT_MOCK.repoName,
+                TASK_WITH_PROJECT_MOCK.ghIssueNodeId,
+            );
+            expect(servicesMock.taskService.deleteTask).not.toHaveBeenCalled();
+            expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+        } finally {
+            consoleSpy.mockRestore();
+        }
+    });
+
+    it('returns 500 when deleting the task in the database fails', async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
+        servicesMock.taskService.deleteTask.mockResolvedValue([]);
+
+        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            method: 'DELETE',
+        });
+
+        await expectHandlerError(handler, event, 500, 'There was a problem while deleting the task.');
+
+        expect(servicesMock.githubService.deleteIssue).toHaveBeenCalledWith(
+            PROJECT_MOCK.repoOwner,
+            PROJECT_MOCK.repoName,
+            TASK_WITH_PROJECT_MOCK.ghIssueNodeId,
+        );
+        expect(servicesMock.taskService.deleteTask).toHaveBeenCalledWith(TASK_WITH_PROJECT_MOCK.id);
+        expect(pusherMock.notifyPusherChannel).not.toHaveBeenCalled();
+    });
+
+    it('returns 204 when a task is deleted successfully', async () => {
+        servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
+        servicesMock.taskService.deleteTask.mockResolvedValue([{ id: TASK_WITH_PROJECT_MOCK.id }]);
+
+        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const event = createMockEvent({
+            user: USER_MOCK,
+            params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
+            method: 'DELETE',
+        });
+
+        const result = await handler(event);
+
+        expect(result).toBeUndefined();
+        expect(servicesMock.taskService.getTaskWithProject).toHaveBeenCalledWith(TASK_WITH_PROJECT_MOCK.id);
+        expect(servicesMock.githubService.deleteIssue).toHaveBeenCalledWith(
+            PROJECT_MOCK.repoOwner,
+            PROJECT_MOCK.repoName,
+            TASK_WITH_PROJECT_MOCK.ghIssueNodeId,
+        );
+        expect(servicesMock.taskService.deleteTask).toHaveBeenCalledWith(TASK_WITH_PROJECT_MOCK.id);
         expect(pusherMock.notifyPusherChannel).toHaveBeenCalledWith(PROJECT_MOCK.id);
     });
 });

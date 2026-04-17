@@ -36,6 +36,7 @@ export const TASK_WITH_PROJECT_MOCK = {
         id: USER_MOCK.id,
         name: USER_MOCK.name,
     },
+    ghIssueNodeId: 'issue-node-456',
 };
 
 export const TASK_BODY = {
@@ -55,11 +56,13 @@ export const servicesMock = {
     githubService: {
         createIssue: vi.fn(),
         updateIssue: vi.fn(),
+        deleteIssue: vi.fn(),
     },
     taskService: {
         insertTask: vi.fn(),
         getTaskWithProject: vi.fn(),
         updateTask: vi.fn(),
+        deleteTask: vi.fn(),
     },
     userService: {
         getGitHubLogins: vi.fn(),
@@ -74,9 +77,11 @@ export function resetTaskApiMocks() {
     servicesMock.projectService.getByIdForUser.mockReset();
     servicesMock.githubService.createIssue.mockReset();
     servicesMock.githubService.updateIssue.mockReset();
+    servicesMock.githubService.deleteIssue.mockReset();
     servicesMock.taskService.insertTask.mockReset();
     servicesMock.taskService.getTaskWithProject.mockReset();
     servicesMock.taskService.updateTask.mockReset();
+    servicesMock.taskService.deleteTask.mockReset();
     servicesMock.userService.getGitHubLogins.mockReset();
     pusherMock.notifyPusherChannel.mockReset();
 }
