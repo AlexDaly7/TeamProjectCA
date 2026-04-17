@@ -64,10 +64,4 @@ export default defineNuxtConfig({
     imports: {
         dirs: ['shared/validation/**/*'],
     },
-
-    $test: {
-        experimental: {
-            serverAppConfig: false,
-        },
-    },
 });

@@ -64,5 +64,9 @@
     },
     "peerDependencies": {
         "typescript": "^5"
+    },
+    "//": "Temp. comment, see: https://github.com/unjs/unimport/issues/528",
+    "overrides": {
+        "unimport": "5.6.0"
     }
 }
