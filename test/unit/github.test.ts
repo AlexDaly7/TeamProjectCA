@@ -7,6 +7,7 @@ vi.mock('octokit', () => {
         Octokit: vi.fn(),
     };
 });
+
 const mockGetData = vi.fn().mockResolvedValue({});
 
 describe('/server/util/github.ts', () => {

@@ -17,12 +17,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const user = session?.user;
-    console.log("USER::: "+user?.id);
     if (user) {
-        console.log("Userpresent: "+user.id);
         // send authed users from landing to dashboard
         if (UNAUTHED_ONLY_ROUTES.includes(event.path)) {
-            console.log("event path: "+event.path);
             return sendRedirect(event, '/dashboard', 302);
         }
     } else {

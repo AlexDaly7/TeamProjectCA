@@ -251,7 +251,6 @@ export async function deleteIssue(repoOwner: string, repoName: string, issueNode
     }
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
-    console.log(installationOctokit);
     await installationOctokit.graphql(
         `
         mutation ($issueId: ID!) {
