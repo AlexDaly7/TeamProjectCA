@@ -40,10 +40,6 @@ describe("/server/service/githubService", () =>{
 
     })
 
-})
-
-describe("/server/service/githubService", () =>{
-
     test('assignee Usernames is empty', async () => {
 
         const result = await getAssignableAssignees({}, 'James-Joyce', 'Ulysees-repo', [])
