@@ -38,23 +38,6 @@ export default defineConfig({
             }),
             {
                 test: {
-                    name: 'unit',
-                    include: ['test/unit/*.{test,spec}.ts'],
-                    environment: 'node',
-                },
-                resolve,
-            },
-            {
-                test: {
-                    name: 'e2e',
-                    include: ['test/e2e/*.{test,spec}.ts'],
-                    environment: 'node',
-                    setupFiles: ['./test/setup.ts'],
-                },
-                resolve,
-            },
-            {
-                test: {
                     name: 'alexsTests',
                     include: ['test/alexsTests/*.{test,spec}.ts'],
                     environment: 'node',
@@ -80,14 +63,6 @@ export default defineConfig({
                 },
                 resolve,
             },
-            await defineVitestProject({
-                test: {
-                    name: 'nuxt',
-                    include: ['test/nuxt/*.{test,spec}.ts'],
-                    environment: 'nuxt',
-                },
-                resolve,
-            }),
         ],
     },
 });
