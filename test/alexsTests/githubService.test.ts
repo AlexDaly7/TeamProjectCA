@@ -3,13 +3,21 @@ import { deleteIssue } from '../../server/services/githubService';
 import { Octokit, App } from 'octokit';
 import githubApp from '../../server/lib/octokit';
 
-const mockGraphql = vi.fn().mockResolvedValue("");
+const mockGraphql = vi.fn().mockResolvedValue('');
 
-vi.mock(import("~~/server/services"), () => {
-    return {}
-})
+vi.mock(import('~~/server/services'), () => {
+    return {};
+});
 
-vi.mock(import("~~/server/lib/octokit"), (importOriginal) => {
+vi.mock('~~/server/utils/github/generateGithubIssue', () => ({
+    generateGithubIssue: vi.fn().mockReturnValue({
+        owner: 'owner',
+        repo: 'repo',
+        title: 'Test Issue',
+    }),
+}));
+
+vi.mock(import('~~/server/lib/octokit'), (importOriginal) => {
     const original = importOriginal();
     return {
         default: {
@@ -18,40 +26,38 @@ vi.mock(import("~~/server/lib/octokit"), (importOriginal) => {
                 rest: {
                     apps: {
                         getRepoInstallation: vi.fn(),
-                    }
-                }
+                    },
+                },
             },
             getInstallationOctokit: vi.fn().mockResolvedValue({
                 graphql: vi.fn(),
-            })
-        }
-    }
+            }),
+        },
+    };
 });
 
-describe("githubService.ts deleteIssue()", async ()=> {
-
-    test("No repo installation is found", async () => {
+describe('githubService.ts deleteIssue()', async () => {
+    test('No repo installation is found', async () => {
         vi.mocked(githubApp.octokit.rest.apps.getRepoInstallation).mockResolvedValue({});
-        
+
         vi.mocked(githubApp.getInstallationOctokit).mockResolvedValue({
-            graphql: mockGraphql
+            graphql: mockGraphql,
         });
-        
+
         await expect(deleteIssue()).rejects.toThrow('Internal server error');
     });
-  
-    test("Repo installation is found", async () => {
+
+    test('Repo installation is found', async () => {
         vi.mocked(githubApp.octokit.rest.apps.getRepoInstallation).mockResolvedValue({
             data: {
-                id: "1"
-            }
+                id: '1',
+            },
         });
-        
+
         vi.mocked(githubApp.getInstallationOctokit).mockResolvedValue({
-            graphql: mockGraphql
+            graphql: mockGraphql,
         });
         const result = await deleteIssue();
-        await expect(githubApp.getInstallationOctokit).toHaveBeenCalledWith("1");
+        await expect(githubApp.getInstallationOctokit).toHaveBeenCalledWith('1');
     });
-
-})
+});
