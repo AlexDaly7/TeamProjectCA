@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMockEvent } from '../utils/event';
+import { createMockEvent } from '../../utils/event';
 import {
     PROJECT_MOCK,
     pusherMock,
@@ -9,8 +9,8 @@ import {
     TASK_BODY,
     TASK_WITH_PROJECT_MOCK,
     USER_MOCK,
-} from '../mocks/taskApi';
-import { expectHandlerError } from '../utils/handlerExpectStatus';
+} from '../../mocks/taskApi';
+import { expectHandlerError } from '../../utils/handlerExpectStatus';
 
 vi.mock('~~/server/services', () => servicesMock);
 vi.mock('~~/server/lib/pusher', () => pusherMock);
@@ -29,7 +29,7 @@ describe('POST /api/projects/:id/tasks', () => {
     it("returns 404 when adding a task to a project that doesn't exist", async () => {
         servicesMock.projectService.getByIdForUser.mockResolvedValue(null);
 
-        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const { default: handler } = await import('../../../server/api/projects/[id]/tasks.post');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: '999999' },
@@ -44,7 +44,7 @@ describe('POST /api/projects/:id/tasks', () => {
     });
 
     it('returns 401 when the request has no authenticated user', async () => {
-        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const { default: handler } = await import('../../../server/api/projects/[id]/tasks.post');
         const event = createMockEvent({
             params: { id: '123' },
             body: TASK_BODY,
@@ -60,7 +60,7 @@ describe('POST /api/projects/:id/tasks', () => {
     it('returns 400 when an assignee is not in the project organization', async () => {
         servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
 
-        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const { default: handler } = await import('../../../server/api/projects/[id]/tasks.post');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(PROJECT_MOCK.id) },
@@ -93,7 +93,7 @@ describe('POST /api/projects/:id/tasks', () => {
             error: null,
         });
 
-        const { default: handler } = await import('../../server/api/projects/[id]/tasks.post');
+        const { default: handler } = await import('../../../server/api/projects/[id]/tasks.post');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(PROJECT_MOCK.id) },
@@ -165,7 +165,7 @@ describe('PATCH /api/tasks/:id', () => {
     it("returns 404 when modifying a task that doesn't exist", async () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(undefined);
 
-        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const { default: handler } = await import('../../../server/api/tasks/[id].patch');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: '999999' },
@@ -180,7 +180,7 @@ describe('PATCH /api/tasks/:id', () => {
     });
 
     it('returns 401 when the request has no authenticated user', async () => {
-        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const { default: handler } = await import('../../../server/api/tasks/[id].patch');
         const event = createMockEvent({
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
             body: TASK_BODY,
@@ -197,7 +197,7 @@ describe('PATCH /api/tasks/:id', () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
         servicesMock.projectService.getByIdForUser.mockResolvedValue(PROJECT_MOCK);
 
-        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const { default: handler } = await import('../../../server/api/tasks/[id].patch');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
@@ -224,7 +224,7 @@ describe('PATCH /api/tasks/:id', () => {
             error: null,
         });
 
-        const { default: handler } = await import('../../server/api/tasks/[id].patch');
+        const { default: handler } = await import('../../../server/api/tasks/[id].patch');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
@@ -291,7 +291,7 @@ describe('DELETE /api/tasks/:id', () => {
     it("returns 404 when deleting a task that doesn't exist", async () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(undefined);
 
-        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const { default: handler } = await import('../../../server/api/tasks/[id].delete');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: '999999' },
@@ -306,7 +306,7 @@ describe('DELETE /api/tasks/:id', () => {
     });
 
     it('returns 401 when the request has no authenticated user', async () => {
-        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const { default: handler } = await import('../../../server/api/tasks/[id].delete');
         const event = createMockEvent({
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
             method: 'DELETE',
@@ -326,7 +326,7 @@ describe('DELETE /api/tasks/:id', () => {
         // Suppress console.error — this test intentionally triggers a caught error in the handler
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const { default: handler } = await import('../../../server/api/tasks/[id].delete');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
@@ -353,7 +353,7 @@ describe('DELETE /api/tasks/:id', () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
         servicesMock.taskService.deleteTask.mockResolvedValue([]);
 
-        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const { default: handler } = await import('../../../server/api/tasks/[id].delete');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
@@ -375,7 +375,7 @@ describe('DELETE /api/tasks/:id', () => {
         servicesMock.taskService.getTaskWithProject.mockResolvedValue(TASK_WITH_PROJECT_MOCK);
         servicesMock.taskService.deleteTask.mockResolvedValue([{ id: TASK_WITH_PROJECT_MOCK.id }]);
 
-        const { default: handler } = await import('../../server/api/tasks/[id].delete');
+        const { default: handler } = await import('../../../server/api/tasks/[id].delete');
         const event = createMockEvent({
             user: USER_MOCK,
             params: { id: String(TASK_WITH_PROJECT_MOCK.id) },
