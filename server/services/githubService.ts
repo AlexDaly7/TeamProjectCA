@@ -13,7 +13,7 @@ export const user = {
     },
 };
 
-async function getAssignableAssignees(
+export async function getAssignableAssignees(
     installationOctokit: Octokit,
     repoOwner: string,
     repoName: string,

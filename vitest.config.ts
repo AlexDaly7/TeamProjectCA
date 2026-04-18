@@ -59,6 +59,10 @@ export default defineConfig({
                     include: ['test/alexsTests/*.{test,spec}.ts'],
                     environment: 'node',
                     setupFiles: ['./test/setup.ts'],
+                    
+                    name: 'josephsTests',
+                    include: ['test/josephsTests/*.{test,spec}.ts'],
+                    environment: 'node',
                 },
                 resolve,
             },
