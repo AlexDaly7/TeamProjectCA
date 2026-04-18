@@ -4,9 +4,14 @@ import { updateIssue } from '../../../server/services/githubService';
 import githubApp from '../../../server/lib/octokit';
 import { mockInstallationOctokit } from '../../mocks/octokit';
 import { taskService } from '../../../server/services';
+import { generateGithubIssue } from '../../../server/utils/github/generateGithubIssue';
 
 vi.mock('~~/server/services', () => ({
     taskService: { getTask: vi.fn() },
+}));
+
+vi.mock('~~/server/utils/github/generateGithubIssue', () => ({
+    generateGithubIssue: vi.fn().mockReturnValue({}),
 }));
 
 const BASE_PREV_VALUES = {
@@ -33,8 +38,6 @@ const BASE_VALUES = {
     progress: 0,
 };
 
-let mockGenerateGithubIssue: ReturnType<typeof vi.fn>;
-
 function setupHappyPathMocks(updatedIssueId = 42) {
     vi.mocked(githubApp.octokit.rest.apps.getRepoInstallation).mockResolvedValue({ data: { id: 1 } } as any);
     vi.mocked(githubApp.getInstallationOctokit).mockResolvedValue(mockInstallationOctokit as any);
@@ -44,8 +47,7 @@ function setupHappyPathMocks(updatedIssueId = 42) {
 describe('githubService updateIssue()', () => {
     beforeEach(() => {
         vi.resetAllMocks();
-        mockGenerateGithubIssue = vi.fn().mockReturnValue({});
-        vi.stubGlobal('generateGithubIssue', mockGenerateGithubIssue);
+        vi.mocked(generateGithubIssue).mockReturnValue({} as any);
     });
 
     it('throws 500 when no repo installation is found', async () => {
@@ -93,7 +95,7 @@ describe('githubService updateIssue()', () => {
 
         await updateIssue('owner', 'repo', 1, BASE_VALUES, 'creator', BASE_PREV_VALUES, ['alice', 'bob']);
 
-        expect(mockGenerateGithubIssue).toHaveBeenCalledWith(
+        expect(vi.mocked(generateGithubIssue)).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining({ assigneeUsernames: ['alice'] }),
             expect.anything(),
@@ -105,7 +107,7 @@ describe('githubService updateIssue()', () => {
 
         await updateIssue('owner', 'repo', 1, BASE_VALUES, 'creator', BASE_PREV_VALUES, []);
 
-        expect(mockGenerateGithubIssue).toHaveBeenCalledWith(
+        expect(vi.mocked(generateGithubIssue)).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining({ assigneeUsernames: [] }),
             expect.anything(),
@@ -138,7 +140,7 @@ describe('githubService updateIssue()', () => {
             BASE_PREV_VALUES,
         );
 
-        expect(mockGenerateGithubIssue).toHaveBeenCalledWith(
+        expect(vi.mocked(generateGithubIssue)).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining({ title: 'Old title', description: 'Old desc' }),
             expect.anything(),
