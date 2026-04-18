@@ -4,7 +4,11 @@ import { Octokit, App } from 'octokit';
 import githubApp from '../../server/lib/octokit';
 
 const mockGraphql = vi.fn().mockResolvedValue('');
+const mockGraphql = vi.fn().mockResolvedValue('');
 
+vi.mock(import('~~/server/services'), () => {
+    return {};
+});
 vi.mock(import('~~/server/services'), () => {
     return {};
 });
