@@ -61,3 +61,12 @@ Locally preview production build:
 ```bash
 bun run preview
 ```
+
+## Testing
+
+Each team members' tests are located in a separate directory in the `test/` folder. To run each test there is an appropriate `package.json` script to do so.
+
+- Thomas: `bun run test:tom`
+- Alex: `bun run test:alex`
+- Antonio: `bun run test:antonio`
+- Joseph: `bun run test:joseph`

@@ -13,16 +13,16 @@ export default defineConfig({
         projects: [
             {
                 test: {
-                    name: 'unit',
-                    include: ['test/unit/*.{test,spec}.ts'],
+                    name: 'tom-unit',
+                    include: ['test/tom/unit/*.{test,spec}.ts'],
                     environment: 'node',
                 },
                 resolve,
             },
             {
                 test: {
-                    name: 'e2e',
-                    include: ['test/e2e/*.{test,spec}.ts'],
+                    name: 'tom-e2e',
+                    include: ['test/tom/e2e/*.{test,spec}.ts'],
                     environment: 'node',
                     setupFiles: ['./test/setup.ts'],
                 },
@@ -30,12 +30,39 @@ export default defineConfig({
             },
             await defineVitestProject({
                 test: {
-                    name: 'nuxt',
-                    include: ['test/nuxt/*.{test,spec}.ts'],
+                    name: 'tom-nuxt',
+                    include: ['test/tom/nuxt/*.{test,spec}.ts'],
                     environment: 'nuxt',
                 },
                 resolve,
             }),
+            {
+                test: {
+                    name: 'alexsTests',
+                    include: ['test/alexsTests/*.{test,spec}.ts'],
+                    environment: 'node',
+                    setupFiles: ['./test/setup.ts'],
+                },
+                resolve,
+            },
+            {
+                test: {
+                    name: 'josephsTests',
+                    include: ['test/josephsTests/*.{test,spec}.ts'],
+                    environment: 'node',
+                    setupFiles: ['./test/setup.ts'],
+                },
+                resolve,
+            },
+            {
+                test: {
+                    name: 'antoniosTests',
+                    include: ['test/antoniosTests/*.{test,spec}.ts'],
+                    environment: 'node',
+                    setupFiles: ['./test/setup.ts'],
+                },
+                resolve,
+            },
         ],
     },
 });

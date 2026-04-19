@@ -1,8 +1,14 @@
 import { Octokit } from 'octokit';
-import githubApp from '../lib/octokit';
+//stealthy
+import githubApp from '~~/server/lib/octokit';
 import { type InsertTaskSchema, type TasksSchema } from '~~/server/lib/db/schema';
-import { taskService } from '.';
+//stealthy
+import { taskService } from '~~/server/services';
 import { type Endpoints } from '@octokit/types';
+//stealthy
+import { createError } from 'h3';
+//you guessed it also kinda stealthy
+import { generateGithubIssue } from '../utils/github/generateGithubIssue';
 
 export const user = {
     getInfo: async (token: string) => {
@@ -12,7 +18,7 @@ export const user = {
     },
 };
 
-async function getAssignableAssignees(
+export async function getAssignableAssignees(
     installationOctokit: Octokit,
     repoOwner: string,
     repoName: string,
@@ -250,7 +256,6 @@ export async function deleteIssue(repoOwner: string, repoName: string, issueNode
     }
 
     const installationOctokit = await githubApp.getInstallationOctokit(repoInstallation.data.id);
-
     await installationOctokit.graphql(
         `
         mutation ($issueId: ID!) {

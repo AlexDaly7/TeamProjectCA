@@ -1,0 +1,14 @@
+import { describe, it, expect, vi } from 'vitest';
+import { auth } from '../../../server/lib/auth/auth';
+import { setup, fetch } from '@nuxt/test-utils/e2e';
+
+describe('GET /api/user/get-accounts', async () => {
+    await setup({ dev: true });
+
+    it('responds with 401 on no session', async () => {
+        vi.mocked(auth.api.getSession).mockResolvedValue(null);
+
+        const res = await fetch('/api/user/get-accounts');
+        expect(res.status).toBe(401);
+    });
+});
