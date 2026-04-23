@@ -1,17 +1,21 @@
-import { vi, test, describe, expect } from 'vitest';
+import { vi, describe, expect, it, importOriginal, toThrowError, resolves, test } from 'vitest';
 import { deleteIssue } from '../../server/services/githubService';
 import { Octokit, App } from 'octokit';
 import githubApp from '../../server/lib/octokit';
 
 const mockGraphql = vi.fn().mockResolvedValue('');
-const mockGraphql = vi.fn().mockResolvedValue('');
 
 vi.mock(import('~~/server/services'), () => {
     return {};
 });
-vi.mock(import('~~/server/services'), () => {
-    return {};
-});
+
+vi.mock('~~/server/utils/github/generateGithubIssue', () => ({
+    generateGithubIssue: vi.fn().mockReturnValue({
+        owner: 'owner',
+        repo: 'repo',
+        title: 'Test Issue',
+    }),
+}));
 
 vi.mock(import('~~/server/lib/octokit'), (importOriginal) => {
     const original = importOriginal();
